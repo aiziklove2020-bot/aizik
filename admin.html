@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דה וינצ'י — ניהול</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#c9a84c;--gl:#e2c06a;--gd:rgba(201,168,76,.12);--gb:rgba(201,168,76,.28);--k:#09090b;--d1:#111214;--d2:#161719;--d3:#1c1e22;--d4:#242629;--d5:#2e3035;--tx:#f0ead8;--t2:#a89878;--t3:#5c5444;--re:#e05252;--gr:#4caf7a;--bl:#5b8ef0;--r:12px;--r2:8px;--sh:0 8px 40px rgba(0,0,0,.6)}
+body{font-family:'Heebo',sans-serif;background:var(--k);color:var(--tx);min-height:100vh;direction:rtl}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% -5%,rgba(201,168,76,.05) 0%,transparent 55%);pointer-events:none}
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}
+.lbox{background:var(--d1);border:1px solid var(--gb);border-radius:20px;width:100%;max-width:360px;padding:36px;box-shadow:var(--sh);position:relative}
+.lbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.ltop{text-align:center;margin-bottom:28px}
+.ldv{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--gold);line-height:1}
+.lname{font-family:'Playfair Display',serif;font-size:16px;color:var(--t2);margin:4px 0 2px}
+.lsub{font-size:10px;letter-spacing:3px;color:var(--t3);text-transform:uppercase}
+.lfg{margin-bottom:12px}
+.lfl{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px}
+.linp{width:100%;background:var(--d3);border:1px solid var(--d4);border-radius:var(--r2);padding:11px 14px;color:var(--tx);font-family:inherit;font-size:14px;direction:rtl;outline:none;transition:border-color .18s}
+.linp:focus{border-color:var(--gb);background:var(--d2)}
+.linp::placeholder{color:var(--t3)}
+.lerr{color:var(--re);font-size:12px;text-align:center;height:18px;margin-bottom:8px}
+.lbtn{width:100%;background:var(--gold);color:var(--k);border:none;padding:13px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .18s}
+.lbtn:hover{background:var(--gl)}
+.lload{text-align:center;font-size:12px;color:var(--t3);margin-top:10px;min-height:18px}
+#app{display:none}
+.topbar{background:var(--d1);border-bottom:1px solid var(--gb);padding:0 24px;height:60px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;backdrop-filter:blur(14px)}
+.tlogo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
+.tright{margin-right:auto;display:flex;align-items:center;gap:10px}
+.clk{font-size:12px;color:var(--t2);background:var(--d3);border:1px solid var(--d5);padding:5px 12px;border-radius:30px}
+.tunm{font-size:13px;color:var(--t2)}
+.tbtn{background:transparent;border:1px solid var(--d5);color:var(--t2);padding:6px 14px;border-radius:var(--r2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s}
+.tbtn:hover{border-color:rgba(224,82,82,.4);color:var(--re)}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 20px;display:flex;flex-direction:column;gap:20px}
+.tabs{display:flex;border-bottom:1px solid var(--d4);gap:4px}
+.tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;margin-bottom:-1px}
+.tab:hover{color:var(--tx)}.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.sec{display:none}.sec.on{display:flex;flex-direction:column;gap:16px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sc{background:var(--d1);border:1px solid var(--d4);border-radius:var(--r);padding:16px;text-align:center;transition:all .18s}
+.sc.hl{border-color:var(--gb)}.sc:hover{transform:translateY(-2px)}
+.scn{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--tx)}
+.sc.hl .scn{color:var(--gold)}.scl{font-size:11px;color:var(--t3);margin-top:3px}
+.two{display:grid;grid-template-columns:1fr 280px;gap:16px}
+.card{background:var(--d1);border:1px solid var(--d4);border-radius:var(--r);overflow:hidden}
+.ch{padding:14px 18px;border-bottom:1px solid var(--d4);display:flex;align-items:center;justify-content:space-between}
+.ch h3{font-family:'Playfair Display',serif;font-size:15px;font-weight:700}
+.bln{background:none;border:none;color:var(--gold);font-size:12px;cursor:pointer;font-family:inherit;opacity:.75}
+.bln:hover{opacity:1}
+.cb{padding:18px;display:flex;flex-direction:column;gap:12px}
+.frow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.sw2{position:relative;flex:1;min-width:180px}
+.si{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none}
+.fi{width:100%;background:var(--d2);border:1px solid var(--d4);border-radius:var(--r2);padding:9px 32px 9px 11px;color:var(--tx);font-family:inherit;font-size:13px;direction:rtl;outline:none}
+.fi:focus{border-color:var(--gb)}.fi::placeholder{color:var(--t3)}
+.fs{background:var(--d2);border:1px solid var(--d4);border-radius:var(--r2);padding:9px 11px;color:var(--tx);font-family:inherit;font-size:12.5px;cursor:pointer;direction:rtl;outline:none}
+.fs:focus{border-color:var(--gb)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--d2);color:var(--t3);font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:right;border-bottom:1px solid var(--d4);white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.025);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(201,168,76,.03)}
+.ec{text-align:center;color:var(--t3);padding:32px !important;font-size:13px}
+.bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bb{background:rgba(91,142,240,.1);color:var(--bl);border:1px solid rgba(91,142,240,.18)}
+.bg{background:var(--gd);color:var(--gold);border:1px solid var(--gb)}
+.bgr{background:rgba(76,175,122,.1);color:var(--gr);border:1px solid rgba(76,175,122,.18)}
+.bgy{background:rgba(255,255,255,.04);color:var(--t2);border:1px solid var(--d5)}
+.ic{background:none;border:none;cursor:pointer;padding:4px 7px;border-radius:5px;font-size:13px;color:var(--t2);transition:all .18s}
+.ic.dl:hover{background:rgba(224,82,82,.1);color:var(--re)}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:11px;font-weight:600;color:var(--t2)}
+.inp{width:100%;background:var(--d3);border:1px solid var(--d4);border-radius:var(--r2);padding:9px 12px;color:var(--tx);font-family:inherit;font-size:13px;direction:rtl;outline:none;transition:border-color .18s}
+.inp:focus{border-color:var(--gb);background:var(--d2)}
+.inp[readonly]{opacity:.5;cursor:not-allowed}.inp::placeholder{color:var(--t3)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sbtn{background:var(--gold);color:var(--k);border:none;padding:10px 24px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s}
+.sbtn:hover{background:var(--gl)}.sbtn.w{width:100%;padding:12px}
+.sbox{background:var(--d1);border:1px solid var(--gb);border-radius:var(--r);overflow:hidden}
+.sbi{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--d4)}
+.sbico{font-size:16px;color:var(--gold)}
+.sbinp{flex:1;background:none;border:none;color:var(--tx);font-family:inherit;font-size:15px;outline:none;direction:rtl}
+.sbinp::placeholder{color:var(--t3)}
+.sbcl{background:var(--d3);border:1px solid var(--d5);color:var(--t2);border-radius:5px;width:24px;height:24px;cursor:pointer;font-size:11px}
+.sbtags{display:flex;gap:6px;padding:10px 16px;flex-wrap:wrap}
+.stag{padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--t2);border:1px solid var(--d5);transition:all .18s;user-select:none}
+.stag:hover{border-color:var(--gb)}.stag.on{background:var(--gd);color:var(--gold);border-color:var(--gb)}
+mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0 2px}
+.tcnt{font-size:12px;color:var(--t3);white-space:nowrap;align-self:center}
+.fll{padding:12px 18px;display:flex;flex-direction:column;gap:9px}
+.flr2{display:flex;align-items:center;gap:9px}
+.fll2{width:60px;font-size:11px;color:var(--t2);font-weight:600;flex-shrink:0}
+.flt{flex:1;height:5px;background:var(--d3);border-radius:3px;overflow:hidden}
+.flf{height:100%;background:linear-gradient(to left,var(--gold),var(--gl));border-radius:3px;transition:width .7s ease}
+.fln{width:20px;font-size:11px;color:var(--t3);flex-shrink:0;text-align:left}
+.role-a{background:var(--gd);color:var(--gold);border:1px solid var(--gb);display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.role-g{background:rgba(91,142,240,.1);color:var(--bl);border:1px solid rgba(91,142,240,.18);display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--d5);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--d1);border:1px solid var(--d5);color:var(--tx);padding:10px 24px;border-radius:30px;font-size:13px;font-weight:500;z-index:9999;transition:transform .28s ease;white-space:nowrap;box-shadow:var(--sh);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(76,175,122,.35);color:var(--gr)}
+.toast.er{border-color:rgba(224,82,82,.35);color:var(--re)}
+@media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:600px){.sg{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+
+.tadmin{background:var(--gd);color:var(--gold);border:1px solid var(--gb);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="lbox">
+    <div class="ltop">
+      <div class="ldv">DV</div>
+      <div class="lname">דה וינצ'י</div>
+      <div class="lsub">כניסת מנהל</div>
+    </div>
+    <div class="lfg"><label class="lfl">אימייל</label><input type="email" id="lU" class="linp" placeholder="admin@davinci.com" autocomplete="off"></div>
+    <div class="lfg"><label class="lfl">סיסמה</label><input type="password" id="lP" class="linp" placeholder="••••••••"></div>
+    <div class="lerr" id="lErr">&nbsp;</div>
+    <button class="lbtn" id="lBtn">כניסה למערכת</button>
+    <div class="lload" id="lLoad"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header class="topbar">
+    <span class="tlogo">דה וינצ'י</span>
+    <span class="tadmin">ניהול מערכת</span>
+    <div class="tright">
+      <span class="clk" id="clk"></span>
+      <span class="tunm" id="uNm"></span>
+      <button class="tbtn" id="logoutBtn">יציאה</button>
+    </div>
+  </header>
+  <div class="wrap" style="max-width:1200px">
+    <div class="tabs">
+      <div class="tab on" data-tab="dash">דשבורד</div>
+      <div class="tab" data-tab="guests">אורחים</div>
+      <div class="tab" data-tab="tenants">דיירים</div>
+      <div class="tab" data-tab="settings">הגדרות</div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="sec on" id="tab-dash">
+      <div class="sg">
+        <div class="sc hl"><div class="scn" id="sTen">0</div><div class="scl">🏠 דיירים רשומים</div></div>
+        <div class="sc hl"><div class="scn" id="sToday">0</div><div class="scl">👤 אורחים היום</div></div>
+        <div class="sc"><div class="scn" id="sTotal">0</div><div class="scl">📋 סה"כ כניסות</div></div>
+        <div class="sc"><div class="scn" id="sFloors">0</div><div class="scl">🏗️ קומות פעילות</div></div>
+      </div>
+      <div class="two">
+        <div class="card">
+          <div class="ch"><h3>כניסות אחרונות</h3><button class="bln" onclick="switchTab('guests')">הכל ←</button></div>
+          <div class="tw"><table><thead><tr><th>שם אורח</th><th>דייר מארח</th><th>דירה</th><th>קטגוריה</th><th>שעה</th><th>נרשם ע"י</th></tr></thead><tbody id="recTbl"><tr><td colspan="6" class="ec">טוען... <span class="spinner"></span></td></tr></tbody></table></div>
+        </div>
+        <div class="card"><div class="ch"><h3>פעילות לפי קומה</h3></div><div class="fll" id="flrAct"></div></div>
+      </div>
+    </div>
+
+    <!-- GUESTS -->
+    <div class="sec" id="tab-guests">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">אורחים</h2>
+        <div style="display:flex;gap:9px">
+          <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
+          <button class="sbtn" id="addGuestBtn">+ רישום אורח</button>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="sw2"><span class="si">🔍</span><input type="text" id="gSrch" class="fi" placeholder="חיפוש..."></div>
+        <select id="gCatF" class="fs"><option value="">כל הקטגוריות</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
+        <select id="gFlrF" class="fs"><option value="">כל הקומות</option><option value="3">קומה 3</option>
+<option value="4">קומה 4</option>
+<option value="5">קומה 5</option>
+<option value="6">קומה 6</option>
+<option value="7">קומה 7</option>
+<option value="8">קומה 8</option>
+<option value="9">קומה 9</option>
+<option value="10">קומה 10</option>
+<option value="11">קומה 11</option>
+<option value="12">קומה 12</option>
+<option value="13">קומה 13</option>
+<option value="14">קומה 14</option>
+<option value="15">קומה 15</option>
+<option value="16">קומה 16</option>
+<option value="17">קומה 17</option>
+<option value="18">קומה 18</option>
+<option value="19">קומה 19</option>
+<option value="20">קומה 20</option>
+<option value="21">קומה 21</option>
+<option value="22">קומה 22</option>
+<option value="23">קומה 23</option>
+<option value="24">קומה 24</option>
+<option value="25">קומה 25</option>
+<option value="26">קומה 26</option>
+<option value="27">קומה 27</option>
+<option value="28">קומה 28</option>
+<option value="29">קומה 29</option>
+<option value="30">קומה 30</option>
+<option value="31">קומה 31</option>
+<option value="32">קומה 32</option>
+<option value="33">קומה 33</option>
+<option value="34">קומה 34</option>
+<option value="35">קומה 35</option>
+<option value="36">קומה 36</option>
+<option value="37">קומה 37</option>
+<option value="38">קומה 38</option>
+<option value="39">קומה 39</option>
+<option value="40">קומה 40</option>
+<option value="41">קומה 41</option>
+<option value="42">קומה 42</option></select>
+        <input type="date" id="gDateF" class="fs">
+      </div>
+      <div class="card tw"><table><thead><tr><th>שם אורח</th><th>קטגוריה</th><th>קומה</th><th>דירה</th><th>דייר מארח</th><th>תאריך</th><th>שעה</th><th>נרשם ע"י</th><th></th></tr></thead><tbody id="gTbl"><tr><td colspan="9" class="ec">טוען... <span class="spinner"></span></td></tr></tbody></table></div>
+    </div>
+
+    <!-- TENANTS -->
+    <div class="sec" id="tab-tenants">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">דיירים</h2>
+      </div>
+      <div class="sbox">
+        <div class="sbi"><span class="sbico">🔍</span><input type="text" id="tSrch" class="sbinp" placeholder="שם, טלפון, דירה, קומה..."><button class="sbcl" onclick="clrT()">✕</button></div>
+        <div class="sbtags">
+          <span class="stag on" data-f="all">הכל</span><span class="stag" data-f="name">שם</span><span class="stag" data-f="phone">טלפון</span><span class="stag" data-f="apt">דירה</span><span class="stag" data-f="floor">קומה</span>
+        </div>
+      </div>
+      <div class="frow">
+        <select id="tFlr" class="fs"><option value="">כל הקומות</option><option value="3">קומה 3</option>
+<option value="4">קומה 4</option>
+<option value="5">קומה 5</option>
+<option value="6">קומה 6</option>
+<option value="7">קומה 7</option>
+<option value="8">קומה 8</option>
+<option value="9">קומה 9</option>
+<option value="10">קומה 10</option>
+<option value="11">קומה 11</option>
+<option value="12">קומה 12</option>
+<option value="13">קומה 13</option>
+<option value="14">קומה 14</option>
+<option value="15">קומה 15</option>
+<option value="16">קומה 16</option>
+<option value="17">קומה 17</option>
+<option value="18">קומה 18</option>
+<option value="19">קומה 19</option>
+<option value="20">קומה 20</option>
+<option value="21">קומה 21</option>
+<option value="22">קומה 22</option>
+<option value="23">קומה 23</option>
+<option value="24">קומה 24</option>
+<option value="25">קומה 25</option>
+<option value="26">קומה 26</option>
+<option value="27">קומה 27</option>
+<option value="28">קומה 28</option>
+<option value="29">קומה 29</option>
+<option value="30">קומה 30</option>
+<option value="31">קומה 31</option>
+<option value="32">קומה 32</option>
+<option value="33">קומה 33</option>
+<option value="34">קומה 34</option>
+<option value="35">קומה 35</option>
+<option value="36">קומה 36</option>
+<option value="37">קומה 37</option>
+<option value="38">קומה 38</option>
+<option value="39">קומה 39</option>
+<option value="40">קומה 40</option>
+<option value="41">קומה 41</option>
+<option value="42">קומה 42</option></select>
+        <select id="tSort" class="fs"><option value="floor">מיון: קומה</option><option value="name">מיון: שם</option><option value="apt">מיון: דירה</option></select>
+        <span class="tcnt" id="tCnt"></span>
+      </div>
+      <div class="card tw"><table><thead><tr><th>שם מלא</th><th>קומה</th><th>דירה</th><th>טלפון</th><th></th></tr></thead><tbody id="tTbl"></tbody></table></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="sec" id="tab-settings">
+      <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">הגדרות</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="ch"><h3>➕ הוספת דייר</h3></div>
+          <div class="cb">
+            <form id="tForm">
+              <div class="grid2" style="margin-bottom:12px">
+                <div class="fg"><label class="fl">שם מלא *</label><input type="text" id="tN" class="inp" required></div>
+                <div class="fg"><label class="fl">טלפון</label><input type="tel" id="tPh" class="inp" placeholder="050-0000000"></div>
+              </div>
+              <div class="grid2" style="margin-bottom:14px">
+                <div class="fg"><label class="fl">קומה *</label><input type="number" id="tFl" class="inp" required min="1"></div>
+                <div class="fg"><label class="fl">דירה *</label><input type="text" id="tAp" class="inp" required></div>
+              </div>
+              <button type="submit" class="sbtn w">שמור דייר</button>
+            </form>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><h3>⚙️ פרטי הבניין</h3></div>
+          <div class="cb">
+            <div class="fg"><label class="fl">שם הבניין</label><input class="inp" value="דה וינצ'י"></div>
+            <div class="fg"><label class="fl">כתובת</label><input class="inp" value="מגדל דרומי"></div>
+            <button class="sbtn" onclick="toast('נשמר ✓','ok')">שמור שינויים</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GUEST -->
+<div id="mG" style="position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;backdrop-filter:blur(8px)">
+  <div style="background:var(--d1);border:1px solid var(--gb);border-radius:16px;width:100%;max-width:500px;box-shadow:var(--sh);max-height:90vh;overflow-y:auto;position:relative">
+    <div style="background:linear-gradient(to right,transparent,var(--gold),transparent);height:1px;position:absolute;top:0;left:0;right:0"></div>
+    <div style="padding:18px 20px 14px;border-bottom:1px solid var(--d4);display:flex;align-items:center;justify-content:space-between">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700">רישום אורח חדש</h3>
+      <button onclick="closeM()" style="width:28px;height:28px;background:var(--d3);border:1px solid var(--d5);color:var(--t2);border-radius:6px;cursor:pointer;font-size:13px">✕</button>
+    </div>
+    <form id="gForm">
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
+        <div class="grid2">
+          <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required></div>
+          <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+        </div>
+        <div class="grid2">
+          <div class="fg"><label class="fl">קומה *</label><select id="gFlrM" class="inp" required><option value="">בחר קומה</option><option value="3">קומה 3</option>
+<option value="4">קומה 4</option>
+<option value="5">קומה 5</option>
+<option value="6">קומה 6</option>
+<option value="7">קומה 7</option>
+<option value="8">קומה 8</option>
+<option value="9">קומה 9</option>
+<option value="10">קומה 10</option>
+<option value="11">קומה 11</option>
+<option value="12">קומה 12</option>
+<option value="13">קומה 13</option>
+<option value="14">קומה 14</option>
+<option value="15">קומה 15</option>
+<option value="16">קומה 16</option>
+<option value="17">קומה 17</option>
+<option value="18">קומה 18</option>
+<option value="19">קומה 19</option>
+<option value="20">קומה 20</option>
+<option value="21">קומה 21</option>
+<option value="22">קומה 22</option>
+<option value="23">קומה 23</option>
+<option value="24">קומה 24</option>
+<option value="25">קומה 25</option>
+<option value="26">קומה 26</option>
+<option value="27">קומה 27</option>
+<option value="28">קומה 28</option>
+<option value="29">קומה 29</option>
+<option value="30">קומה 30</option>
+<option value="31">קומה 31</option>
+<option value="32">קומה 32</option>
+<option value="33">קומה 33</option>
+<option value="34">קומה 34</option>
+<option value="35">קומה 35</option>
+<option value="36">קומה 36</option>
+<option value="37">קומה 37</option>
+<option value="38">קומה 38</option>
+<option value="39">קומה 39</option>
+<option value="40">קומה 40</option>
+<option value="41">קומה 41</option>
+<option value="42">קומה 42</option></select></div>
+          <div class="fg"><label class="fl">דירה *</label><select id="gApt" class="inp" required><option value="">בחר דירה</option></select></div>
+        </div>
+        <div class="fg"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+        <div class="grid2">
+          <div class="fg"><label class="fl">תאריך *</label><input type="date" id="gDt" class="inp" required></div>
+          <div class="fg"><label class="fl">שעה *</label><input type="time" id="gTm" class="inp" required></div>
+        </div>
+      </div>
+      <div style="padding:13px 20px;border-top:1px solid var(--d4);display:flex;justify-content:flex-end;gap:9px">
+        <button type="button" onclick="closeM()" style="background:transparent;color:var(--t2);border:1px solid var(--d5);padding:9px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">ביטול</button>
+        <button type="submit" class="sbtn" id="saveGuestBtn">שמור רישום</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script type="module">
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+const TODAY = new Date().toISOString().split('T')[0];
+let tFld = 'all';
+
+function badge(cat){
+  const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr','אחר':'bgy'};
+  return `<span class="bdg ${m[cat]||'bgy'}">${cat||'—'}</span>`;
+}
+function fd(d){if(!d)return'—';const p=d.split('-');return`${p[2]}/${p[1]}/${p[0]}`;}
+function toast(msg,type){
+  const e=document.getElementById('toastEl');
+  e.textContent=msg;e.className=`toast ${type||''}`;e.classList.add('show');
+  setTimeout(()=>e.classList.remove('show'),3200);
+}
+function hl(str,q){
+  if(!q||!str)return str||'';
+  return str.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi'),'<mark>$1</mark>');
+}
+function tick(){
+  const n=new Date();
+  const el=document.getElementById('clk');
+  if(el) el.textContent=n.toLocaleDateString('he-IL',{weekday:'short',day:'numeric',month:'short'})+' | '+n.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(tick,1000);tick();
+
+
+var tenants=[
+  {id:'t1',name:'אלישי כדיר',phone:'052-8838381',floor:3,apt:'1'},
+  {id:'t2',name:'אולי צלאל',phone:'052-2314412',floor:4,apt:'6'},
+  {id:'t3',name:'מיה ויזהר קיינר',phone:'054-5629944',floor:5,apt:'11'},
+  {id:'t4',name:'יניב קדשאי',phone:'050-5251110',floor:6,apt:'16'},
+  {id:'t5',name:'אברהם ערה',phone:'0546915134',floor:7,apt:'21'},
+  {id:'t6',name:'בוגדן קורטנוב',phone:'054-3497897',floor:8,apt:'26'},
+  {id:'t7',name:'אבלין וגבריאל נגר',phone:'053-7726864',floor:8,apt:'27'},
+  {id:'t8',name:'עמית דוידוף',phone:'052-8949240',floor:8,apt:'28'},
+  {id:'t9',name:'אייל פרסיאדו',phone:'054-7713030',floor:8,apt:'29'},
+  {id:'t10',name:'אורן קוקו השקעות',phone:'054-5420208',floor:9,apt:'30'},
+  {id:'t11',name:'נועה ותום קליר גורביץ',phone:'054-4400005',floor:9,apt:'31'},
+  {id:'t12',name:'עומר אדלר',phone:'052-4627525',floor:9,apt:'32'},
+  {id:'t13',name:'משה וגילה אושרת',phone:'052-8662929',floor:9,apt:'33'},
+  {id:'t14',name:'עומרי כהן',phone:'050-3360000',floor:10,apt:'34'},
+  {id:'t15',name:'קרן קירשנר',phone:'054-7799137',floor:10,apt:'35'},
+  {id:'t16',name:'גיל ויסמן עומר הולצמן',phone:'054-7421444',floor:10,apt:'36'},
+  {id:'t17',name:'אפרת/הגר קדם',phone:'052-2854823',floor:10,apt:'37'},
+  {id:'t18',name:'טל ואדם פלוטקין',phone:'052-3262000',floor:10,apt:'38'},
+  {id:'t19',name:'אקמ',phone:'',floor:10,apt:'39'},
+  {id:'t20',name:'חגית בן טוב',phone:'052-4662828',floor:11,apt:'40'},
+  {id:'t21',name:'יניב יונה',phone:'054-4888579',floor:11,apt:'41'},
+  {id:'t22',name:'דין ארבוב כרמל בן דוד',phone:'054-3970713',floor:11,apt:'42'},
+  {id:'t23',name:'בר צורני',phone:'054-3080458',floor:11,apt:'43'},
+  {id:'t24',name:'תכלת ונועם פורטמן',phone:'0542203068',floor:11,apt:'44'},
+  {id:'t25',name:'יעקב ואורה בוברובסקי באר',phone:'050-7292772',floor:11,apt:'45'},
+  {id:'t26',name:'מרקו קנפו',phone:'054-7498477',floor:12,apt:'46'},
+  {id:'t27',name:'דן ברנשטיין',phone:'052-8444499',floor:12,apt:'47'},
+  {id:'t28',name:'ליאור ברגמן',phone:'052-5008484',floor:12,apt:'48'},
+  {id:'t29',name:'רפי ורותי שקל',phone:'054-4264647',floor:12,apt:'49'},
+  {id:'t30',name:'אבנר ויעל חדד',phone:'054-5211329',floor:12,apt:'50'},
+  {id:'t31',name:'טל שקד',phone:'054-7741333',floor:12,apt:'51'},
+  {id:'t32',name:'יהודית ושמואל צור',phone:'052-4605048',floor:13,apt:'52'},
+  {id:'t33',name:'לילך ויקי בלדב',phone:'054-2282362',floor:13,apt:'53'},
+  {id:'t34',name:'נועם בונומו',phone:'052-4442432',floor:13,apt:'54'},
+  {id:'t35',name:'אלודי ובועז גורן קלימי',phone:'050-2121540',floor:13,apt:'55'},
+  {id:'t36',name:'אורן חסון נורית',phone:'054-9770111',floor:13,apt:'56'},
+  {id:'t37',name:'אלון וינר',phone:'052-8394983',floor:13,apt:'57'},
+  {id:'t38',name:'אריאל סמוחי',phone:'050-6828406',floor:14,apt:'59'},
+  {id:'t39',name:'אופק וליסה כתריאל',phone:'053-4300430',floor:14,apt:'60'},
+  {id:'t40',name:'יאיר אדרת',phone:'054-7299721',floor:14,apt:'61'},
+  {id:'t41',name:'יערה וספי לרנר,זרצקי',phone:'052-6769116',floor:14,apt:'62'},
+  {id:'t42',name:'רונן יודקביץ',phone:'052-3510518',floor:14,apt:'63'},
+  {id:'t43',name:'דנה אשכנזי',phone:'054-4402240',floor:15,apt:'64'},
+  {id:'t44',name:'דני סלבין אנגלינה קנזניקובה',phone:'050-3020671',floor:15,apt:'65'},
+  {id:'t45',name:'תום וקורל ניסני',phone:'050-9960409',floor:15,apt:'66'},
+  {id:'t46',name:'נטע צדוק יוסי זלנסקי',phone:'052-5361834',floor:15,apt:'67'},
+  {id:'t47',name:'צביה לניר',phone:'054-4891948',floor:15,apt:'68'},
+  {id:'t48',name:'ארמנד ותמרה אוג\'רד',phone:'052-8700883',floor:15,apt:'69'},
+  {id:'t49',name:'מירב ושלום (ניסים) מלול ביטן',phone:'053-3333830',floor:16,apt:'70'},
+  {id:'t50',name:'ענבל ארבוב',phone:'054-4803696',floor:16,apt:'71'},
+  {id:'t51',name:'שלי בן יוסף דור נצר',phone:'054-3974224',floor:16,apt:'72'},
+  {id:'t52',name:'יונתן ונאוה אגבר',phone:'050-6350170',floor:16,apt:'73'},
+  {id:'t53',name:'אלכסנדר ויעל נתן וינקלר',phone:'847-6079376',floor:16,apt:'74'},
+  {id:'t54',name:'אבי ומירב  לוי ילדים: שיר,יובל,מאיה ,עמית',phone:'050-5386415',floor:16,apt:'75'},
+  {id:'t55',name:'גאן ברבי',phone:'',floor:17,apt:'76'},
+  {id:'t56',name:'יובל צדוק',phone:'050-7279792',floor:17,apt:'77'},
+  {id:'t57',name:'מוטי  ותימורה שירי',phone:'050-5708462',floor:17,apt:'78'},
+  {id:'t58',name:'טובי וטרה רידלוויץ,שונגוט',phone:'058-4887898',floor:17,apt:'79'},
+  {id:'t59',name:'הילדה רגואן',phone:'052-2579051',floor:17,apt:'80'},
+  {id:'t60',name:'רותי רז',phone:'050-6255995',floor:17,apt:'81'},
+  {id:'t61',name:'לידור ועמית אזולאי , גזית',phone:'054-2563396',floor:18,apt:'82'},
+  {id:'t62',name:'מיכאל פלד',phone:'050-8221770',floor:18,apt:'83'},
+  {id:'t63',name:'אסנת אביבי',phone:'054-4290380',floor:18,apt:'84'},
+  {id:'t64',name:'בנדטה וטל קרסו',phone:'050-5770404',floor:18,apt:'85'},
+  {id:'t65',name:'נעה ואיתמר פלקון',phone:'052-8041115',floor:18,apt:'86'},
+  {id:'t66',name:'ורד עברי',phone:'052-3256318',floor:18,apt:'87'},
+  {id:'t67',name:'אברהם ולדזי',phone:'054-4776360',floor:19,apt:'89'},
+  {id:'t68',name:'דוד אץ',phone:'054-5565066',floor:19,apt:'90'},
+  {id:'t69',name:'אודי פמיני',phone:'052-2631978',floor:19,apt:'91'},
+  {id:'t70',name:'יאיר סלוצינסקי',phone:'050-5337880',floor:19,apt:'92'},
+  {id:'t71',name:'פיליפ פינחס וסנדרה לזוביק',phone:'052-3404295',floor:19,apt:'93'},
+  {id:'t72',name:'עדי לוי אלון מכהן',phone:'054-5333996',floor:20,apt:'94'},
+  {id:'t73',name:'לי חנונו',phone:'054-2129277',floor:20,apt:'95'},
+  {id:'t74',name:'דנה ושמואל אבן',phone:'054-3977847',floor:20,apt:'96'},
+  {id:'t75',name:'דורון אלכסנדר',phone:'054-4452878',floor:20,apt:'97'},
+  {id:'t76',name:'תקוה ואיציק שקד',phone:'050-2724581',floor:20,apt:'98'},
+  {id:'t77',name:'יוסי ויעל כהן',phone:'053-5575817',floor:20,apt:'99'},
+  {id:'t78',name:'ניב ואזנה',phone:'054-2345159',floor:21,apt:'100'},
+  {id:'t79',name:'יובל סנה יובל  רינר',phone:'052-4231509',floor:21,apt:'101'},
+  {id:'t80',name:'דין ליכטנשטיין',phone:'+14168717173',floor:21,apt:'102'},
+  {id:'t81',name:'נועם דותן עדן אנקרי',phone:'054-4983482',floor:21,apt:'103'},
+  {id:'t82',name:'תמי פרידל',phone:'050-6814023',floor:21,apt:'104'},
+  {id:'t83',name:'גיא כספרי',phone:'054-2009579',floor:21,apt:'105'},
+  {id:'t84',name:'תומר בלדב',phone:'054-5707234',floor:22,apt:'106'},
+  {id:'t85',name:'עודד קינן',phone:'054-5836199',floor:22,apt:'107'},
+  {id:'t86',name:'אריק, יעל פורת',phone:'052-2565767',floor:22,apt:'108'},
+  {id:'t87',name:'ענת שטרית',phone:'054-5883066',floor:22,apt:'109'},
+  {id:'t88',name:'ניב',phone:'052-3308287',floor:22,apt:'110'},
+  {id:'t89',name:'משה ושלומית לדור',phone:'050-6216696',floor:22,apt:'111'},
+  {id:'t90',name:'מאיה אופק',phone:'050-8255314',floor:23,apt:'112'},
+  {id:'t91',name:'אוסנת ושלמה סבאג',phone:'054-5883393',floor:23,apt:'113'},
+  {id:'t92',name:'אהובה ואבי יהל',phone:'050-9772222',floor:23,apt:'114'},
+  {id:'t93',name:'עומרי וליאור / יפתח רות לורך',phone:'052-2502636',floor:23,apt:'115'},
+  {id:'t94',name:'אלי ורחל אנגל',phone:'050-6560026',floor:23,apt:'116'},
+  {id:'t95',name:'דניאל ורועי אנג\'ל',phone:'054-7808014',floor:23,apt:'117'},
+  {id:'t96',name:'אילן טוביהו',phone:'054-5335555',floor:24,apt:'118'},
+  {id:'t97',name:'ענבל ארבוב',phone:'054-4803696',floor:24,apt:'119'},
+  {id:'t98',name:'מתן תורגמן דנה שלום',phone:'054-8836588',floor:24,apt:'120'},
+  {id:'t99',name:'פלורי וסטיב גולדשטיין',phone:'052-8783646',floor:24,apt:'121'},
+  {id:'t100',name:'עודד שילון איה אבני',phone:'054-7600070',floor:24,apt:'122'},
+  {id:'t101',name:'שרלוט ויעקב פולני',phone:'+447825274499',floor:24,apt:'123'},
+  {id:'t102',name:'אירית ויוסף ביבר',phone:'050-6574421',floor:25,apt:'124'},
+  {id:'t103',name:'הדס לויט ישראלי',phone:'052-4717020',floor:25,apt:'125'},
+  {id:'t104',name:'לו ויואן',phone:'+590-690664316',floor:25,apt:'126'},
+  {id:'t105',name:'מרק ליברמן',phone:'054-6778150',floor:25,apt:'127'},
+  {id:'t106',name:'יאיר ברס',phone:'052-2225943',floor:25,apt:'128'},
+  {id:'t107',name:'אורי מוסקונה',phone:'054-4690020',floor:25,apt:'129'},
+  {id:'t108',name:'שרון איבגי',phone:'052-3683005',floor:26,apt:'130'},
+  {id:'t109',name:'ענבל ארבוב',phone:'054-4803696',floor:26,apt:'131'},
+  {id:'t110',name:'אלי דובנוב',phone:'052-5552588',floor:26,apt:'132'},
+  {id:'t111',name:'ענת אטון',phone:'052-2681327',floor:26,apt:'133'},
+  {id:'t112',name:'שי גרינברג',phone:'052-6303660',floor:26,apt:'134'},
+  {id:'t113',name:'אדוה ואסף שומרון',phone:'052-4846860',floor:26,apt:'135'},
+  {id:'t114',name:'מאיר דפס',phone:'052-3895808',floor:27,apt:'136'},
+  {id:'t115',name:'גד שמרון',phone:'052-3112330',floor:27,apt:'137'},
+  {id:'t116',name:'גולן זרביב',phone:'050-9400629',floor:27,apt:'138'},
+  {id:'t117',name:'גניה ויוסף קוסט',phone:'054-4690916',floor:27,apt:'139'},
+  {id:'t118',name:'דינה ויעקב טרובצקי',phone:'054-4243355',floor:27,apt:'140'},
+  {id:'t119',name:'אורי וטלי ארזי',phone:'054-7884242',floor:27,apt:'141'},
+  {id:'t120',name:'ארז רוחמה',phone:'053-7755398',floor:28,apt:'142'},
+  {id:'t121',name:'מאור אביטל',phone:'052-2840568',floor:28,apt:'143'},
+  {id:'t122',name:'צח ולינור עובד',phone:'054-4827876',floor:28,apt:'144'},
+  {id:'t123',name:'רחל תורן',phone:'052-2581454',floor:28,apt:'145'},
+  {id:'t124',name:'ערן ברנע',phone:'050-5299930',floor:28,apt:'146'},
+  {id:'t125',name:'יועד וסלביה מקוב',phone:'052-4676067',floor:28,apt:'147'},
+  {id:'t126',name:'אביקם',phone:'052-6063019',floor:29,apt:'148'},
+  {id:'t127',name:'יואב קריל',phone:'054-4331338',floor:29,apt:'149'},
+  {id:'t128',name:'נתי ויעקב לוי',phone:'050-6770279',floor:29,apt:'151'},
+  {id:'t129',name:'משה בוקריס יולנדה ויצמן',phone:'052-8690095',floor:29,apt:'152'},
+  {id:'t130',name:'רועי כהן אן מרי נובק',phone:'050-2966486',floor:29,apt:'153'},
+  {id:'t131',name:'רומן פרשטר',phone:'+1-6174777765',floor:30,apt:'155'},
+  {id:'t132',name:'יותם כהן',phone:'054-3176196',floor:30,apt:'156'},
+  {id:'t133',name:'יאיר מדילנד',phone:'054-4224333',floor:30,apt:'157'},
+  {id:'t134',name:'אמיר ואדריאנה אגמי',phone:'04-6276644',floor:30,apt:'158'},
+  {id:'t135',name:'ליאב אכיזר',phone:'054-4332099',floor:31,apt:'160'},
+  {id:'t136',name:'מתן סוויסה',phone:'052-3127726',floor:31,apt:'161'},
+  {id:'t137',name:'לאה וסמואל כהן',phone:'054-2530705',floor:31,apt:'162'},
+  {id:'t138',name:'לידור פלדמן רועי גונן',phone:'052-8671515',floor:31,apt:'163'},
+  {id:'t139',name:'ירון גלבוע',phone:'052-5775786',floor:31,apt:'164'},
+  {id:'t140',name:'טלי,יואב,אורי,יאיר ורשבסקי',phone:'052-8752521',floor:31,apt:'165'},
+  {id:'t141',name:'עומר וניסים/משה דמרי',phone:'050-6967801',floor:32,apt:'166'},
+  {id:'t142',name:'עמית בנזרף לילי בורקובסקי',phone:'054-3032229',floor:32,apt:'167'},
+  {id:'t143',name:'ניקי פרימו',phone:'052-2313313',floor:32,apt:'168'},
+  {id:'t144',name:'יניר ואולגה קמחי',phone:'054-6969938',floor:32,apt:'169'},
+  {id:'t145',name:'שלמה וירונה, גיל בן דוד',phone:'054-6550560',floor:32,apt:'170'},
+  {id:'t146',name:'שלמה וירונה, גיל בן דוד',phone:'050-2323891',floor:32,apt:'171'},
+  {id:'t147',name:'גיל וינר',phone:'054-9993700',floor:33,apt:'172'},
+  {id:'t148',name:'יעל ברק אריאל בורוצנר',phone:'050-3340591',floor:33,apt:'173'},
+  {id:'t149',name:'אורי אמויאל שרון זלצמן',phone:'053-5283889',floor:33,apt:'174'},
+  {id:'t150',name:'ענת ועוזי שריד',phone:'050-6204681',floor:33,apt:'175'},
+  {id:'t151',name:'נירית שמעוני',phone:'050-5390344',floor:33,apt:'176'},
+  {id:'t152',name:'יפה ומאיר כרם',phone:'052-4015550',floor:33,apt:'177'},
+  {id:'t153',name:'נועם פרדקין',phone:'054-4264946',floor:34,apt:'178'},
+  {id:'t154',name:'נאוה ועזי טריצר',phone:'052-3997299',floor:34,apt:'179'},
+  {id:'t155',name:'רות ואלדד אלון',phone:'054-7657507',floor:34,apt:'180'},
+  {id:'t156',name:'גיא ויפעת אגמי',phone:'050-9898011',floor:34,apt:'181'},
+  {id:'t157',name:'טל מרום יוני שטיין',phone:'050-6791202',floor:35,apt:'182'},
+  {id:'t158',name:'פנינה ורפי שומרון',phone:'050-6288893',floor:35,apt:'183'},
+  {id:'t159',name:'אלכס ואביבה גור',phone:'054-6303004',floor:35,apt:'184'},
+  {id:'t160',name:'דקלה וגל טוטיאן זייד',phone:'052-8349349',floor:35,apt:'185'},
+  {id:'t161',name:'אורי שוורץ',phone:'052-6676863',floor:36,apt:'186'},
+  {id:'t162',name:'אלכס גינזבורג',phone:'052-2331410',floor:36,apt:'187'},
+  {id:'t163',name:'יעקב בלאט',phone:'050-323-0963',floor:36,apt:'188'},
+  {id:'t164',name:'נילי זוהר ארנון רולניק',phone:'054-4267474',floor:36,apt:'189'},
+  {id:'t165',name:'צוריאל לוין',phone:'054-2463033',floor:37,apt:'190'},
+  {id:'t166',name:'אורלי ויעקב ברס',phone:'052-2213075',floor:37,apt:'191'},
+  {id:'t167',name:'ציפי ומרון מן',phone:'054-8855080',floor:37,apt:'192'},
+  {id:'t168',name:'יעל שנידמן אבי ירון',phone:'052-5798971',floor:37,apt:'193'},
+  {id:'t169',name:'הדס מישאל',phone:'054-4210494',floor:38,apt:'194'},
+  {id:'t170',name:'דידי ופלורי מסילתי',phone:'053-7250770',floor:38,apt:'195'},
+  {id:'t171',name:'דימטריס אוטיטס',phone:'054-3532255',floor:38,apt:'196'},
+  {id:'t172',name:'עופר הדס מהרשק',phone:'054-4850289',floor:38,apt:'197'},
+  {id:'t173',name:'קובי סקאל',phone:'050-5292629',floor:39,apt:'198'},
+  {id:'t174',name:'דין ארבוב כרמל בן דוד',phone:'054-3970713',floor:39,apt:'199'},
+  {id:'t175',name:'אלה ואהרון לוי',phone:'054-4333023',floor:39,apt:'200'},
+  {id:'t176',name:'אילנה ודורון פלד',phone:'052-2754124',floor:39,apt:'201'},
+  {id:'t177',name:'מירב ושלמה רודב',phone:'054-9007000',floor:40,apt:'202'},
+  {id:'t178',name:'אוהד ואביגיל בטצייג',phone:'052-7777753',floor:40,apt:'203'},
+  {id:'t179',name:'כרמי וערן זיסאפל',phone:'054-7693263',floor:41,apt:'204'},
+  {id:'t180',name:'איתי וליהי מילרד',phone:'054-4443520',floor:41,apt:'205'},
+  {id:'t181',name:'איתי וליהי מילרד',phone:'054-4443520',floor:42,apt:'206'},
+];
+
+// ── AUTH ──
+document.getElementById('lBtn').onclick = doLogin;
+document.getElementById('lP').onkeydown = e => { if(e.key==='Enter') doLogin(); };
+document.getElementById('lU').onkeydown = e => { if(e.key==='Enter') document.getElementById('lP').focus(); };
+
+async function doLogin(){
+  const u=document.getElementById('lU').value.trim();
+  const p=document.getElementById('lP').value.trim();
+  if(!u||!p){document.getElementById('lErr').textContent='נא למלא אימייל וסיסמה';return;}
+  document.getElementById('lLoad').innerHTML='מתחבר... <span class="spinner"></span>';
+  document.getElementById('lErr').textContent='\u00a0';
+  try{
+    await signInWithEmailAndPassword(auth,u,p);
+  }catch(err){
+    document.getElementById('lErr').textContent='אימייל או סיסמה שגויים';
+    document.getElementById('lLoad').textContent='';
+  }
+}
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('uNm').textContent=user.displayName||user.email;
+    document.getElementById('lLoad').textContent='';
+    initApp();
+  } else {
+    document.getElementById('app').style.display='none';
+    document.getElementById('login').style.display='flex';
+  }
+});
+
+document.getElementById('logoutBtn').onclick=()=>signOut(auth);
+
+// ── INIT ──
+let guests=[];
+function initApp(){
+  loadGuests();
+  renderTenants();
+}
+
+// ── GUESTS REALTIME ──
+function loadGuests(){
+  const q=query(collection(db,'guests'),orderBy('createdAt','desc'));
+  onSnapshot(q,snap=>{
+    guests=snap.docs.map(d=>{{return{id:d.id,...d.data()}}});
+    renderDash();
+    renderGuestsList();
+  });
+}
+
+function renderDash(){
+  document.getElementById('sTen').textContent=tenants.length;
+  document.getElementById('sTotal').textContent=guests.length;
+  document.getElementById('sToday').textContent=guests.filter(g=>g.date===TODAY).length;
+  document.getElementById('sFloors').textContent=new Set(tenants.map(t=>t.floor)).size;
+  document.getElementById('recTbl').innerHTML=guests.length
+    ?guests.slice(0,7).map(g=>`<tr><td><strong>${g.name}</strong></td><td>${g.tname}</td><td>${g.apt}</td><td>${badge(g.cat)}</td><td>${g.time}</td><td style="color:var(--t3);font-size:11px">${g.registeredBy||'—'}</td></tr>`).join('')
+    :'<tr><td colspan="6" class="ec">אין כניסות עדיין</td></tr>';
+  const cnt={};
+  guests.forEach(g=>{const k='קומה '+g.floor;cnt[k]=(cnt[k]||0)+1;});
+  const srt=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mx=srt[0]?srt[0][1]:1;
+  document.getElementById('flrAct').innerHTML=srt.length
+    ?srt.map(e=>`<div class="flr2"><span class="fll2">${e[0]}</span><div class="flt"><div class="flf" style="width:${Math.round(e[1]/mx*100)}%"></div></div><span class="fln">${e[1]}</span></div>`).join('')
+    :'<p style="color:var(--t3);font-size:12px;padding:8px">אין נתונים</p>';
+}
+
+function renderGuestsList(){
+  const s=document.getElementById('gSrch').value.toLowerCase();
+  const c=document.getElementById('gCatF').value;
+  const f=document.getElementById('gFlrF').value;
+  const d=document.getElementById('gDateF').value;
+  const arr=guests.filter(g=>(!s||g.name.toLowerCase().includes(s)||g.tname.toLowerCase().includes(s))&&(!c||g.cat===c)&&(!f||String(g.floor)===f)&&(!d||g.date===d));
+  document.getElementById('gTbl').innerHTML=arr.length
+    ?arr.map(g=>`<tr><td><strong>${g.name}</strong></td><td>${badge(g.cat)}</td><td>קומה ${g.floor}</td><td>${g.apt}</td><td>${g.tname}</td><td>${fd(g.date)}</td><td>${g.time}</td><td style="color:var(--t3);font-size:11px">${g.registeredBy||'—'}</td><td><button class="ic dl" onclick="delGuest('${g.id}')">🗑</button></td></tr>`).join('')
+    :'<tr><td colspan="9" class="ec">אין כניסות</td></tr>';
+}
+
+['gSrch','gCatF','gFlrF','gDateF'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderGuestsList);
+  document.getElementById(id).addEventListener('change',renderGuestsList);
+});
+
+async function delGuest(id){
+  if(!confirm('למחוק?'))return;
+  try{await deleteDoc(doc(db,'guests',id));toast('נמחק','ok');}
+  catch(e){toast('שגיאה: '+e.message,'er');}
+}
+
+// MODAL GUEST
+function openM(){
+  const n=new Date();
+  document.getElementById('gN').value='';document.getElementById('gCatM').value='';
+  document.getElementById('gFlrM').value='';
+  document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>';
+  document.getElementById('gTen').value='';
+  document.getElementById('gDt').value=TODAY;
+  document.getElementById('gTm').value=n.toTimeString().slice(0,5);
+  document.getElementById('mG').style.display='flex';
+}
+window.closeM=()=>document.getElementById('mG').style.display='none';
+document.getElementById('mG').onclick=e=>{if(e.target===document.getElementById('mG'))closeM();};
+document.getElementById('addGuestBtn').onclick=openM;
+
+document.getElementById('gFlrM').onchange=function(){
+  const fl=this.value;
+  const apts=tenants.filter(t=>String(t.floor)===fl);
+  document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>'+apts.map(t=>`<option value="${t.id}">דירה ${t.apt} — ${t.name}</option>`).join('');
+  document.getElementById('gTen').value='';
+};
+document.getElementById('gApt').onchange=function(){
+  const t=tenants.find(x=>x.id===this.value);
+  document.getElementById('gTen').value=t?t.name:'';
+};
+document.getElementById('gForm').onsubmit=async function(e){
+  e.preventDefault();
+  const aid=document.getElementById('gApt').value;
+  const t=tenants.find(x=>x.id===aid);
+  if(!t){toast('יש לבחור דירה','er');return;}
+  const btn=document.getElementById('saveGuestBtn');
+  btn.disabled=true;btn.textContent='שומר...';
+  try{
+    await addDoc(collection(db,'guests'),{
+      name:document.getElementById('gN').value.trim(),
+      cat:document.getElementById('gCatM').value,
+      floor:parseInt(document.getElementById('gFlrM').value),
+      apt:t.apt,tid:aid,tname:t.name,
+      date:document.getElementById('gDt').value,
+      time:document.getElementById('gTm').value,
+      createdAt:serverTimestamp(),
+      registeredBy:auth.currentUser?.email||'admin'
+    });
+    closeM();toast('אורח נרשם ✓','ok');
+  }catch(err){toast('שגיאה: '+err.message,'er');}
+  btn.disabled=false;btn.textContent='שמור רישום';
+};
+
+// EXPORT
+document.getElementById('exportBtn').onclick=function(){
+  if(!guests.length){toast('אין נתונים לייצוא','er');return;}
+  const rows=guests.map(g=>({'שם אורח':g.name,'קטגוריה':g.cat,'קומה':g.floor,'דירה':g.apt,'שם דייר':g.tname,'תאריך':fd(g.date),'שעה':g.time,'נרשם ע"י':g.registeredBy||'—'}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'אורחים');
+  XLSX.writeFile(wb,'אורחים_'+TODAY+'.xlsx');
+  toast(`יוצאו ${rows.length} רשומות ✓`,'ok');
+};
+
+// TENANTS
+function clrT(){document.getElementById('tSrch').value='';renderTenants();}
+document.querySelectorAll('.stag').forEach(tag=>{
+  tag.onclick=function(){
+    tFld=this.dataset.f;
+    document.querySelectorAll('.stag').forEach(t=>t.classList.remove('on'));
+    this.classList.add('on');renderTenants();
+  };
+});
+function renderTenants(){
+  const s=document.getElementById('tSrch').value.trim();
+  const sl=s.toLowerCase();
+  const fl=document.getElementById('tFlr').value;
+  const so=document.getElementById('tSort').value;
+  let arr=tenants.filter(t=>{
+    let ok=true;
+    if(s){if(tFld==='name')ok=t.name.toLowerCase().includes(sl);else if(tFld==='phone')ok=!!(t.phone&&t.phone.includes(s));else if(tFld==='apt')ok=t.apt.includes(s);else if(tFld==='floor')ok=String(t.floor)===s;else ok=t.name.toLowerCase().includes(sl)||t.apt.includes(s)||String(t.floor)===s||(t.phone&&t.phone.includes(s));}
+    return ok&&(!fl||String(t.floor)===fl);
+  });
+  arr.sort((a,b)=>{if(so==='name')return a.name.localeCompare(b.name,'he');if(so==='apt')return parseInt(a.apt)-parseInt(b.apt);return a.floor-b.floor||parseInt(a.apt)-parseInt(b.apt);});
+  document.getElementById('tCnt').textContent=`מציג ${arr.length} מתוך ${tenants.length}`;
+  document.getElementById('tTbl').innerHTML=arr.length
+    ?arr.map(t=>{const nm=s?hl(t.name,s):t.name;const ph=t.phone?(s?hl(t.phone,s):t.phone):'<span style="color:var(--t3)">—</span>';const ap=s?hl(t.apt,s):t.apt;return`<tr><td><strong>${nm}</strong></td><td>קומה ${t.floor}</td><td>${ap}</td><td>${ph}</td><td><button class="ic dl" onclick="delTenantLocal('${t.id}')">🗑</button></td></tr>`;}).join('')
+    :'<tr><td colspan="5" class="ec">לא נמצאו דיירים</td></tr>';
+}
+document.getElementById('tSrch').addEventListener('input',renderTenants);
+document.getElementById('tFlr').addEventListener('change',renderTenants);
+document.getElementById('tSort').addEventListener('change',renderTenants);
+window.delTenantLocal=function(id){if(!confirm('למחוק?'))return;tenants=tenants.filter(t=>t.id!==id);renderTenants();renderDash();toast('דייר נמחק','ok');};
+
+// ADD TENANT
+document.getElementById('tForm').onsubmit=function(e){
+  e.preventDefault();
+  tenants.push({id:'ta'+Date.now(),name:document.getElementById('tN').value.trim(),phone:document.getElementById('tPh').value.trim(),floor:parseInt(document.getElementById('tFl').value),apt:document.getElementById('tAp').value.trim()});
+  ['tN','tPh','tFl','tAp'].forEach(i=>document.getElementById(i).value='');
+  renderDash();toast('דייר נוסף ✓','ok');
+};
+
+// TABS
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===name));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id==='tab-'+name));
+  if(name==='tenants')renderTenants();
+  if(name==='guests')renderGuestsList();
+  if(name==='dash')renderDash();
+}
+document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>switchTab(t.dataset.tab);});
+window.switchTab=switchTab;
+</script>
+</body>
+</html>
