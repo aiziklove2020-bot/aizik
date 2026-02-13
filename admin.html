@@ -735,11 +735,10 @@ async function doLogin(){
 
 onAuthStateChanged(auth, async user=>{
   if(user){
-    // רק superadmin מורשה לדף הניהול הגדול
-    const isSuperAdmin = user.email.startsWith('superadmin');
-    if(!isSuperAdmin){
+    // חסום רק שומרי לובי
+    if(user.email.startsWith('lobby')){
       await signOut(auth);
-      document.getElementById('lErr').textContent='דף זה מיועד למנהל הגדול בלבד';
+      document.getElementById('lErr').textContent='דף זה מיועד למנהלים בלבד';
       document.getElementById('lLoad').textContent='';
       return;
     }
