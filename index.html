@@ -619,6 +619,13 @@ async function doLogin(){
 
 onAuthStateChanged(auth, async user => {
   if(user){
+    // superadmin שייך לדף הניהול הגדול
+    if(user.email.startsWith('superadmin')){
+      await signOut(auth);
+      document.getElementById('lErr').textContent='מנהל גדול? היכנס דרך admin.html';
+      document.getElementById('lLoad').textContent='';
+      return;
+    }
     document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='block';
     document.getElementById('uNm').textContent=user.displayName||user.email;
