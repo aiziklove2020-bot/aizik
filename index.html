@@ -584,6 +584,8 @@ function initApp(){
   const n=new Date();
   document.getElementById('gDt').value=TODAY;
   document.getElementById('gTm').value=n.toTimeString().slice(0,5);
+  // הצג מיד את מספר הדיירים
+  document.getElementById('sTen').textContent=tenants.length;
   autoCleanOldGuests();
   checkLobbyStatus();
   loadGuests();
