@@ -47,20 +47,20 @@ input:focus{border-color:rgba(201,168,76,.5)}
 
   <div class="card">
     <h2>2. סיסמאות</h2>
-    <div class="fg"><label>🔴 סיסמה למנהל הגדול</label><input type="text" id="superPass" value="Super@0710" placeholder="לפחות 6 תווים"></div>
-    <div class="fg"><label>🟡 סיסמה למנהלים</label><input type="text" id="adminPass" value="0710" placeholder="לפחות 6 תווים"></div>
-    <div class="fg"><label>🔵 סיסמה לשומרים</label><input type="text" id="lobbyPass" value="2026" placeholder="לפחות 6 תווים"></div>
+    <div class="fg"><label>🔴 סיסמה למנהל הגדול</label><input type="text" id="superPass" value="davinci1" placeholder="לפחות 6 תווים"></div>
+    <div class="fg"><label>🟡 סיסמה למנהלים</label><input type="text" id="adminPass" value="admin1234" placeholder="לפחות 6 תווים"></div>
+    <div class="fg"><label>🔵 סיסמה לשומרים</label><input type="text" id="lobbyPass" value="lobby1234" placeholder="לפחות 6 תווים"></div>
 
     <h2 style="margin-top:4px">משתמשים שייווצרו:</h2>
     <table class="users-table">
       <thead><tr><th>אימייל</th><th>תפקיד</th><th>גישה</th></tr></thead>
       <tbody>
-        <tr><td>superadmin@davinci.com</td><td><span class="pill super">מנהל גדול</span></td><td style="color:#5c5444;font-size:11px">admin.html בלבד</td></tr>
-        <tr><td>admin1@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>admin2@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>admin3@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>lobby1@davinci.com</td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>lobby2@davinci.com</td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5a6a0a5b0a7b4b1b8bcbb95b1b4a3bcbbb6bcfbb6bab8">[email&#160;protected]</a></td><td><span class="pill super">מנהל גדול</span></td><td style="color:#5c5444;font-size:11px">admin.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8d9dcd5d1d689f8dcd9ced1d6dbd196dbd7d5">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b2d3d6dfdbdc80f2d6d3c4dbdcd1db9cd1dddf">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d7c797074732e5d797c6b74737e74337e7270">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3afaca1a1baf283a7a2b5aaada0aaeda0acae">[email&#160;protected]</a></td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa9695989883c8ba9e9b8c93949993d4999597">[email&#160;protected]</a></td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
       </tbody>
     </table>
   </div>
@@ -76,7 +76,7 @@ input:focus{border-color:rgba(201,168,76,.5)}
   </div>
 </div>
 
-<script type="module">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -121,28 +121,4 @@ window.runSetup = async function() {
       const cred=await createUserWithEmailAndPassword(auth,u.email,u.pass);
       await setDoc(doc(db,'users',cred.user.uid),{email:u.email,role:u.role,name:u.name,createdAt:new Date().toISOString()});
       await signOut(auth);
-      log(`✓ נוצר: ${u.email} [${roleNames[u.role]}]`,'ok');
-      ok++;
-    }catch(e){
-      if(e.code==='auth/email-already-in-use'){log(`⚠️ כבר קיים: ${u.email}`,'gd');ok++;}
-      else{log(`❌ שגיאה ב-${u.email}: ${e.message}`,'er');fail++;}
-    }
-    await new Promise(r=>setTimeout(r,400));
-  }
-  log('','');
-  if(fail===0){
-    log(`🎉 הושלם! ${ok} משתמשים מוכנים.`,'ok');
-    document.getElementById('doneBox').style.display='block';
-  }else{log(`⚠️ הושלם עם ${fail} שגיאות`,'er');}
-  btn.disabled=false;
-};
-
-function log(msg,type){
-  const el=document.getElementById('log');
-  const colors={ok:'#4caf7a',er:'#e05252',inf:'#a89878',gd:'#c9a84c'};
-  el.innerHTML+=`<span style="color:${colors[type]||'#f0ead8'}">${msg}</span>\n`;
-  el.scrollTop=el.scrollHeight;
-}
-</script>
-</body>
-</html>
+      log(`✓ נו�
