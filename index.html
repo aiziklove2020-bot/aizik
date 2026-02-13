@@ -27,7 +27,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .lbtn{width:100%;background:var(--gold);color:var(--k);border:none;padding:13px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .18s}
 .lbtn:hover{background:var(--gl)}
 .lload{text-align:center;font-size:12px;color:var(--t3);margin-top:10px;min-height:18px}
-#app{display:none}
+#app{display:block}
 .topbar{background:var(--d1);border-bottom:1px solid var(--gb);padding:0 24px;height:60px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;backdrop-filter:blur(14px)}
 .tlogo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
 .tright{margin-right:auto;display:flex;align-items:center;gap:10px}
@@ -668,7 +668,7 @@ document.getElementById('gForm').onsubmit=async function(e){
       date:document.getElementById('gDt').value,
       time:document.getElementById('gTm').value,
       createdAt:serverTimestamp(),
-      registeredBy:auth.currentUser?.email||'lobby'
+      registeredBy:'לובי'
     });
     this.reset();
     document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>';
