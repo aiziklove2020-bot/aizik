@@ -118,28 +118,12 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 </head>
 <body>
 
-<div id="login">
-  <div class="lbox">
-    <div class="ltop">
-      <div class="ldv">DV</div>
-      <div class="lname">דה וינצ'י</div>
-      <div class="lsub">כניסת שומר לובי</div>
-    </div>
-    <div class="lfg"><label class="lfl">אימייל</label><input type="email" id="lU" class="linp" placeholder="lobby@davinci.com" autocomplete="off"></div>
-    <div class="lfg"><label class="lfl">סיסמה</label><input type="password" id="lP" class="linp" placeholder="••••••••"></div>
-    <div class="lerr" id="lErr">&nbsp;</div>
-    <button class="lbtn" id="lBtn">כניסה למערכת</button>
-    <div class="lload" id="lLoad"></div>
-  </div>
-</div>
-
 <div id="app">
   <header class="topbar">
     <span class="tlogo">דה וינצ'י</span>
     <span class="clk" id="clk"></span>
     <div class="tright">
-      <span class="tunm" id="uNm"></span>
-      <button class="tbtn" id="logoutBtn">יציאה</button>
+      <span class="tunm">לובי</span>
     </div>
   </header>
   <div class="wrap">
@@ -222,6 +206,10 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 
     <!-- רשימת כניסות -->
     <div class="sec" id="tab-list">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">רשימת כניסות</span>
+        <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
+      </div>
       <div class="frow">
         <input type="date" id="fDate" class="fs">
         <select id="fCat" class="fs"><option value="">כל הקטגוריות</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
@@ -362,7 +350,6 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 <script type="module">
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -375,7 +362,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
 
@@ -589,55 +575,9 @@ var tenants=[
   {id:'t181',name:'איתי וליהי מילרד',phone:'054-4443520',floor:42,apt:'206'},
 ];
 
-// ── AUTH ──
-document.getElementById('lBtn').onclick = doLogin;
-document.getElementById('lP').onkeydown = e => { if(e.key==='Enter') doLogin(); };
-document.getElementById('lU').onkeydown = e => { if(e.key==='Enter') document.getElementById('lP').focus(); };
+// ── START DIRECTLY - NO LOGIN ──
+initApp();
 
-async function doLogin(){
-  const u=document.getElementById('lU').value.trim();
-  const p=document.getElementById('lP').value.trim();
-  if(!u||!p){document.getElementById('lErr').textContent='נא למלא אימייל וסיסמה';return;}
-  document.getElementById('lLoad').innerHTML='מתחבר... <span class="spinner"></span>';
-  document.getElementById('lErr').textContent='\u00a0';
-  try{
-    const cred = await signInWithEmailAndPassword(auth,u,p);
-    // role check — lobby users only
-    const idToken = await cred.user.getIdTokenResult();
-    const role = idToken.claims.role;
-    if(role==='admin'){
-      await signOut(auth);
-      document.getElementById('lErr').textContent='דף זה מיועד לשומרי לובי בלבד';
-      document.getElementById('lLoad').textContent='';
-      return;
-    }
-  }catch(err){
-    document.getElementById('lErr').textContent='אימייל או סיסמה שגויים';
-    document.getElementById('lLoad').textContent='';
-  }
-}
-
-onAuthStateChanged(auth, async user => {
-  if(user){
-    // superadmin שייך לדף הניהול הגדול
-    if(user.email.startsWith('superadmin')){
-      await signOut(auth);
-      document.getElementById('lErr').textContent='מנהל גדול? היכנס דרך admin.html';
-      document.getElementById('lLoad').textContent='';
-      return;
-    }
-    document.getElementById('login').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('uNm').textContent=user.displayName||user.email;
-    document.getElementById('lLoad').textContent='';
-    initApp();
-  } else {
-    document.getElementById('app').style.display='none';
-    document.getElementById('login').style.display='flex';
-  }
-});
-
-document.getElementById('logoutBtn').onclick = ()=>signOut(auth);
 
 // ── INIT ──
 function initApp(){
@@ -645,8 +585,29 @@ function initApp(){
   document.getElementById('gDt').value=TODAY;
   document.getElementById('gTm').value=n.toTimeString().slice(0,5);
   autoCleanOldGuests();
+  checkLobbyStatus();
   loadGuests();
   renderTenants();
+}
+
+// בדיקת סטטוס לובי
+async function checkLobbyStatus(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='lobby');
+    const isOpen = s ? s.data().open !== false : true;
+    if(!isOpen){
+      // הצג מסך סגור
+      document.getElementById('app').innerHTML = `
+        <div style="position:fixed;inset:0;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:20px">
+          <div style="font-size:60px">🔴</div>
+          <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#c9a84c">דה וינצ'י</div>
+          <div style="font-size:18px;font-weight:700;color:#f0ead8">המערכת אינה פעילה כרגע</div>
+          <div style="font-size:14px;color:#a89878;max-width:300px;line-height:1.6">הלובי נסגר על ידי המנהל.<br>פנה למנהל לפתיחת המערכת.</div>
+          <button onclick="location.reload()" style="background:#1c1e22;border:1px solid #242629;color:#a89878;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:10px">🔄 בדוק שוב</button>
+        </div>`;
+    }
+  }catch(e){ console.log('שגיאה בבדיקת סטטוס:',e.message); }
 }
 
 // מחיקה אוטומטית של כניסות מיום קודם
@@ -734,6 +695,17 @@ function renderGuestsList(){
 }
 ['fDate','fCat','fFlr'].forEach(id=>{
   document.getElementById(id).addEventListener('change',renderGuestsList);
+});
+
+// ייצוא Excel
+document.getElementById('exportBtn').addEventListener('click',function(){
+  if(!guests.length){toast('אין כניסות לייצוא','er');return;}
+  const rows=guests.map(g=>({'שם אורח':g.name,'קטגוריה':g.cat,'קומה':g.floor,'דירה':g.apt,'דייר מארח':g.tname,'תאריך':fd(g.date),'שעה':g.time}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'כניסות');
+  XLSX.writeFile(wb,'כניסות_'+TODAY+'.xlsx');
+  toast('יוצאו '+rows.length+' רשומות ✓','ok');
 });
 
 // DELETE + EDIT GUEST

@@ -150,6 +150,19 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 
     <!-- DASHBOARD -->
     <div class="sec on" id="tab-dash">
+      <!-- בקרת לובי -->
+      <div class="card" style="border-color:var(--gb)">
+        <div style="padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px">🚪 בקרת כניסת לובי</div>
+            <div style="font-size:12px;color:var(--t3)" id="lobbyStatusDesc">טוען...</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <span id="lobbyStatusBadge" style="font-size:13px;font-weight:700"></span>
+            <button id="lobbyToggleBtn" class="sbtn" onclick="toggleLobby()" style="min-width:120px">טוען...</button>
+          </div>
+        </div>
+      </div>
       <div class="sg">
         <div class="sc hl"><div class="scn" id="sTen">0</div><div class="scl">🏠 דיירים רשומים</div></div>
         <div class="sc hl"><div class="scn" id="sToday">0</div><div class="scl">👤 אורחים היום</div></div>
@@ -488,7 +501,7 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 <script type="module">
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -755,12 +768,61 @@ onAuthStateChanged(auth, async user=>{
 
 document.getElementById('logoutBtn').onclick=()=>signOut(auth);
 
+// ── LOBBY STATUS CONTROL ──
+let lobbyOpen = true;
+
+async function loadLobbyStatus(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='lobby');
+    lobbyOpen = s ? s.data().open !== false : true;
+  }catch(e){ lobbyOpen = true; }
+  updateLobbyUI();
+}
+
+function updateLobbyUI(){
+  const badge = document.getElementById('lobbyStatusBadge');
+  const btn = document.getElementById('lobbyToggleBtn');
+  const desc = document.getElementById('lobbyStatusDesc');
+  if(lobbyOpen){
+    badge.textContent = '🟢 פתוח';
+    badge.style.color = '#4caf7a';
+    btn.textContent = '🔴 סגור לובי';
+    btn.style.background = 'transparent';
+    btn.style.border = '1px solid rgba(224,82,82,.4)';
+    btn.style.color = '#e05252';
+    desc.textContent = 'שומרי הלובי יכולים להיכנס ולרשום אורחים';
+  } else {
+    badge.textContent = '🔴 סגור';
+    badge.style.color = '#e05252';
+    btn.textContent = '🟢 פתח לובי';
+    btn.style.background = '#c9a84c';
+    btn.style.border = 'none';
+    btn.style.color = '#09090b';
+    desc.textContent = 'הלובי סגור — שומרים יראו הודעת השבתה';
+  }
+}
+
+window.toggleLobby = async function(){
+  lobbyOpen = !lobbyOpen;
+  updateLobbyUI();
+  try{
+    await setDoc(doc(db,'settings','lobby'),{open:lobbyOpen, updatedAt: new Date().toISOString()});
+    toast(lobbyOpen ? 'הלובי נפתח ✓' : 'הלובי נסגר ✓', lobbyOpen?'ok':'er');
+  }catch(e){
+    lobbyOpen = !lobbyOpen;
+    updateLobbyUI();
+    toast('שגיאה: '+e.message,'er');
+  }
+};
+
 // ── INIT ──
 let guests=[];
 function initApp(){
   autoCleanOldGuests();
   loadGuests();
   loadUsers();
+  loadLobbyStatus();
   renderTenants();
 }
 
@@ -1043,33 +1105,45 @@ window.saveUser = async function(){
   btn.disabled=true; btn.textContent='שומר...';
   try{
     if(editingUserId){
-      // עריכה — עדכן ב-Firestore
+      // עריכה — עדכן רק שם ותפקיד ב-Firestore
       await updateDoc(doc(db,'users',editingUserId),{name,role});
-      // עדכן גם locally
       const idx = allUsers.findIndex(x=>x.id===editingUserId);
       if(idx>=0){allUsers[idx].name=name;allUsers[idx].role=role;}
       toast('משתמש עודכן ✓','ok');
+      renderUsers();
+      document.getElementById('mUser').style.display='none';
     } else {
-      // הוספה — שמור ב-Firestore (כניסה בפועל תיווצר ע"י setup)
+      // הוספה — צור ב-Firebase Auth וגם ב-Firestore
       if(pass.length<6){toast('סיסמה חייבת להיות לפחות 6 תווים','er');btn.disabled=false;btn.textContent='שמור';return;}
-      const newId = 'u_'+Date.now();
-      await setDoc(doc(db,'users',newId),{email,name,role,createdAt:new Date().toISOString(),pendingPassword:pass});
-      allUsers.push({id:newId,email,name,role});
-      toast('משתמש נוסף ✓ — יש ליצור אותו גם ב-Firebase Authentication','ok');
+      // שמור את המשתמש הנוכחי לפני יצירת חדש
+      const currentUser = auth.currentUser;
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      // שמור ב-Firestore
+      await setDoc(doc(db,'users',cred.user.uid),{email,name,role,createdAt:new Date().toISOString()});
+      allUsers.push({id:cred.user.uid,email,name,role});
+      // חזור למשתמש המקורי
+      await signOut(auth);
+      // התחבר מחדש אוטומטית (Firebase שומר session)
+      toast('משתמש '+email+' נוצר בהצלחה ✓','ok');
+      renderUsers();
+      document.getElementById('mUser').style.display='none';
+      // רענן דף לאחר 2 שניות כדי להתחבר מחדש
+      setTimeout(()=>location.reload(),2000);
     }
-    renderUsers();
-    document.getElementById('mUser').style.display='none';
-  }catch(err){toast('שגיאה: '+err.message,'er');}
+  }catch(err){
+    if(err.code==='auth/email-already-in-use') toast('אימייל זה כבר קיים במערכת','er');
+    else toast('שגיאה: '+err.message,'er');
+  }
   btn.disabled=false; btn.textContent='שמור';
 };
 
 window.deleteUser = async function(id, email){
-  if(!confirm(`למחוק את המשתמש ${email}?`)) return;
+  if(!confirm('למחוק את המשתמש '+email+'?\nשים לב: המשתמש יימחק מהמסד אך יוכל עדיין להתחבר עד שתמחק אותו גם מ-Firebase Authentication.')) return;
   try{
     await deleteDoc(doc(db,'users',id));
     allUsers = allUsers.filter(u=>u.id!==id);
     renderUsers();
-    toast('משתמש נמחק ✓','ok');
+    toast('משתמש נמחק מהמסד ✓','ok');
   }catch(err){toast('שגיאה: '+err.message,'er');}
 };
 

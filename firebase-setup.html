@@ -8,8 +8,8 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Heebo',sans-serif;background:#09090b;color:#f0ead8;min-height:100vh;padding:30px 20px;direction:rtl}
-.wrap{max-width:580px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-h1{font-size:24px;font-weight:700;color:#c9a84c;text-align:center;margin-bottom:4px}
+.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:24px;font-weight:700;color:#c9a84c;text-align:center}
 .sub{text-align:center;color:#a89878;font-size:13px}
 .card{background:#111214;border:1px solid rgba(201,168,76,.28);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
 .card h2{font-size:15px;font-weight:700}
@@ -20,54 +20,52 @@ input:focus{border-color:rgba(201,168,76,.5)}
 .btn{background:#c9a84c;color:#09090b;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
 .btn:hover{background:#e2c06a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.log{background:#0a0a0b;border:1px solid #242629;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:2;min-height:140px;direction:ltr;text-align:left;overflow-y:auto;max-height:300px}
-.done{background:rgba(76,175,122,.06);border:1px solid rgba(76,175,122,.3);border-radius:10px;padding:16px;text-align:center;display:none}
-.done h3{color:#4caf7a;font-size:16px;margin-bottom:6px}
-.done p{color:#a89878;font-size:12px;line-height:1.7}
+.log{background:#0a0a0b;border:1px solid #242629;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:2;min-height:120px;direction:ltr;text-align:left;overflow-y:auto;max-height:260px}
+.done{background:rgba(76,175,122,.06);border:1px solid rgba(76,175,122,.3);border-radius:10px;padding:18px;text-align:center;display:none}
+.done h3{color:#4caf7a;font-size:16px;margin-bottom:8px}
+.done p{color:#a89878;font-size:12px;line-height:1.8}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:#1c1e22;color:#5c5444;padding:8px 10px;text-align:right;font-size:10px;text-transform:uppercase}
-td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a89878}
+td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a89878}
 td:first-child{color:#f0ead8;font-weight:600}
-.p{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700}
-.ps{background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.3)}
-.pa{background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.3)}
-.pg{background:rgba(91,142,240,.1);color:#5b8ef0;border:1px solid rgba(91,142,240,.2)}
+.p{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.3)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🔥 Firebase Setup — דה וינצ'י</h1>
-  <p class="sub">הגדרה אוטומטית חד פעמית</p>
+  <h1>🔥 Firebase Setup</h1>
+  <p class="sub">הגדרה חד פעמית — דה וינצ'י</p>
 
   <div class="card">
-    <h2>פרטי Firebase (כבר מולאו)</h2>
+    <h2>פרטי Firebase</h2>
     <div class="fg"><label>API Key</label><input id="apiKey" value="AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo"></div>
     <div class="fg"><label>Project ID</label><input id="projectId" value="leonrdi-de-vinhi"></div>
   </div>
 
   <div class="card">
-    <h2>סיסמאות</h2>
-    <div class="fg"><label>מנהלים (admin1, admin2, admin3)</label><input id="adminPass" value="admin1234"></div>
-    <div class="fg"><label>שומרים (lobby1, lobby2)</label><input id="lobbyPass" value="lobby1234"></div>
-
-    <table>
+    <h2>סיסמה למנהלים</h2>
+    <div class="fg"><label>סיסמה (לשני המנהלים)</label><input id="adminPass" value="admin1234"></div>
+    <table style="margin-top:6px">
       <thead><tr><th>אימייל</th><th>תפקיד</th></tr></thead>
       <tbody>
-        <tr><td>admin1@davinci.com</td><td><span class="p pa">מנהל</span></td></tr>
-        <tr><td>admin2@davinci.com</td><td><span class="p pa">מנהל</span></td></tr>
-        <tr><td>admin3@davinci.com</td><td><span class="p pa">מנהל</span></td></tr>
-        <tr><td>lobby1@davinci.com</td><td><span class="p pg">שומר</span></td></tr>
-        <tr><td>lobby2@davinci.com</td><td><span class="p pg">שומר</span></td></tr>
+        <tr><td>admin1@davinci.com</td><td><span class="p">מנהל 1</span></td></tr>
+        <tr><td>admin2@davinci.com</td><td><span class="p">מנהל 2</span></td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="card">
-    <button class="btn" id="runBtn">🚀 התחל הגדרה אוטומטית</button>
+    <button class="btn" id="runBtn">🚀 צור משתמשים</button>
     <div class="log" id="log">ממתין...</div>
     <div class="done" id="done">
       <h3>✅ הושלם!</h3>
-      <p>כל המשתמשים נוצרו בהצלחה.<br>כניסה למנהל: admin1@davinci.com / admin1234<br>כניסה לשומר: lobby1@davinci.com / lobby1234</p>
+      <p>
+        שני המנהלים נוצרו בהצלחה.<br><br>
+        <strong style="color:#f0ead8">כניסה למערכת הניהול:</strong><br>
+        admin1@davinci.com / admin1234<br>
+        admin2@davinci.com / admin1234<br><br>
+        <strong style="color:#f0ead8">דף הלובי:</strong> פתוח לכולם, ללא סיסמה
+      </p>
     </div>
   </div>
 </div>
@@ -79,8 +77,8 @@ import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10
 
 function log(msg, color) {
   const el = document.getElementById('log');
-  const c = {g:'#4caf7a', r:'#e05252', y:'#a89878', gold:'#c9a84c'};
-  el.innerHTML += '<span style="color:' + (c[color]||'#f0ead8') + '">' + msg + '</span>\n';
+  const c = {g:'#4caf7a',r:'#e05252',y:'#a89878',gold:'#c9a84c'};
+  el.innerHTML += '<span style="color:'+(c[color]||'#f0ead8')+'">'+msg+'</span>\n';
   el.scrollTop = el.scrollHeight;
 }
 
@@ -88,60 +86,47 @@ document.getElementById('runBtn').addEventListener('click', async function() {
   const apiKey = document.getElementById('apiKey').value.trim();
   const projectId = document.getElementById('projectId').value.trim();
   const adminPass = document.getElementById('adminPass').value.trim();
-  const lobbyPass = document.getElementById('lobbyPass').value.trim();
 
-  if (!apiKey || !projectId) { log('❌ חסרים פרטי Firebase', 'r'); return; }
-  if (adminPass.length < 6 || lobbyPass.length < 6) { log('❌ סיסמה קצרה מדי (מינימום 6 תווים)', 'r'); return; }
+  if(!apiKey||!projectId){log('❌ חסרים פרטי Firebase','r');return;}
+  if(adminPass.length<6){log('❌ סיסמה קצרה מדי (מינימום 6 תווים)','r');return;}
 
-  this.disabled = true;
-  document.getElementById('log').innerHTML = '';
+  this.disabled=true;
+  document.getElementById('log').innerHTML='';
 
-  let app, auth, db;
-  try {
-    log('🔧 מתחבר ל-Firebase...', 'y');
-    app = initializeApp({ apiKey, authDomain: projectId + '.firebaseapp.com', projectId }, 'setup' + Date.now());
+  let auth, db;
+  try{
+    log('🔧 מתחבר...','y');
+    const app = initializeApp({apiKey, authDomain:projectId+'.firebaseapp.com', projectId}, 'setup'+Date.now());
     auth = getAuth(app);
     db = getFirestore(app);
-    log('✓ מחובר!', 'g');
-  } catch(e) {
-    log('❌ שגיאת חיבור: ' + e.message, 'r');
-    this.disabled = false;
-    return;
-  }
+    log('✓ מחובר!','g');
+  }catch(e){log('❌ '+e.message,'r');this.disabled=false;return;}
 
   const users = [
-    { email: 'admin1@davinci.com', pass: adminPass, role: 'admin', name: 'מנהל 1' },
-    { email: 'admin2@davinci.com', pass: adminPass, role: 'admin', name: 'מנהל 2' },
-    { email: 'admin3@davinci.com', pass: adminPass, role: 'admin', name: 'מנהל 3' },
-    { email: 'lobby1@davinci.com', pass: lobbyPass, role: 'guard', name: 'לובי 1' },
-    { email: 'lobby2@davinci.com', pass: lobbyPass, role: 'guard', name: 'לובי 2' },
+    {email:'admin1@davinci.com', name:'מנהל 1', role:'admin'},
+    {email:'admin2@davinci.com', name:'מנהל 2', role:'admin'},
   ];
 
-  let ok = 0, fail = 0;
-  for (const u of users) {
-    log('⏳ ' + u.email + '...', 'y');
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, u.email, u.pass);
-      await setDoc(doc(db, 'users', cred.user.uid), { email: u.email, role: u.role, name: u.name });
+  let ok=0, fail=0;
+  for(const u of users){
+    log('⏳ '+u.email+'...','y');
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, u.email, adminPass);
+      await setDoc(doc(db,'users',cred.user.uid),{email:u.email,name:u.name,role:u.role,createdAt:new Date().toISOString()});
       await signOut(auth);
-      log('✓ ' + u.email, 'g');
+      log('✓ '+u.email,'g');
       ok++;
-    } catch(e) {
-      if (e.code === 'auth/email-already-in-use') {
-        log('⚠️ כבר קיים: ' + u.email, 'gold');
-        ok++;
-      } else {
-        log('❌ ' + u.email + ': ' + e.message, 'r');
-        fail++;
-      }
+    }catch(e){
+      if(e.code==='auth/email-already-in-use'){log('⚠️ כבר קיים: '+u.email,'gold');ok++;}
+      else{log('❌ '+u.email+': '+e.message,'r');fail++;}
     }
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r=>setTimeout(r,400));
   }
 
-  log('', '');
-  log('🎉 הושלם! ' + ok + ' משתמשים מוכנים.', 'g');
-  if (fail === 0) document.getElementById('done').style.display = 'block';
-  this.disabled = false;
+  log('','');
+  log('🎉 הושלם! '+ok+' משתמשים מוכנים.','g');
+  if(fail===0) document.getElementById('done').style.display='block';
+  this.disabled=false;
 });
 </script>
 </body>
