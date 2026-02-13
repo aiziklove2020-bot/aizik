@@ -169,6 +169,7 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">אורחים</h2>
         <div style="display:flex;gap:9px">
+          <button class="sbtn" id="deleteAllBtn" style="background:transparent;border:1px solid rgba(224,82,82,.4);color:#e05252">🗑 מחק הכל</button>
           <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
           <button class="sbtn" id="addGuestBtn">+ רישום אורח</button>
         </div>
@@ -281,32 +282,63 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 
     <!-- SETTINGS -->
     <div class="sec" id="tab-settings">
-      <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">הגדרות</h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">ניהול דיירים</h2>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+        <!-- ייבוא מ-Excel -->
         <div class="card">
-          <div class="ch"><h3>➕ הוספת דייר</h3></div>
+          <div class="ch"><h3>📂 ייבוא דיירים מ-Excel</h3></div>
+          <div class="cb">
+            <p style="font-size:12px;color:var(--t3);line-height:1.6">העלה קובץ Excel עם עמודות:<br><strong style="color:var(--t2)">קומה | מספר דירה | שם פרטי | שם משפחה | טלפון</strong></p>
+            <div id="xlDrop" style="border:2px dashed var(--d5);border-radius:var(--r2);padding:28px;text-align:center;cursor:pointer;transition:all .18s;position:relative">
+              <div style="font-size:28px;margin-bottom:8px">📊</div>
+              <div style="font-size:13px;color:var(--t2);font-weight:600">גרור קובץ Excel לכאן</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:4px">או לחץ לבחירה</div>
+              <input type="file" id="xlFile" accept=".xlsx,.xls" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+            </div>
+            <div id="xlPreview" style="display:none">
+              <div id="xlInfo" style="font-size:12px;color:var(--gold);margin-bottom:10px;text-align:center"></div>
+              <div style="max-height:180px;overflow-y:auto;border:1px solid var(--d4);border-radius:var(--r2)">
+                <table style="width:100%;border-collapse:collapse;font-size:12px">
+                  <thead><tr id="xlHead" style="background:var(--d2)"></tr></thead>
+                  <tbody id="xlBody"></tbody>
+                </table>
+              </div>
+              <div style="display:flex;gap:9px;margin-top:10px">
+                <button class="sbtn w" id="xlImportBtn">✓ ייבא לרשימה</button>
+                <button onclick="clearXl()" style="background:transparent;border:1px solid var(--d5);color:var(--t2);padding:10px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;flex:0 0 auto">ביטול</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- הוספה ידנית -->
+        <div class="card">
+          <div class="ch"><h3>➕ הוספת דייר ידנית</h3></div>
           <div class="cb">
             <form id="tForm">
               <div class="grid2" style="margin-bottom:12px">
-                <div class="fg"><label class="fl">שם מלא *</label><input type="text" id="tN" class="inp" required></div>
+                <div class="fg"><label class="fl">שם מלא *</label><input type="text" id="tN" class="inp" required placeholder="ישראל ישראלי"></div>
                 <div class="fg"><label class="fl">טלפון</label><input type="tel" id="tPh" class="inp" placeholder="050-0000000"></div>
               </div>
               <div class="grid2" style="margin-bottom:14px">
-                <div class="fg"><label class="fl">קומה *</label><input type="number" id="tFl" class="inp" required min="1"></div>
-                <div class="fg"><label class="fl">דירה *</label><input type="text" id="tAp" class="inp" required></div>
+                <div class="fg"><label class="fl">קומה *</label><input type="number" id="tFl" class="inp" required min="1" placeholder="5"></div>
+                <div class="fg"><label class="fl">דירה *</label><input type="text" id="tAp" class="inp" required placeholder="12"></div>
               </div>
               <button type="submit" class="sbtn w">שמור דייר</button>
             </form>
           </div>
         </div>
-        <div class="card">
-          <div class="ch"><h3>⚙️ פרטי הבניין</h3></div>
-          <div class="cb">
-            <div class="fg"><label class="fl">שם הבניין</label><input class="inp" value="דה וינצ'י"></div>
-            <div class="fg"><label class="fl">כתובת</label><input class="inp" value="מגדל דרומי"></div>
-            <button class="sbtn" onclick="toast('נשמר ✓','ok')">שמור שינויים</button>
+
+        <!-- ייצוא רשימת דיירים -->
+        <div class="card" style="grid-column:1/-1">
+          <div class="ch"><h3>📥 ייצוא רשימת דיירים</h3></div>
+          <div class="cb" style="flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <p style="font-size:12px;color:var(--t3)">הורד את רשימת הדיירים הנוכחית כקובץ Excel</p>
+            <button class="sbtn" id="exportTenantsBtn">📥 ייצוא דיירים לExcel</button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -383,13 +415,41 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
   </div>
 </div>
 
+<!-- MODAL EDIT GUEST -->
+<div id="mEdit" style="position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;backdrop-filter:blur(8px)">
+  <div style="background:var(--d1);border:1px solid var(--gb);border-radius:16px;width:100%;max-width:460px;box-shadow:var(--sh);position:relative">
+    <div style="background:linear-gradient(to right,transparent,var(--gold),transparent);height:1px;position:absolute;top:0;left:0;right:0"></div>
+    <div style="padding:18px 20px 14px;border-bottom:1px solid var(--d4);display:flex;align-items:center;justify-content:space-between">
+      <h3 style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700">✏️ עריכת אורח</h3>
+      <button onclick="document.getElementById('mEdit').style.display='none'" style="width:28px;height:28px;background:var(--d3);border:1px solid var(--d5);color:var(--t2);border-radius:6px;cursor:pointer;font-size:13px">✕</button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" id="editId">
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
+        <div class="grid2">
+          <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="editN" class="inp" required></div>
+          <div class="fg"><label class="fl">קטגוריה *</label><select id="editCat" class="inp" required><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+        </div>
+        <div class="grid2">
+          <div class="fg"><label class="fl">תאריך *</label><input type="date" id="editDt" class="inp" required></div>
+          <div class="fg"><label class="fl">שעה *</label><input type="time" id="editTm" class="inp" required></div>
+        </div>
+      </div>
+      <div style="padding:13px 20px;border-top:1px solid var(--d4);display:flex;justify-content:flex-end;gap:9px">
+        <button type="button" onclick="document.getElementById('mEdit').style.display='none'" style="background:transparent;color:var(--t2);border:1px solid var(--d5);padding:9px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">ביטול</button>
+        <button type="submit" class="sbtn" id="saveEditBtn">שמור שינויים</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toastEl"></div>
 
 <script type="module">
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -651,8 +711,23 @@ document.getElementById('logoutBtn').onclick=()=>signOut(auth);
 // ── INIT ──
 let guests=[];
 function initApp(){
+  autoCleanOldGuests();
   loadGuests();
   renderTenants();
+}
+
+// מחיקה אוטומטית של כניסות מיום קודם
+async function autoCleanOldGuests(){
+  try{
+    const snap = await getDocs(collection(db,'guests'));
+    const toDelete = snap.docs.filter(d => {
+      const date = d.data().date;
+      return date && date < TODAY;
+    });
+    if(!toDelete.length) return;
+    for(const d of toDelete){ await deleteDoc(doc(db,'guests',d.id)); }
+    console.log(`נמחקו ${toDelete.length} כניסות ישנות`);
+  }catch(e){ console.log('שגיאה בניקוי אוטומטי:',e.message); }
 }
 
 // ── GUESTS REALTIME ──
@@ -689,7 +764,7 @@ function renderGuestsList(){
   const d=document.getElementById('gDateF').value;
   const arr=guests.filter(g=>(!s||g.name.toLowerCase().includes(s)||g.tname.toLowerCase().includes(s))&&(!c||g.cat===c)&&(!f||String(g.floor)===f)&&(!d||g.date===d));
   document.getElementById('gTbl').innerHTML=arr.length
-    ?arr.map(g=>`<tr><td><strong>${g.name}</strong></td><td>${badge(g.cat)}</td><td>קומה ${g.floor}</td><td>${g.apt}</td><td>${g.tname}</td><td>${fd(g.date)}</td><td>${g.time}</td><td style="color:var(--t3);font-size:11px">${g.registeredBy||'—'}</td><td><button class="ic dl" onclick="delGuest('${g.id}')">🗑</button></td></tr>`).join('')
+    ?arr.map(g=>`<tr><td><strong>${g.name}</strong></td><td>${badge(g.cat)}</td><td>קומה ${g.floor}</td><td>${g.apt}</td><td>${g.tname}</td><td>${fd(g.date)}</td><td>${g.time}</td><td style="color:var(--t3);font-size:11px">${g.registeredBy||'—'}</td><td style="display:flex;gap:4px"><button class="ic" onclick="openEdit('${g.id}')">✏️</button><button class="ic dl" onclick="delGuest('${g.id}')">🗑</button></td></tr>`).join('')
     :'<tr><td colspan="9" class="ec">אין כניסות</td></tr>';
 }
 
@@ -703,6 +778,48 @@ async function delGuest(id){
   try{await deleteDoc(doc(db,'guests',id));toast('נמחק','ok');}
   catch(e){toast('שגיאה: '+e.message,'er');}
 }
+
+// DELETE ALL
+document.getElementById('deleteAllBtn').onclick=async function(){
+  if(!guests.length){toast('אין כניסות למחיקה','er');return;}
+  if(!confirm(`למחוק את כל ${guests.length} הכניסות? פעולה זו לא ניתנת לביטול!`))return;
+  this.disabled=true;this.textContent='מוחק...';
+  try{
+    for(const g of guests){await deleteDoc(doc(db,'guests',g.id));}
+    toast('כל הכניסות נמחקו','ok');
+  }catch(e){toast('שגיאה: '+e.message,'er');}
+  this.disabled=false;this.textContent='🗑 מחק הכל';
+};
+
+// EDIT GUEST
+window.openEdit=function(id){
+  const g=guests.find(x=>x.id===id);
+  if(!g)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('editN').value=g.name;
+  document.getElementById('editCat').value=g.cat;
+  document.getElementById('editDt').value=g.date;
+  document.getElementById('editTm').value=g.time;
+  document.getElementById('mEdit').style.display='flex';
+};
+document.getElementById('mEdit').onclick=e=>{if(e.target===document.getElementById('mEdit'))document.getElementById('mEdit').style.display='none';};
+document.getElementById('editForm').onsubmit=async function(e){
+  e.preventDefault();
+  const id=document.getElementById('editId').value;
+  const btn=document.getElementById('saveEditBtn');
+  btn.disabled=true;btn.textContent='שומר...';
+  try{
+    await updateDoc(doc(db,'guests',id),{
+      name:document.getElementById('editN').value.trim(),
+      cat:document.getElementById('editCat').value,
+      date:document.getElementById('editDt').value,
+      time:document.getElementById('editTm').value,
+    });
+    document.getElementById('mEdit').style.display='none';
+    toast('עודכן בהצלחה ✓','ok');
+  }catch(err){toast('שגיאה: '+err.message,'er');}
+  btn.disabled=false;btn.textContent='שמור שינויים';
+};
 
 // MODAL GUEST
 function openM(){
@@ -792,13 +909,114 @@ document.getElementById('tFlr').addEventListener('change',renderTenants);
 document.getElementById('tSort').addEventListener('change',renderTenants);
 window.delTenantLocal=function(id){if(!confirm('למחוק?'))return;tenants=tenants.filter(t=>t.id!==id);renderTenants();renderDash();toast('דייר נמחק','ok');};
 
-// ADD TENANT
+// ADD TENANT (manual)
 document.getElementById('tForm').onsubmit=function(e){
   e.preventDefault();
-  tenants.push({id:'ta'+Date.now(),name:document.getElementById('tN').value.trim(),phone:document.getElementById('tPh').value.trim(),floor:parseInt(document.getElementById('tFl').value),apt:document.getElementById('tAp').value.trim()});
+  const name=document.getElementById('tN').value.trim();
+  const floor=parseInt(document.getElementById('tFl').value);
+  const apt=document.getElementById('tAp').value.trim();
+  const exists=tenants.find(x=>String(x.floor)===String(floor)&&x.apt===apt);
+  if(exists){toast('דירה '+apt+' בקומה '+floor+' כבר קיימת','er');return;}
+  tenants.push({id:'ta'+Date.now(),name,phone:document.getElementById('tPh').value.trim(),floor,apt});
   ['tN','tPh','tFl','tAp'].forEach(i=>document.getElementById(i).value='');
-  renderDash();toast('דייר נוסף ✓','ok');
+  renderDash();renderTenants();toast('דייר נוסף ✓','ok');
 };
+
+// ── TENANT EXCEL IMPORT/EXPORT ──
+let xlData = [];
+
+document.getElementById('xlFile').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const wb = XLSX.read(ev.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      if(rows.length < 2){toast('הקובץ ריק או לא תקין','er');return;}
+
+      // Try to auto-detect columns
+      const header = rows[0].map(h=>String(h).trim());
+      let iFloor=-1, iApt=-1, iFname=-1, iLname=-1, iPhone=-1, iName=-1;
+      header.forEach((h,i)=>{
+        const l=h.toLowerCase();
+        if(l.includes('קומה')||l.includes('floor')) iFloor=i;
+        if(l.includes('דירה')||l.includes('apt')||l.includes('unit')) iApt=i;
+        if(l.includes('שם פרטי')||l.includes('first')) iFname=i;
+        if(l.includes('משפחה')||l.includes('last')) iLname=i;
+        if(l.includes('טלפון')||l.includes('phone')||l.includes('נייד')) iPhone=i;
+        if(l.includes('שם הדייר')||l.includes('שם מלא')||l.includes('name')) iName=i;
+      });
+
+      xlData = [];
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        if(!r.some(c=>c!='')) continue;
+        let name='';
+        if(iFname>=0 && iLname>=0) name=(String(r[iFname]||'').trim()+' '+String(r[iLname]||'').trim()).trim();
+        else if(iName>=0) name=String(r[iName]||'').trim();
+        const floor=parseInt(r[iFloor]||0);
+        const apt=String(r[iApt]||'').trim();
+        const phone=String(r[iPhone]>=0?r[iPhone]:'').trim();
+        if(!name||!floor||!apt) continue;
+        if(name.includes('מדינה')||name.includes('ריק')) continue;
+        xlData.push({name, floor, apt, phone});
+      }
+
+      if(!xlData.length){toast('לא נמצאו דיירים תקינים בקובץ','er');return;}
+
+      // Show preview
+      document.getElementById('xlInfo').textContent=`נמצאו ${xlData.length} דיירים — בדוק לפני ייבוא:`;
+      document.getElementById('xlHead').innerHTML='<th style="padding:6px 10px;color:var(--t3);text-align:right">שם</th><th style="padding:6px 10px;color:var(--t3);text-align:right">קומה</th><th style="padding:6px 10px;color:var(--t3);text-align:right">דירה</th><th style="padding:6px 10px;color:var(--t3);text-align:right">טלפון</th>';
+      document.getElementById('xlBody').innerHTML=xlData.slice(0,20).map(t=>`<tr><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.03)">${t.name}</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.03)">${t.floor}</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.03)">${t.apt}</td><td style="padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.03)">${t.phone||'—'}</td></tr>`).join('')
+        +(xlData.length>20?`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--t3);font-size:11px">ועוד ${xlData.length-20} דיירים...</td></tr>`:'');
+      document.getElementById('xlDrop').style.display='none';
+      document.getElementById('xlPreview').style.display='block';
+    }catch(err){toast('שגיאה בקריאת הקובץ: '+err.message,'er');}
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+// Drag & drop highlight
+const drop=document.getElementById('xlDrop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.borderColor='var(--gold)';drop.style.background='var(--gd)';});
+drop.addEventListener('dragleave',()=>{drop.style.borderColor='var(--d5)';drop.style.background='';});
+drop.addEventListener('drop',e=>{e.preventDefault();drop.style.borderColor='var(--d5)';drop.style.background='';const f=e.dataTransfer.files[0];if(f){document.getElementById('xlFile').files=e.dataTransfer.files;document.getElementById('xlFile').dispatchEvent(new Event('change'));}});
+
+document.getElementById('xlImportBtn').addEventListener('click',function(){
+  if(!xlData.length) return;
+  let added=0, skipped=0;
+  xlData.forEach(t=>{
+    const exists=tenants.find(x=>String(x.floor)===String(t.floor)&&x.apt===t.apt);
+    if(exists){skipped++;return;}
+    tenants.push({id:'xl'+Date.now()+Math.random(),name:t.name,phone:t.phone,floor:t.floor,apt:t.apt});
+    added++;
+  });
+  clearXl();
+  renderTenants();
+  renderDash();
+  toast(`✓ יובאו ${added} דיירים${skipped?` (${skipped} כפולים דולגו)`:''}`, 'ok');
+});
+
+function clearXl(){
+  xlData=[];
+  document.getElementById('xlFile').value='';
+  document.getElementById('xlDrop').style.display='block';
+  document.getElementById('xlPreview').style.display='none';
+}
+window.clearXl=clearXl;
+
+// EXPORT TENANTS
+document.getElementById('exportTenantsBtn').addEventListener('click',function(){
+  if(!tenants.length){toast('אין דיירים לייצוא','er');return;}
+  const rows=tenants.map(t=>({'שם מלא':t.name,'קומה':t.floor,'דירה':t.apt,'טלפון':t.phone||''}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'דיירים');
+  XLSX.writeFile(wb,'דיירים_דה_וינצי.xlsx');
+  toast(`יוצאו ${tenants.length} דיירים ✓`,'ok');
+});
 
 // TABS
 function switchTab(name){

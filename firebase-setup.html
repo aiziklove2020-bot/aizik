@@ -55,11 +55,11 @@ input:focus{border-color:rgba(201,168,76,.5)}
     <table class="users-table">
       <thead><tr><th>אימייל</th><th>תפקיד</th></tr></thead>
       <tbody>
-        <tr><td>admin1@davinci.com</td><td><span class="pill admin">מנהל</span></td></tr>
-        <tr><td>admin2@davinci.com</td><td><span class="pill admin">מנהל</span></td></tr>
-        <tr><td>admin3@davinci.com</td><td><span class="pill admin">מנהל</span></td></tr>
-        <tr><td>lobby1@davinci.com</td><td><span class="pill guard">שומר</span></td></tr>
-        <tr><td>lobby2@davinci.com</td><td><span class="pill guard">שומר</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1b7a7f7672752a5b7f7a6d7275787235787476">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f6e6b6266613d4f6b6e7966616c66216c6062">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="442520292d2a77042025322d2a272d6a272b29">[email&#160;protected]</a></td><td><span class="pill admin">מנהל</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7dbd8d5d5ce86f7d3d6c1ded9d4de99d4d8da">[email&#160;protected]</a></td><td><span class="pill guard">שומר</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c8cbc6c6dd96e4c0c5d2cdcac7cd8ac7cbc9">[email&#160;protected]</a></td><td><span class="pill guard">שומר</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -76,7 +76,7 @@ input:focus{border-color:rgba(201,168,76,.5)}
   </div>
 </div>
 
-<script type="module">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -156,25 +156,3 @@ window.runSetup = async function() {
     log(`      allow read, write: if request.auth != null;`, 'inf');
     log(`    }`, 'inf');
     log(`    match /users/{uid} {`, 'inf');
-    log(`      allow read: if request.auth != null;`, 'inf');
-    log(`    }`, 'inf');
-    log(`  }`, 'inf');
-    log(`}`, 'inf');
-    document.getElementById('doneBox').style.display = 'block';
-  } else {
-    log(`⚠️ הושלם עם ${fail} שגיאות`, 'er');
-  }
-  btn.disabled = false;
-};
-
-function log(msg, type) {
-  const el = document.getElementById('log');
-  if(!msg) { el.innerHTML += '<br>'; return; }
-  const colors = { ok:'#4caf7a', er:'#e05252', inf:'#a89878', gd:'#c9a84c' };
-  el.innerHTML += `<span style="color:${colors[type]||'#f0ead8'}">${msg}</span>\n`;
-  el.scrollTop = el.scrollHeight;
-}
-function clearLog() { document.getElementById('log').innerHTML = ''; }
-</script>
-</body>
-</html>
