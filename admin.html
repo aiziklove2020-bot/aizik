@@ -1271,7 +1271,7 @@ window.saveUser = async function(){
       // הוספה — צור ב-Firebase Auth וגם ב-Firestore
       if(pass.length<6){toast('סיסמה חייבת להיות לפחות 6 תווים','er');btn.disabled=false;btn.textContent='שמור';return;}
       // שמור את המשתמש הנוכחי לפני יצירת חדש
-      const currentUser = auth.currentUser;
+      const currentUser = auth?.currentUser || null;
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
       // שמור ב-Firestore
       await setDoc(doc(db,'users',cred.user.uid),{email,name,role,createdAt:new Date().toISOString()});
@@ -1474,4 +1474,4 @@ document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>switchTab(t.dataset.
 window.switchTab=switchTab;
 </script>
 </body>
-</html><!-- build: Sun Feb 15 10:41:56 UTC 2026 -->
+</html>
