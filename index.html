@@ -133,44 +133,54 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div class="stat"><div class="stn" id="sTen">0</div><div class="stl">🏠 דיירים רשומים</div></div>
     </div>
     <div class="tabs">
-      <div class="tab on" data-tab="reg">רישום אורח</div>
-      <div class="tab" data-tab="list">רשימת כניסות</div>
+      <div class="tab on" data-tab="offices">🏢 משרדים</div>
+      <div class="tab" data-tab="reg">רישום אורח</div>
       <div class="tab" data-tab="tenants">חיפוש דיירים</div>
-      <div class="tab" data-tab="offices">🏢 משרדים</div>
+      <div class="tab" data-tab="list">רשימת כניסות</div>
     </div>
 
     <!-- רישום אורח -->
-    <div class="sec on" id="tab-reg">
+    <div class="sec" id="tab-reg">
       <div class="card">
         <div class="ch"><h3>רישום אורח חדש</h3></div>
         <div class="cb">
           <form id="gForm">
+
+            <!-- 1. לאן מגיע -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">① לאן מגיע האורח</div>
+            <div class="fg" style="margin-bottom:12px;position:relative">
+              <label class="fl">חיפוש דייר / משרד *</label>
+              <div style="position:relative">
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+                <input type="text" id="tenSearch" class="inp" placeholder="שם / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
+              </div>
+              <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+            </div>
+            <div class="grid2" style="margin-bottom:16px">
+              <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="אוטומטי"></div>
+              <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="אוטומטי"></div>
+            </div>
+            <input type="hidden" id="gFlr">
+            <input type="hidden" id="gApt">
+
+            <!-- מפריד -->
+            <div style="border-top:1px solid var(--d4);margin:4px 0 14px"></div>
+
+            <!-- 2. פרטי האורח -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">② פרטי האורח</div>
             <div class="grid2" style="margin-bottom:12px">
               <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required placeholder="שם ושם משפחה"></div>
               <div class="fg"><label class="fl">קטגוריה *</label>
                 <select id="gCat" class="inp" required onchange="toggleOther(this,'gCatOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
               </div>
-              <div class="fg" id="gCatOtherWrap" style="display:none;margin-top:-4px"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
             </div>
+            <div class="fg" id="gCatOtherWrap" style="display:none;margin-bottom:12px"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
 
-            <!-- חיפוש דייר -->
-            <div class="fg" style="margin-bottom:12px;position:relative">
-              <label class="fl">חיפוש דייר מארח *</label>
-              <div style="position:relative">
-                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
-                <input type="text" id="tenSearch" class="inp" placeholder="הקלד שם דייר..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
-              </div>
-              <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
-            </div>
+            <!-- מפריד -->
+            <div style="border-top:1px solid var(--d4);margin:4px 0 14px"></div>
 
-            <!-- קומה ודירה (מולאים אוטומטית) -->
-            <div class="grid2" style="margin-bottom:12px">
-              <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
-              <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
-            </div>
-            <input type="hidden" id="gFlr">
-            <input type="hidden" id="gApt">
-            <div class="fg" style="margin-bottom:12px"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+            <!-- 3. פרטי רישום -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">③ פרטי רישום</div>
             <div class="fg" style="margin-bottom:12px">
               <label class="fl">נרשם על ידי *</label>
               <select id="gEmployee" class="inp" required>
@@ -309,7 +319,7 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
     </div>
 
     <!-- משרדים -->
-    <div class="sec" id="tab-offices">
+    <div class="sec on" id="tab-offices">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
         <h3 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🏢 רשימת משרדים</h3>
         <div style="position:relative">
@@ -623,6 +633,7 @@ function initApp(){
   loadGuests();
   loadEmployeesLobby();
   renderTenants();
+  renderOffices();
 }
 
 async function loadEmployeesLobby(){
@@ -917,17 +928,16 @@ let filteredOffices = [...OFFICES];
 function renderOffices(){
   const tbody = document.getElementById('offTbl');
   if(!tbody) return;
+  let html = '';
   let curFloor = null;
-  tbody.innerHTML = filteredOffices.map(o=>{
-    let floorCell = '';
+  filteredOffices.forEach(o=>{
     if(o.floor !== curFloor){
       curFloor = o.floor;
-      const count = filteredOffices.filter(x=>x.floor===o.floor).length;
-      floorCell = `<td rowspan="${count}" style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;vertical-align:middle;background:var(--d2);border-left:2px solid var(--gb)">קומה<br>${o.floor}</td>`;
-      return `<tr class="floor-first">${floorCell}<td style="font-size:13px;padding:10px 14px">${o.name}</td></tr>`;
+      html += `<tr style="background:var(--d2)"><td colspan="2" style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold);padding:8px 14px;border-top:2px solid var(--gb)">🏢 קומה ${o.floor}</td></tr>`;
     }
-    return `<tr><td style="font-size:13px;padding:10px 14px">${o.name}</td></tr>`;
-  }).join('');
+    html += `<tr><td style="width:10px"></td><td style="font-size:13px;padding:9px 14px;color:var(--tx)">${o.name}</td></tr>`;
+  });
+  tbody.innerHTML = html || '<tr><td colspan="2" style="text-align:center;color:var(--t3);padding:20px">לא נמצאו תוצאות</td></tr>';
 }
 
 window.filterOffices = function(q){
