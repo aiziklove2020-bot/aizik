@@ -132,11 +132,16 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div class="stat"><div class="stn" id="sTotal">0</div><div class="stl">📋 סה"כ כניסות</div></div>
       <div class="stat"><div class="stn" id="sTen">0</div><div class="stl">🏠 דיירים רשומים</div></div>
     </div>
+    <!-- בלון עדכונים מהמנהלים -->
+    <div id="lobbyNoteBanner" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.35);border-radius:12px;margin-bottom:14px;overflow:hidden">
+      <div style="padding:10px 16px;background:rgba(201,168,76,.1);border-bottom:1px solid rgba(201,168,76,.2);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px">📝 עדכונים מהמנהלים</div>
+      <div id="lobbyNotesFeed"></div>
+    </div>
+
     <div class="tabs">
       <div class="tab on" data-tab="offices">🏢 משרדים</div>
-      <div class="tab" data-tab="list">רשימת כניסות</div>
+      <div class="tab" data-tab="list">רישום אורח חדש</div>
       <div class="tab" data-tab="tenants">חיפוש דיירים</div>
-      <button class="sbtn" id="openRegBtn" style="margin-right:auto">+ רישום אורח</button>
     </div>
 
     <!-- MODAL רישום אורח -->
@@ -237,7 +242,10 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
     <div class="sec" id="tab-list">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">רשימת כניסות</span>
-        <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
+        <div style="display:flex;gap:8px">
+          <button class="sbtn" id="openRegBtn">+ רישום אורח</button>
+          <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
+        </div>
       </div>
       <div class="frow">
         <input type="date" id="fDate" class="fs">
@@ -657,6 +665,7 @@ function initApp(){
   checkLobbyStatus();
   loadGuests();
   loadEmployeesLobby();
+  loadLobbyNoteDisplay();
   renderTenants();
   renderOffices();
 }
@@ -772,6 +781,34 @@ function openReg(){
 window.closeReg=()=>document.getElementById('mReg').style.display='none';
 document.getElementById('mReg').onclick=e=>{if(e.target===document.getElementById('mReg'))closeReg();};
 document.getElementById('openRegBtn').onclick=openReg;
+
+// ── טעינת עדכונים מהמנהלים ──
+async function loadLobbyNoteDisplay(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='lobbyNotes');
+    const notes = s ? (s.data().notes||[]) : [];
+    const banner = document.getElementById('lobbyNoteBanner');
+    const feed = document.getElementById('lobbyNotesFeed');
+    if(notes.length){
+      feed.innerHTML = notes.slice().reverse().map(n=>{
+        const d = new Date(n.time);
+        const timeStr = d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'});
+        return `<div style="padding:12px 16px;border-bottom:1px solid var(--d4)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-size:12px;font-weight:700;color:var(--gold)">${n.author}</span>
+            <span style="font-size:11px;color:var(--t3)">${dateStr} ${timeStr}</span>
+          </div>
+          <div style="font-size:13px;color:var(--tx);line-height:1.6">${n.text}</div>
+        </div>`;
+      }).join('');
+      banner.style.display='block';
+    } else {
+      banner.style.display='none';
+    }
+  }catch(e){}
+}
 
 // ── מצב רישום: דייר / מתווך ──
 let regMode = 'tenant';

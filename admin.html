@@ -164,6 +164,18 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
           </div>
         </div>
       </div>
+
+      <!-- הערות ללובי - פיד -->
+      <div class="card" style="border-color:rgba(201,168,76,.3)">
+        <div class="ch"><h3>📝 הוסף עדכון ללובי</h3></div>
+        <div class="cb">
+          <textarea id="lobbyNoteInput" class="inp" rows="2" placeholder="כתוב דגש או הנחיה לשומרי הלובי..." style="resize:vertical;font-family:inherit;font-size:13px;line-height:1.6"></textarea>
+          <div style="margin-top:10px">
+            <button onclick="publishLobbyNote()" class="sbtn">📤 פרסם</button>
+          </div>
+        </div>
+      </div>
+      <div id="notesFeedAdmin" style="margin-bottom:16px"></div>
       <div class="sg">
         <div class="sc hl"><div class="scn" id="sTen">0</div><div class="scl">🏠 דיירים רשומים</div></div>
         <div class="sc hl"><div class="scn" id="sToday">0</div><div class="scl">👤 אורחים היום</div></div>
@@ -947,6 +959,70 @@ window.toggleLobby = async function(){
   }
 };
 
+// ── עדכונים ללובי (פיד) ──
+let lobbyNotes = [];
+
+async function loadLobbyNotes(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='lobbyNotes');
+    lobbyNotes = s ? (s.data().notes||[]) : [];
+    renderNotesFeedAdmin();
+  }catch(e){}
+}
+
+function renderNotesFeedAdmin(){
+  const el = document.getElementById('notesFeedAdmin');
+  if(!el) return;
+  if(!lobbyNotes.length){ el.innerHTML=''; return; }
+  el.innerHTML = `
+    <div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.35);border-radius:12px;overflow:hidden">
+      <div style="padding:10px 16px;background:rgba(201,168,76,.1);border-bottom:1px solid rgba(201,168,76,.2);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px">📝 עדכונים פורסמו</div>
+      ${lobbyNotes.slice().reverse().map((n,ri)=>{
+        const i = lobbyNotes.length-1-ri;
+        const d = new Date(n.time);
+        const timeStr = d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'});
+        return `<div style="padding:12px 16px;border-bottom:1px solid var(--d4)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:700;color:var(--gold)">${n.author}</span>
+            <span style="display:flex;gap:10px;align-items:center">
+              <span style="font-size:11px;color:var(--t3)">${dateStr} ${timeStr}</span>
+              <span onclick="deleteNote(${i})" style="font-size:11px;color:#e05252;cursor:pointer">🗑 מחק</span>
+            </span>
+          </div>
+          <div style="font-size:13px;color:var(--tx);line-height:1.6">${n.text}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+window.publishLobbyNote = async function(){
+  const text = document.getElementById('lobbyNoteInput').value.trim();
+  if(!text){ toast('כתוב הודעה לפני פרסום','er'); return; }
+  try{
+    const user = auth.currentUser;
+    const snap = await getDocs(collection(db,'users'));
+    const u = snap.docs.find(d=>d.id===user?.uid);
+    const author = u ? u.data().name||u.data().email : (user?.email||'מנהל');
+    lobbyNotes.push({ text, author, time: new Date().toISOString() });
+    await setDoc(doc(db,'settings','lobbyNotes'),{ notes: lobbyNotes });
+    document.getElementById('lobbyNoteInput').value='';
+    renderNotesFeedAdmin();
+    toast('עדכון פורסם ✓','ok');
+  }catch(e){ toast('שגיאה: '+e.message,'er'); }
+};
+
+window.deleteNote = async function(i){
+  if(!confirm('למחוק עדכון זה?')) return;
+  lobbyNotes.splice(i,1);
+  try{
+    await setDoc(doc(db,'settings','lobbyNotes'),{ notes: lobbyNotes });
+    renderNotesFeedAdmin();
+    toast('נמחק ✓','ok');
+  }catch(e){ toast('שגיאה: '+e.message,'er'); }
+};
+
 // ── INIT ──
 let guests=[];
 function initApp(){
@@ -954,6 +1030,7 @@ function initApp(){
   loadGuests();
   loadUsers();
   loadLobbyStatus();
+  loadLobbyNotes();
   loadEmployees();
   renderTenants();
 }
