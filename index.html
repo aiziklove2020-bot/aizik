@@ -142,77 +142,62 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
     <!-- רישום אורח -->
     <div class="sec" id="tab-reg">
       <div class="card">
-        <div class="ch"><h3>✍️ רישום אורח חדש</h3></div>
+        <div class="ch"><h3>רישום אורח חדש</h3></div>
         <div class="cb">
           <form id="gForm">
-
-            <!-- שלב 1 -->
-            <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-              <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px">שלב 1 — לאיזה דירה מגיע האורח?</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <!-- חיפוש דייר -->
               <div class="fg" style="position:relative">
+                <label class="fl">דייר מארח *</label>
                 <div style="position:relative">
-                  <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:14px;pointer-events:none">🔍</span>
-                  <input type="text" id="tenSearch" class="inp" placeholder="חפש לפי שם דייר / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:34px;font-size:14px" oninput="searchTenant(this.value)">
+                  <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+                  <input type="text" id="tenSearch" class="inp" placeholder="חפש שם / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
                 </div>
                 <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
               </div>
-              <!-- תוצאה נבחרת -->
-              <div id="selectedTenantBox" style="display:none;margin-top:10px;background:rgba(76,175,122,.08);border:1px solid rgba(76,175,122,.25);border-radius:8px;padding:10px 14px">
-                <div style="font-size:12px;color:#4caf7a;font-weight:700;margin-bottom:4px">✓ דייר נבחר</div>
-                <div id="selectedTenantName" style="font-size:14px;font-weight:700;color:var(--tx)"></div>
-                <div id="selectedTenantInfo" style="font-size:12px;color:var(--t3);margin-top:2px"></div>
+              <div class="grid2">
+                <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="אוטומטי"></div>
+                <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="אוטומטי"></div>
               </div>
               <input type="hidden" id="gFlr">
               <input type="hidden" id="gApt">
-              <input type="hidden" id="gFlrDisp">
-              <input type="hidden" id="gAptDisp">
-            </div>
-
-            <!-- שלב 2 -->
-            <div style="background:rgba(91,142,240,.06);border:1px solid rgba(91,142,240,.15);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-              <div style="font-size:13px;font-weight:700;color:#5b8ef0;margin-bottom:10px">שלב 2 — פרטי האורח</div>
-              <div class="fg" style="margin-bottom:10px">
-                <label class="fl">שם מלא של האורח *</label>
-                <input type="text" id="gN" class="inp" required placeholder="שם פרטי ושם משפחה" style="font-size:14px">
+              <input type="hidden" id="gDt">
+              <input type="hidden" id="gTm">
+              <div class="grid2">
+                <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required placeholder="שם ושם משפחה"></div>
+                <div class="fg"><label class="fl">קטגוריה *</label>
+                  <select id="gCat" class="inp" required onchange="toggleOther(this,'gCatOther')">
+                    <option value="">בחר...</option>
+                    <option>אורח פרטי</option>
+                    <option>ספק/טכנאי</option>
+                    <option>משלוח</option>
+                    <option>אחר</option>
+                  </select>
+                </div>
               </div>
+              <div class="fg" id="gCatOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
               <div class="fg">
-                <label class="fl">סוג ביקור *</label>
-                <select id="gCat" class="inp" required onchange="toggleOther(this,'gCatOther')" style="font-size:14px">
-                  <option value="">— בחר סוג —</option>
-                  <option>אורח פרטי</option>
-                  <option>ספק/טכנאי</option>
-                  <option>משלוח</option>
-                  <option>אחר</option>
+                <label class="fl">נרשם על ידי *</label>
+                <select id="gEmployee" class="inp" required>
+                  <option value="">בחר עובד...</option>
+                  <option>אור צדוק</option>
+                  <option>איציק קסטוריאנו</option>
+                  <option>בנימין גורמו</option>
+                  <option>ג'ו ביטון</option>
+                  <option>יוסף מאיר עמדו</option>
+                  <option>מאיר סבג</option>
+                  <option>מיכאל אלקין</option>
+                  <option>עמנואל לוי</option>
+                  <option>ענת כהן</option>
+                  <option>שלומית כהן</option>
                 </select>
               </div>
-              <div class="fg" id="gCatOtherWrap" style="display:none;margin-top:10px">
-                <label class="fl">פרט את הסוג</label>
-                <input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא...">
-              </div>
+              <button type="submit" class="sbtn w" id="saveGuestBtn">✓ שמור רישום</button>
             </div>
-
-            <!-- שלב 3 -->
-            <div style="background:rgba(255,255,255,.03);border:1px solid var(--d4);border-radius:10px;padding:14px 16px;margin-bottom:16px">
-              <div style="font-size:13px;font-weight:700;color:var(--t2);margin-bottom:10px">שלב 3 — מי מבצע הרישום?</div>
-              <select id="gEmployee" class="inp" required style="font-size:14px">
-                <option value="">— בחר את שמך —</option>
-                <option>אור צדוק</option>
-                <option>איציק קסטוריאנו</option>
-                <option>בנימין גורמו</option>
-                <option>ג'ו ביטון</option>
-                <option>יוסף מאיר עמדו</option>
-                <option>מאיר סבג</option>
-                <option>מיכאל אלקין</option>
-                <option>עמנואל לוי</option>
-                <option>ענת כהן</option>
-                <option>שלומית כהן</option>
-              </select>
-            </div>
-
-            <button type="submit" class="sbtn" id="saveGuestBtn" style="width:100%;padding:14px;font-size:15px">✓ רשום אורח</button>
-            <input type="hidden" id="gDt">
-            <input type="hidden" id="gTm">
           </form>
+        </div>
+      </div>
+    </div>
         </div>
       </div>
     </div>
@@ -767,10 +752,6 @@ window.selectTenant = function(id){
   document.getElementById('gFlrDisp').value = 'קומה '+t.floor;
   document.getElementById('gAptDisp').value = 'דירה '+t.apt;
   document.getElementById('tenDropdown').style.display='none';
-  document.getElementById('selectedTenantBox').style.display='block';
-  document.getElementById('selectedTenantName').textContent = t.name;
-  document.getElementById('selectedTenantInfo').textContent = 'קומה '+t.floor+' • דירה '+t.apt+(t.phone?' • '+t.phone:'');
-  document.getElementById('tenDropdown').style.display='none';
 };
 
 // סגור dropdown בלחיצה מחוץ
@@ -810,9 +791,6 @@ document.getElementById('gForm').onsubmit=async function(e){
     document.getElementById('gApt').value='';
     document.getElementById('gFlrDisp').value='';
     document.getElementById('gAptDisp').value='';
-    document.getElementById('selectedTenantBox').style.display='none';
-    document.getElementById('selectedTenantName').textContent='';
-    document.getElementById('selectedTenantInfo').textContent='';
     document.getElementById('gEmployee').value='';
     document.getElementById('gCatOtherWrap').style.display='none';
     const n=new Date();
