@@ -324,6 +324,21 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
           <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="editN" class="inp" required></div>
           <div class="fg"><label class="fl">קטגוריה</label><select id="editCat" class="inp"><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
         </div>
+        <div class="fg"><label class="fl">נרשם על ידי</label>
+          <select id="editEmployee" class="inp">
+            <option value="">בחר עובד...</option>
+            <option>אור צדוק</option>
+            <option>איציק קסטוריאנו</option>
+            <option>בנימין גורמו</option>
+            <option>ג'ו ביטון</option>
+            <option>יוסף מאיר עמדו</option>
+            <option>מאיר סבג</option>
+            <option>מיכאל אלקין</option>
+            <option>עמנואל לוי</option>
+            <option>ענת כהן</option>
+            <option>שלומית כהן</option>
+          </select>
+        </div>
         <div class="grid2">
           <div class="fg"><label class="fl">תאריך</label><input type="date" id="editDt" class="inp"></div>
           <div class="fg"><label class="fl">שעה</label><input type="time" id="editTm" class="inp"></div>
@@ -607,9 +622,9 @@ async function checkLobbyStatus(){
   try{
     const snap = await getDocs(collection(db,'settings'));
     const s = snap.docs.find(d=>d.id==='lobby');
+    // אם אין רשומה — פתוח כברירת מחדל
     const isOpen = s ? s.data().open !== false : true;
     if(!isOpen){
-      // הצג מסך סגור
       document.getElementById('app').innerHTML = `
         <div style="position:fixed;inset:0;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:20px">
           <div style="font-size:60px">🔴</div>
@@ -619,7 +634,10 @@ async function checkLobbyStatus(){
           <button onclick="location.reload()" style="background:#1c1e22;border:1px solid #242629;color:#a89878;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:10px">🔄 בדוק שוב</button>
         </div>`;
     }
-  }catch(e){ console.log('שגיאה בבדיקת סטטוס:',e.message); }
+  }catch(e){
+    // בשגיאה — אל תסגור, השאר פתוח
+    console.log('שגיאה בבדיקת סטטוס:',e.message);
+  }
 }
 
 // מחיקה אוטומטית + גיבוי לארכיון
@@ -802,6 +820,7 @@ window.openEdit=function(id){
   document.getElementById('editCat').value=g.cat;
   document.getElementById('editDt').value=g.date;
   document.getElementById('editTm').value=g.time;
+  document.getElementById('editEmployee').value=g.registeredBy||'';
   document.getElementById('mEdit').style.display='flex';
 };
 document.getElementById('mEdit').onclick=e=>{if(e.target===document.getElementById('mEdit'))document.getElementById('mEdit').style.display='none';};
@@ -816,6 +835,7 @@ document.getElementById('editForm').onsubmit=async function(e){
       cat:document.getElementById('editCat').value,
       date:document.getElementById('editDt').value,
       time:document.getElementById('editTm').value,
+      registeredBy:document.getElementById('editEmployee').value||'—',
     });
     document.getElementById('mEdit').style.display='none';
     toast('עודכן בהצלחה ✓','ok');
