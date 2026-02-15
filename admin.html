@@ -396,50 +396,43 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
           <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required onchange="toggleOther(this,'gCatMOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
           <div class="fg" id="gCatMOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatMOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
         </div>
-        <div class="grid2">
-          <div class="fg"><label class="fl">קומה *</label><select id="gFlrM" class="inp" required><option value="">בחר קומה</option><option value="3">קומה 3</option>
-<option value="4">קומה 4</option>
-<option value="5">קומה 5</option>
-<option value="6">קומה 6</option>
-<option value="7">קומה 7</option>
-<option value="8">קומה 8</option>
-<option value="9">קומה 9</option>
-<option value="10">קומה 10</option>
-<option value="11">קומה 11</option>
-<option value="12">קומה 12</option>
-<option value="13">קומה 13</option>
-<option value="14">קומה 14</option>
-<option value="15">קומה 15</option>
-<option value="16">קומה 16</option>
-<option value="17">קומה 17</option>
-<option value="18">קומה 18</option>
-<option value="19">קומה 19</option>
-<option value="20">קומה 20</option>
-<option value="21">קומה 21</option>
-<option value="22">קומה 22</option>
-<option value="23">קומה 23</option>
-<option value="24">קומה 24</option>
-<option value="25">קומה 25</option>
-<option value="26">קומה 26</option>
-<option value="27">קומה 27</option>
-<option value="28">קומה 28</option>
-<option value="29">קומה 29</option>
-<option value="30">קומה 30</option>
-<option value="31">קומה 31</option>
-<option value="32">קומה 32</option>
-<option value="33">קומה 33</option>
-<option value="34">קומה 34</option>
-<option value="35">קומה 35</option>
-<option value="36">קומה 36</option>
-<option value="37">קומה 37</option>
-<option value="38">קומה 38</option>
-<option value="39">קומה 39</option>
-<option value="40">קומה 40</option>
-<option value="41">קומה 41</option>
-<option value="42">קומה 42</option></select></div>
-          <div class="fg"><label class="fl">דירה *</label><select id="gApt" class="inp" required><option value="">בחר דירה</option></select></div>
+
+        <!-- חיפוש דייר -->
+        <div class="fg" style="position:relative">
+          <label class="fl">חיפוש דייר מארח *</label>
+          <div style="position:relative">
+            <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+            <input type="text" id="tenSearchM" class="inp" placeholder="שם / דירה / קומה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenantM(this.value)">
+          </div>
+          <div id="tenDropdownM" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:200;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
         </div>
+
+        <div class="grid2">
+          <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrMDisp" class="inp" readonly placeholder="אוטומטי"></div>
+          <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptMDisp" class="inp" readonly placeholder="אוטומטי"></div>
+        </div>
+        <input type="hidden" id="gFlrM">
+        <input type="hidden" id="gApt">
         <div class="fg"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+
+        <!-- עובד רושם -->
+        <div class="fg">
+          <label class="fl">נרשם על ידי *</label>
+          <select id="gEmployeeM" class="inp" required>
+            <option value="">בחר עובד...</option>
+            <option>אור צדוק</option>
+            <option>איציק קסטוריאנו</option>
+            <option>בנימין גורמו</option>
+            <option>ג'ו ביטון</option>
+            <option>יוסף מאיר עמדו</option>
+            <option>מאיר סבג</option>
+            <option>מיכאל אלקין</option>
+            <option>עמנואל לוי</option>
+            <option>ענת כהן</option>
+            <option>שלומית כהן</option>
+          </select>
+        </div>
+
         <div class="grid2">
           <div class="fg"><label class="fl">תאריך *</label><input type="date" id="gDt" class="inp" required></div>
           <div class="fg"><label class="fl">שעה *</label><input type="time" id="gTm" class="inp" required></div>
@@ -790,6 +783,48 @@ window.toggleOther = function(sel, inputId){
   else{wrap.style.display='none';if(document.getElementById(inputId))document.getElementById(inputId).value='';}
 };
 
+// ── חיפוש דייר במודל מנהל ──
+window.searchTenantM = function(q){
+  const dd = document.getElementById('tenDropdownM');
+  if(!q||q.length<1){dd.style.display='none';return;}
+  const s=q.trim().toLowerCase();
+  const results=tenants.filter(t=>
+    t.name.toLowerCase().includes(s)||
+    String(t.apt).includes(s)||
+    String(t.floor).includes(s)||
+    (t.phone&&t.phone.replace(/-/g,'').includes(s.replace(/-/g,'')))
+  ).slice(0,8);
+  if(!results.length){
+    dd.innerHTML='<div style="padding:12px;text-align:center;color:var(--t3);font-size:13px">לא נמצא דייר</div>';
+  }else{
+    dd.innerHTML=results.map(t=>`
+      <div onclick="selectTenantM('${t.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--d4)" onmouseover="this.style.background='var(--d3)'" onmouseout="this.style.background=''">
+        <div style="font-weight:700;font-size:13px;color:var(--tx)">${t.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">קומה ${t.floor} • דירה ${t.apt}${t.phone?' • '+t.phone:''}</div>
+      </div>`).join('');
+  }
+  dd.style.display='block';
+};
+
+window.selectTenantM = function(id){
+  const t=tenants.find(x=>x.id===id);
+  if(!t)return;
+  document.getElementById('tenSearchM').value=t.name;
+  document.getElementById('gFlrM').value=t.floor;
+  document.getElementById('gApt').value=t.id;
+  document.getElementById('gFlrMDisp').value='קומה '+t.floor;
+  document.getElementById('gAptMDisp').value='דירה '+t.apt;
+  document.getElementById('gTen').value=t.name;
+  document.getElementById('tenDropdownM').style.display='none';
+};
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#tenSearchM')&&!e.target.closest('#tenDropdownM')){
+    const dd=document.getElementById('tenDropdownM');
+    if(dd)dd.style.display='none';
+  }
+});
+
 // ── LOBBY STATUS CONTROL ──
 let lobbyOpen = true;
 
@@ -969,10 +1004,16 @@ document.getElementById('editForm').onsubmit=async function(e){
 // MODAL GUEST
 function openM(){
   const n=new Date();
-  document.getElementById('gN').value='';document.getElementById('gCatM').value='';
+  document.getElementById('gN').value='';
+  document.getElementById('gCatM').value='';
+  document.getElementById('gCatMOtherWrap').style.display='none';
+  document.getElementById('tenSearchM').value='';
   document.getElementById('gFlrM').value='';
-  document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>';
+  document.getElementById('gApt').value='';
+  document.getElementById('gFlrMDisp').value='';
+  document.getElementById('gAptMDisp').value='';
   document.getElementById('gTen').value='';
+  document.getElementById('gEmployeeM').value='';
   document.getElementById('gDt').value=TODAY;
   document.getElementById('gTm').value=n.toTimeString().slice(0,5);
   document.getElementById('mG').style.display='flex';
@@ -981,27 +1022,19 @@ window.closeM=()=>document.getElementById('mG').style.display='none';
 document.getElementById('mG').onclick=e=>{if(e.target===document.getElementById('mG'))closeM();};
 document.getElementById('addGuestBtn').onclick=openM;
 
-document.getElementById('gFlrM').onchange=function(){
-  const fl=this.value;
-  const apts=tenants.filter(t=>String(t.floor)===fl);
-  document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>'+apts.map(t=>`<option value="${t.id}">דירה ${t.apt} — ${t.name}</option>`).join('');
-  document.getElementById('gTen').value='';
-};
-document.getElementById('gApt').onchange=function(){
-  const t=tenants.find(x=>x.id===this.value);
-  document.getElementById('gTen').value=t?t.name:'';
-};
 document.getElementById('gForm').onsubmit=async function(e){
   e.preventDefault();
   const aid=document.getElementById('gApt').value;
   const t=tenants.find(x=>x.id===aid);
-  if(!t){toast('יש לבחור דירה','er');return;}
+  if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
+  const employee=document.getElementById('gEmployeeM').value;
+  if(!employee){toast('יש לבחור עובד','er');return;}
   const btn=document.getElementById('saveGuestBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
-    const catVal = document.getElementById('gCatM').value;
-    const catOther = document.getElementById('gCatMOther')?.value.trim()||'';
-    const finalCat = catVal==='אחר' && catOther ? 'אחר: '+catOther : catVal;
+    const catVal=document.getElementById('gCatM').value;
+    const catOther=document.getElementById('gCatMOther')?.value.trim()||'';
+    const finalCat=catVal==='אחר'&&catOther?'אחר: '+catOther:catVal;
     await addDoc(collection(db,'guests'),{
       name:document.getElementById('gN').value.trim(),
       cat:finalCat,
@@ -1010,7 +1043,7 @@ document.getElementById('gForm').onsubmit=async function(e){
       date:document.getElementById('gDt').value,
       time:document.getElementById('gTm').value,
       createdAt:serverTimestamp(),
-      registeredBy:auth.currentUser?.email||'admin'
+      registeredBy:employee
     });
     closeM();toast('אורח נרשם ✓','ok');
   }catch(err){toast('שגיאה: '+err.message,'er');}
