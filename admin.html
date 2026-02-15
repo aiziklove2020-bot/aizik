@@ -419,6 +419,11 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
             <input type="text" id="tenSearchM" class="inp" placeholder="שם / דירה / קומה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenantM(this.value)">
           </div>
           <div id="tenDropdownM" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:200;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+          <div id="selectedTenantBoxM" style="display:none;margin-top:8px;background:rgba(76,175,122,.08);border:1px solid rgba(76,175,122,.25);border-radius:8px;padding:9px 12px">
+            <div style="font-size:11px;color:#4caf7a;font-weight:700;margin-bottom:3px">✓ דייר נבחר</div>
+            <div id="selectedTenantNameM" style="font-size:13px;font-weight:700;color:var(--tx)"></div>
+            <div id="selectedTenantInfoM" style="font-size:11px;color:var(--t3);margin-top:2px"></div>
+          </div>
         </div>
 
         <div class="grid2">
@@ -843,6 +848,9 @@ window.selectTenantM = function(id){
   document.getElementById('gFlrMDisp').value='קומה '+t.floor;
   document.getElementById('gAptMDisp').value='דירה '+t.apt;
   document.getElementById('gTen').value=t.name;
+  document.getElementById('selectedTenantBoxM').style.display='block';
+  document.getElementById('selectedTenantNameM').textContent=t.name;
+  document.getElementById('selectedTenantInfoM').textContent='קומה '+t.floor+' • דירה '+t.apt+(t.phone?' • '+t.phone:'');
   document.getElementById('tenDropdownM').style.display='none';
 };
 
@@ -1056,6 +1064,7 @@ function openM(){
   document.getElementById('gFlrMDisp').value='';
   document.getElementById('gAptMDisp').value='';
   document.getElementById('gTen').value='';
+  document.getElementById('selectedTenantBoxM').style.display='none';
   document.getElementById('gEmployeeM').value='';
   document.getElementById('gDt').value=TODAY;
   document.getElementById('gTm').value=n.toTimeString().slice(0,5);
