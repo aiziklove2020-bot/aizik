@@ -146,23 +146,42 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
         <div class="cb">
           <form id="gForm">
             <div style="display:flex;flex-direction:column;gap:13px">
-              <!-- חיפוש דייר -->
-              <div class="fg" style="position:relative">
-                <label class="fl">דייר מארח *</label>
-                <div style="position:relative">
-                  <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
-                  <input type="text" id="tenSearch" class="inp" placeholder="חפש שם / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
+
+              <!-- טוגל דייר / מתווך -->
+              <div style="display:flex;gap:8px">
+                <button type="button" id="modeTenant" onclick="setMode('tenant')" style="flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gold);color:#09090b;border:none">🏠 דייר רשום</button>
+                <button type="button" id="modeBroker" onclick="setMode('broker')" style="flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--d3);color:var(--t2);border:1px solid var(--d5)">🔑 מתווך / אורח חופשי</button>
+              </div>
+
+              <!-- מצב דייר רשום -->
+              <div id="tenantMode">
+                <div class="fg" style="position:relative">
+                  <label class="fl">דייר מארח *</label>
+                  <div style="position:relative">
+                    <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+                    <input type="text" id="tenSearch" class="inp" placeholder="חפש שם / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
+                  </div>
+                  <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
                 </div>
-                <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+                <div class="grid2" style="margin-top:13px">
+                  <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="אוטומטי"></div>
+                  <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="אוטומטי"></div>
+                </div>
               </div>
-              <div class="grid2">
-                <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="אוטומטי"></div>
-                <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="אוטומטי"></div>
+
+              <!-- מצב מתווך / חופשי -->
+              <div id="brokerMode" style="display:none">
+                <div class="grid2">
+                  <div class="fg"><label class="fl">קומה *</label><input type="number" id="gFlrManual" class="inp" placeholder="לדוגמה: 7" min="1" max="42"></div>
+                  <div class="fg"><label class="fl">דירה / מספר *</label><input type="text" id="gAptManual" class="inp" placeholder="לדוגמה: 702"></div>
+                </div>
               </div>
+
               <input type="hidden" id="gFlr">
               <input type="hidden" id="gApt">
               <input type="hidden" id="gDt">
               <input type="hidden" id="gTm">
+
               <div class="grid2">
                 <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required placeholder="שם ושם משפחה"></div>
                 <div class="fg"><label class="fl">קטגוריה *</label>
@@ -171,6 +190,7 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
                     <option>אורח פרטי</option>
                     <option>ספק/טכנאי</option>
                     <option>משלוח</option>
+                    <option>מתווך</option>
                     <option>אחר</option>
                   </select>
                 </div>
@@ -716,6 +736,27 @@ function renderStats(){
 }
 
 // FORM
+// ── מצב רישום: דייר / מתווך ──
+let regMode = 'tenant';
+window.setMode = function(mode){
+  regMode = mode;
+  const isTenant = mode==='tenant';
+  document.getElementById('tenantMode').style.display = isTenant ? 'block' : 'none';
+  document.getElementById('brokerMode').style.display = isTenant ? 'none' : 'block';
+  document.getElementById('modeTenant').style.background = isTenant ? 'var(--gold)' : 'var(--d3)';
+  document.getElementById('modeTenant').style.color = isTenant ? '#09090b' : 'var(--t2)';
+  document.getElementById('modeTenant').style.border = isTenant ? 'none' : '1px solid var(--d5)';
+  document.getElementById('modeBroker').style.background = isTenant ? 'var(--d3)' : 'var(--gold)';
+  document.getElementById('modeBroker').style.color = isTenant ? 'var(--t2)' : '#09090b';
+  document.getElementById('modeBroker').style.border = isTenant ? '1px solid var(--d5)' : 'none';
+  // נקה ערכים
+  document.getElementById('gFlr').value='';
+  document.getElementById('gApt').value='';
+  document.getElementById('gFlrDisp').value='';
+  document.getElementById('gAptDisp').value='';
+  document.getElementById('tenSearch').value='';
+};
+
 // ── חיפוש דייר ──
 let selectedTenant = null;
 
@@ -763,29 +804,41 @@ document.addEventListener('click', e=>{
 
 document.getElementById('gForm').onsubmit=async function(e){
   e.preventDefault();
-  const aid=document.getElementById('gApt').value;
-  const t=tenants.find(x=>x.id===aid);
-  if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
   const employee=document.getElementById('gEmployee').value;
   if(!employee){toast('יש לבחור עובד','er');return;}
+
+  let floor, apt, tname, tid;
+
+  if(regMode==='tenant'){
+    const aid=document.getElementById('gApt').value;
+    const t=tenants.find(x=>x.id===aid);
+    if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
+    floor=parseInt(t.floor); apt=t.apt; tname=t.name; tid=aid;
+  } else {
+    const floorVal=document.getElementById('gFlrManual').value.trim();
+    const aptVal=document.getElementById('gAptManual').value.trim();
+    if(!floorVal||!aptVal){toast('יש להזין קומה ומספר דירה','er');return;}
+    floor=parseInt(floorVal); apt=aptVal; tname='מתווך'; tid='';
+  }
+
   const btn=document.getElementById('saveGuestBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
     const catVal = document.getElementById('gCat').value;
     const catOther = document.getElementById('gCatOther').value.trim();
     const finalCat = catVal==='אחר' && catOther ? 'אחר: '+catOther : catVal;
+    const n=new Date();
     await addDoc(collection(db,'guests'),{
       name:document.getElementById('gN').value.trim(),
       cat:finalCat,
-      floor:parseInt(document.getElementById('gFlr').value),
-      apt:t.apt,tid:aid,tname:t.name,
-      date:document.getElementById('gDt').value,
-      time:document.getElementById('gTm').value,
+      floor, apt, tid, tname,
+      date:TODAY,
+      time:n.toTimeString().slice(0,5),
       createdAt:serverTimestamp(),
       registeredBy:employee
     });
     this.reset();
-    selectedTenant = null;
+    selectedTenant=null;
     document.getElementById('tenSearch').value='';
     document.getElementById('gFlr').value='';
     document.getElementById('gApt').value='';
@@ -793,7 +846,10 @@ document.getElementById('gForm').onsubmit=async function(e){
     document.getElementById('gAptDisp').value='';
     document.getElementById('gEmployee').value='';
     document.getElementById('gCatOtherWrap').style.display='none';
-    const n=new Date();
+    if(regMode==='broker'){
+      document.getElementById('gFlrManual').value='';
+      document.getElementById('gAptManual').value='';
+    }
     document.getElementById('gDt').value=TODAY;
     document.getElementById('gTm').value=n.toTimeString().slice(0,5);
     toast('אורח נרשם בהצלחה ✓','ok');
