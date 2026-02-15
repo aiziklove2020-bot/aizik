@@ -136,6 +136,7 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div class="tab on" data-tab="reg">רישום אורח</div>
       <div class="tab" data-tab="list">רשימת כניסות</div>
       <div class="tab" data-tab="tenants">חיפוש דיירים</div>
+      <div class="tab" data-tab="offices">🏢 משרדים</div>
     </div>
 
     <!-- רישום אורח -->
@@ -305,6 +306,23 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
         <span class="tcnt" id="tCnt"></span>
       </div>
       <div class="card tw"><table><thead><tr><th>שם מלא</th><th>קומה</th><th>דירה</th><th>טלפון</th></tr></thead><tbody id="tTbl"></tbody></table></div>
+    </div>
+
+    <!-- משרדים -->
+    <div class="sec" id="tab-offices">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🏢 רשימת משרדים</h3>
+        <div style="position:relative">
+          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12px;pointer-events:none">🔍</span>
+          <input type="text" id="offSearch" class="inp" placeholder="חפש משרד..." style="padding-right:30px;width:200px;font-size:13px" oninput="filterOffices(this.value)">
+        </div>
+      </div>
+      <div class="card tw">
+        <table id="offTable">
+          <thead><tr><th>קומה</th><th>שם חברה / משרד</th></tr></thead>
+          <tbody id="offTbl"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -855,6 +873,69 @@ document.getElementById('editForm').onsubmit=async function(e){
   btn.disabled=false;btn.textContent='שמור שינויים';
 };
 
+// ── OFFICES ──
+const OFFICES = [
+  {floor:3, name:'יח 307+306 ריפט מערכות מידע'},
+  {floor:3, name:'ארו-אסיה בע"מ Euro-Asia Ltd רולקס'},
+  {floor:3, name:'חיים לוי יזות - משרד עורכי דין + קליגולה 310'},
+  {floor:3, name:'יחידה 311 אבירים-ויטנברג, יהל בן עובד, משרד עו"ד'},
+  {floor:3, name:'Echo 308 אקו סופט יח'},
+  {floor:3, name:'Ledge 309 יח'},
+  {floor:3, name:'313 Jefferies International Limited'},
+  {floor:3, name:'ד"ר הימל-מרפאת שיניים 312'},
+  {floor:3, name:'RESIDENT רזידנט'},
+  {floor:3, name:'איקום 2יח 304'},
+  {floor:4, name:'Al21labs'},
+  {floor:5, name:'C8 Health סי אייט הילת בע"מ'},
+  {floor:5, name:'Moshal Program / Entrée Capital - מושל עמותה של אנטרי/ אי סי וי יל מנקו'},
+  {floor:5, name:'Al21labs'},
+  {floor:5, name:'Dux'},
+  {floor:5, name:'Zafran Security שוכר משנה זפרן סקיוריטי (A21)'},
+  {floor:5, name:'Inbar Group Finance and Nostro (מור אנד מור)'},
+  {floor:5, name:'איקס 5 מעברות בע"מ 502B'},
+  {floor:5, name:'NEO Security שוכר משנה (A21)'},
+  {floor:6, name:'PSG Equity Ltd יח 602'},
+  {floor:6, name:'למד ע.ק. אחזקות 601'},
+  {floor:6, name:'ישר אדריכלים'},
+  {floor:6, name:'A+B 606 PARADOX'},
+  {floor:6, name:'גולדמן זקס יח 606 בנק GS'},
+  {floor:6, name:'Tribal גו טריייבל א.י.אי בע"מ 601Bמ'},
+  {floor:6, name:'TRES Finance טרס יח 603'},
+  {floor:7, name:'אקסולה אינק'},
+  {floor:7, name:'בנק לאומי בנקאות פרטית דן (626)'},
+  {floor:7, name:'Bank Leumi בנק לאומי'},
+  {floor:7, name:'Connecteam - קונקטים (Candivore קנדיבור)'},
+  {floor:8, name:'Connecteam - קונקטים (Cycode סייקוד)'},
+  {floor:8, name:'Connecteam - קונקטים'},
+  {floor:8, name:'Connecteam - קונקטים (Salt Security - סולט סקיוריטי)'},
+  {floor:8, name:'Connecteam - קונקטים (gloat)'},
+  {floor:9, name:'Connecteam - קונקטים'},
+];
+
+let filteredOffices = [...OFFICES];
+
+function renderOffices(){
+  const tbody = document.getElementById('offTbl');
+  if(!tbody) return;
+  let curFloor = null;
+  tbody.innerHTML = filteredOffices.map(o=>{
+    let floorCell = '';
+    if(o.floor !== curFloor){
+      curFloor = o.floor;
+      const count = filteredOffices.filter(x=>x.floor===o.floor).length;
+      floorCell = `<td rowspan="${count}" style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);text-align:center;vertical-align:middle;background:var(--d2);border-left:2px solid var(--gb)">קומה<br>${o.floor}</td>`;
+      return `<tr class="floor-first">${floorCell}<td style="font-size:13px;padding:10px 14px">${o.name}</td></tr>`;
+    }
+    return `<tr><td style="font-size:13px;padding:10px 14px">${o.name}</td></tr>`;
+  }).join('');
+}
+
+window.filterOffices = function(q){
+  const s = q.trim().toLowerCase();
+  filteredOffices = s ? OFFICES.filter(o=>o.name.toLowerCase().includes(s)||String(o.floor).includes(s)) : [...OFFICES];
+  renderOffices();
+};
+
 // TENANTS SEARCH
 function clrT(){document.getElementById('tSrch').value='';renderTenants();}
 document.querySelectorAll('.stag').forEach(tag=>{
@@ -908,6 +989,7 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.getElementById('tab-'+t.dataset.tab).classList.add('on');
     if(t.dataset.tab==='tenants')renderTenants();
     if(t.dataset.tab==='list')renderGuestsList();
+    if(t.dataset.tab==='offices')renderOffices();
   };
 });
 </script>
