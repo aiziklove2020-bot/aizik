@@ -500,7 +500,23 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
         <div class="grid2">
           <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="editN" class="inp" required></div>
-          <div class="fg"><label class="fl">קטגוריה *</label><select id="editCat" class="inp" required><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg"><label class="fl">קטגוריה *</label><select id="editCat" class="inp" required onchange="toggleOther(this,'editCatOther')"><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg" id="editCatOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="editCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
+        </div>
+        <div class="fg"><label class="fl">נרשם על ידי</label>
+          <select id="editEmployee" class="inp">
+            <option value="">בחר עובד...</option>
+            <option>אור צדוק</option>
+            <option>איציק קסטוריאנו</option>
+            <option>בנימין גורמו</option>
+            <option>ג'ו ביטון</option>
+            <option>יוסף מאיר עמדו</option>
+            <option>מאיר סבג</option>
+            <option>מיכאל אלקין</option>
+            <option>עמנואל לוי</option>
+            <option>ענת כהן</option>
+            <option>שלומית כהן</option>
+          </select>
         </div>
         <div class="grid2">
           <div class="fg"><label class="fl">תאריך *</label><input type="date" id="editDt" class="inp" required></div>
@@ -541,12 +557,10 @@ const TODAY = new Date().toISOString().split('T')[0];
 let tFld = 'all';
 
 function badge(cat){
-function badge(cat){
   if(!cat) return '<span class="bdg bgy">—</span>';
   const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr'};
   const base = cat.startsWith('אחר') ? 'bgy' : (m[cat]||'bgy');
   return `<span class="bdg ${base}">${cat}</span>`;
-}
 }
 function fd(d){if(!d)return'—';const p=d.split('-');return`${p[2]}/${p[1]}/${p[0]}`;}
 function toast(msg,type){
@@ -992,9 +1006,19 @@ window.openEdit=function(id){
   if(!g)return;
   document.getElementById('editId').value=id;
   document.getElementById('editN').value=g.name;
-  document.getElementById('editCat').value=g.cat;
+  // טיפול בקטגוריה אחר: פירוט
+  if(g.cat && g.cat.startsWith('אחר:')){
+    document.getElementById('editCat').value='אחר';
+    document.getElementById('editCatOther').value=g.cat.replace('אחר:','').trim();
+    document.getElementById('editCatOtherWrap').style.display='block';
+  } else {
+    document.getElementById('editCat').value=g.cat||'אורח פרטי';
+    document.getElementById('editCatOther').value='';
+    document.getElementById('editCatOtherWrap').style.display='none';
+  }
   document.getElementById('editDt').value=g.date;
   document.getElementById('editTm').value=g.time;
+  document.getElementById('editEmployee').value=g.registeredBy||'';
   document.getElementById('mEdit').style.display='flex';
 };
 document.getElementById('mEdit').onclick=e=>{if(e.target===document.getElementById('mEdit'))document.getElementById('mEdit').style.display='none';};
@@ -1004,11 +1028,15 @@ document.getElementById('editForm').onsubmit=async function(e){
   const btn=document.getElementById('saveEditBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
+    const catVal=document.getElementById('editCat').value;
+    const catOther=document.getElementById('editCatOther')?.value.trim()||'';
+    const finalCat=catVal==='אחר'&&catOther?'אחר: '+catOther:catVal;
     await updateDoc(doc(db,'guests',id),{
       name:document.getElementById('editN').value.trim(),
-      cat:document.getElementById('editCat').value,
+      cat:finalCat,
       date:document.getElementById('editDt').value,
       time:document.getElementById('editTm').value,
+      registeredBy:document.getElementById('editEmployee').value||'—',
     });
     document.getElementById('mEdit').style.display='none';
     toast('עודכן בהצלחה ✓','ok');
@@ -1446,4 +1474,4 @@ document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>switchTab(t.dataset.
 window.switchTab=switchTab;
 </script>
 </body>
-</html>
+</html><!-- build: Sun Feb 15 10:41:56 UTC 2026 -->

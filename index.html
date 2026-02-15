@@ -133,43 +133,54 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div class="stat"><div class="stn" id="sTen">0</div><div class="stl">🏠 דיירים רשומים</div></div>
     </div>
     <div class="tabs">
-      <div class="tab on" data-tab="reg">רישום אורח</div>
-      <div class="tab" data-tab="list">רשימת כניסות</div>
+      <div class="tab on" data-tab="offices">🏢 משרדים</div>
+      <div class="tab" data-tab="reg">רישום אורח</div>
       <div class="tab" data-tab="tenants">חיפוש דיירים</div>
+      <div class="tab" data-tab="list">רשימת כניסות</div>
     </div>
 
     <!-- רישום אורח -->
-    <div class="sec on" id="tab-reg">
+    <div class="sec" id="tab-reg">
       <div class="card">
         <div class="ch"><h3>רישום אורח חדש</h3></div>
         <div class="cb">
           <form id="gForm">
+
+            <!-- 1. לאן מגיע -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">① לאן מגיע האורח</div>
+            <div class="fg" style="margin-bottom:12px;position:relative">
+              <label class="fl">חיפוש דייר / משרד *</label>
+              <div style="position:relative">
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+                <input type="text" id="tenSearch" class="inp" placeholder="שם / קומה / דירה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
+              </div>
+              <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+            </div>
+            <div class="grid2" style="margin-bottom:16px">
+              <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="אוטומטי"></div>
+              <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="אוטומטי"></div>
+            </div>
+            <input type="hidden" id="gFlr">
+            <input type="hidden" id="gApt">
+
+            <!-- מפריד -->
+            <div style="border-top:1px solid var(--d4);margin:4px 0 14px"></div>
+
+            <!-- 2. פרטי האורח -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">② פרטי האורח</div>
             <div class="grid2" style="margin-bottom:12px">
               <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required placeholder="שם ושם משפחה"></div>
               <div class="fg"><label class="fl">קטגוריה *</label>
                 <select id="gCat" class="inp" required onchange="toggleOther(this,'gCatOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
               </div>
-              <div class="fg" id="gCatOtherWrap" style="display:none;margin-top:-4px"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
             </div>
+            <div class="fg" id="gCatOtherWrap" style="display:none;margin-bottom:12px"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
 
-            <!-- חיפוש דייר -->
-            <div class="fg" style="margin-bottom:12px;position:relative">
-              <label class="fl">חיפוש דייר מארח *</label>
-              <div style="position:relative">
-                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
-                <input type="text" id="tenSearch" class="inp" placeholder="הקלד שם דייר..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
-              </div>
-              <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
-            </div>
+            <!-- מפריד -->
+            <div style="border-top:1px solid var(--d4);margin:4px 0 14px"></div>
 
-            <!-- קומה ודירה (מולאים אוטומטית) -->
-            <div class="grid2" style="margin-bottom:12px">
-              <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
-              <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
-            </div>
-            <input type="hidden" id="gFlr">
-            <input type="hidden" id="gApt">
-            <div class="fg" style="margin-bottom:12px"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+            <!-- 3. פרטי רישום -->
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">③ פרטי רישום</div>
             <div class="fg" style="margin-bottom:12px">
               <label class="fl">נרשם על ידי *</label>
               <select id="gEmployee" class="inp" required>
@@ -306,6 +317,23 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       </div>
       <div class="card tw"><table><thead><tr><th>שם מלא</th><th>קומה</th><th>דירה</th><th>טלפון</th></tr></thead><tbody id="tTbl"></tbody></table></div>
     </div>
+
+    <!-- משרדים -->
+    <div class="sec on" id="tab-offices">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🏢 רשימת משרדים</h3>
+        <div style="position:relative">
+          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12px;pointer-events:none">🔍</span>
+          <input type="text" id="offSearch" class="inp" placeholder="חפש משרד..." style="padding-right:30px;width:200px;font-size:13px" oninput="filterOffices(this.value)">
+        </div>
+      </div>
+      <div class="card tw">
+        <table id="offTable">
+          <thead><tr><th>קומה</th><th>שם חברה / משרד</th></tr></thead>
+          <tbody id="offTbl"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -322,7 +350,23 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
         <div class="grid2">
           <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="editN" class="inp" required></div>
-          <div class="fg"><label class="fl">קטגוריה</label><select id="editCat" class="inp"><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg"><label class="fl">קטגוריה</label><select id="editCat" class="inp" onchange="toggleOther(this,'editCatOther')"><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+        </div>
+        <div class="fg" id="editCatOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="editCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
+        <div class="fg"><label class="fl">נרשם על ידי</label>
+          <select id="editEmployee" class="inp">
+            <option value="">בחר עובד...</option>
+            <option>אור צדוק</option>
+            <option>איציק קסטוריאנו</option>
+            <option>בנימין גורמו</option>
+            <option>ג'ו ביטון</option>
+            <option>יוסף מאיר עמדו</option>
+            <option>מאיר סבג</option>
+            <option>מיכאל אלקין</option>
+            <option>עמנואל לוי</option>
+            <option>ענת כהן</option>
+            <option>שלומית כהן</option>
+          </select>
         </div>
         <div class="grid2">
           <div class="fg"><label class="fl">תאריך</label><input type="date" id="editDt" class="inp"></div>
@@ -575,7 +619,6 @@ function toggleOther(sel, inputId){
   else{wrap.style.display='none';document.getElementById(inputId).value='';}
 }
 window.toggleOther=toggleOther;
-initApp();
 
 
 // ── INIT ──
@@ -589,6 +632,7 @@ function initApp(){
   loadGuests();
   loadEmployeesLobby();
   renderTenants();
+  renderOffices();
 }
 
 async function loadEmployeesLobby(){
@@ -607,9 +651,9 @@ async function checkLobbyStatus(){
   try{
     const snap = await getDocs(collection(db,'settings'));
     const s = snap.docs.find(d=>d.id==='lobby');
+    // אם אין רשומה — פתוח כברירת מחדל
     const isOpen = s ? s.data().open !== false : true;
     if(!isOpen){
-      // הצג מסך סגור
       document.getElementById('app').innerHTML = `
         <div style="position:fixed;inset:0;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:20px">
           <div style="font-size:60px">🔴</div>
@@ -619,7 +663,10 @@ async function checkLobbyStatus(){
           <button onclick="location.reload()" style="background:#1c1e22;border:1px solid #242629;color:#a89878;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:10px">🔄 בדוק שוב</button>
         </div>`;
     }
-  }catch(e){ console.log('שגיאה בבדיקת סטטוס:',e.message); }
+  }catch(e){
+    // בשגיאה — אל תסגור, השאר פתוח
+    console.log('שגיאה בבדיקת סטטוס:',e.message);
+  }
 }
 
 // מחיקה אוטומטית + גיבוי לארכיון
@@ -799,9 +846,18 @@ window.openEdit=function(id){
   if(!g)return;
   document.getElementById('editId').value=id;
   document.getElementById('editN').value=g.name;
-  document.getElementById('editCat').value=g.cat;
+  if(g.cat && g.cat.startsWith('אחר:')){
+    document.getElementById('editCat').value='אחר';
+    document.getElementById('editCatOther').value=g.cat.replace('אחר:','').trim();
+    document.getElementById('editCatOtherWrap').style.display='block';
+  } else {
+    document.getElementById('editCat').value=g.cat||'אורח פרטי';
+    document.getElementById('editCatOther').value='';
+    document.getElementById('editCatOtherWrap').style.display='none';
+  }
   document.getElementById('editDt').value=g.date;
   document.getElementById('editTm').value=g.time;
+  document.getElementById('editEmployee').value=g.registeredBy||'';
   document.getElementById('mEdit').style.display='flex';
 };
 document.getElementById('mEdit').onclick=e=>{if(e.target===document.getElementById('mEdit'))document.getElementById('mEdit').style.display='none';};
@@ -811,16 +867,82 @@ document.getElementById('editForm').onsubmit=async function(e){
   const btn=document.getElementById('saveEditBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
+    const catVal=document.getElementById('editCat').value;
+    const catOther=document.getElementById('editCatOther')?.value.trim()||'';
+    const finalCat=catVal==='אחר'&&catOther?'אחר: '+catOther:catVal;
     await updateDoc(doc(db,'guests',id),{
       name:document.getElementById('editN').value.trim(),
-      cat:document.getElementById('editCat').value,
+      cat:finalCat,
       date:document.getElementById('editDt').value,
       time:document.getElementById('editTm').value,
+      registeredBy:document.getElementById('editEmployee').value||'—',
     });
     document.getElementById('mEdit').style.display='none';
     toast('עודכן בהצלחה ✓','ok');
   }catch(err){toast('שגיאה: '+err.message,'er');}
   btn.disabled=false;btn.textContent='שמור שינויים';
+};
+
+// ── OFFICES ──
+const OFFICES = [
+  {floor:3, name:'יח 307+306 ריפט מערכות מידע'},
+  {floor:3, name:'ארו-אסיה בע"מ Euro-Asia Ltd רולקס'},
+  {floor:3, name:'חיים לוי יזות - משרד עורכי דין + קליגולה 310'},
+  {floor:3, name:'יחידה 311 אבירים-ויטנברג, יהל בן עובד, משרד עו"ד'},
+  {floor:3, name:'Echo 308 אקו סופט יח'},
+  {floor:3, name:'Ledge 309 יח'},
+  {floor:3, name:'313 Jefferies International Limited'},
+  {floor:3, name:'ד"ר הימל-מרפאת שיניים 312'},
+  {floor:3, name:'RESIDENT רזידנט'},
+  {floor:3, name:'איקום 2יח 304'},
+  {floor:4, name:'Al21labs'},
+  {floor:5, name:'C8 Health סי אייט הילת בע"מ'},
+  {floor:5, name:'Moshal Program / Entrée Capital - מושל עמותה של אנטרי/ אי סי וי יל מנקו'},
+  {floor:5, name:'Al21labs'},
+  {floor:5, name:'Dux'},
+  {floor:5, name:'Zafran Security שוכר משנה זפרן סקיוריטי (A21)'},
+  {floor:5, name:'Inbar Group Finance and Nostro (מור אנד מור)'},
+  {floor:5, name:'איקס 5 מעברות בע"מ 502B'},
+  {floor:5, name:'NEO Security שוכר משנה (A21)'},
+  {floor:6, name:'PSG Equity Ltd יח 602'},
+  {floor:6, name:'למד ע.ק. אחזקות 601'},
+  {floor:6, name:'ישר אדריכלים'},
+  {floor:6, name:'A+B 606 PARADOX'},
+  {floor:6, name:'גולדמן זקס יח 606 בנק GS'},
+  {floor:6, name:'Tribal גו טריייבל א.י.אי בע"מ 601Bמ'},
+  {floor:6, name:'TRES Finance טרס יח 603'},
+  {floor:7, name:'אקסולה אינק'},
+  {floor:7, name:'בנק לאומי בנקאות פרטית דן (626)'},
+  {floor:7, name:'Bank Leumi בנק לאומי'},
+  {floor:7, name:'Connecteam - קונקטים (Candivore קנדיבור)'},
+  {floor:8, name:'Connecteam - קונקטים (Cycode סייקוד)'},
+  {floor:8, name:'Connecteam - קונקטים'},
+  {floor:8, name:'Connecteam - קונקטים (Salt Security - סולט סקיוריטי)'},
+  {floor:8, name:'Connecteam - קונקטים (gloat)'},
+  {floor:9, name:'Connecteam - קונקטים'},
+];
+
+let filteredOffices = [...OFFICES];
+
+function renderOffices(){
+  const tbody = document.getElementById('offTbl');
+  if(!tbody) return;
+  let html = '';
+  let curFloor = null;
+  filteredOffices.forEach(o=>{
+    if(o.floor !== curFloor){
+      curFloor = o.floor;
+      html += `<tr style="background:var(--d2)"><td colspan="2" style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold);padding:8px 14px;border-top:2px solid var(--gb)">🏢 קומה ${o.floor}</td></tr>`;
+    }
+    html += `<tr><td style="width:10px"></td><td style="font-size:13px;padding:9px 14px;color:var(--tx)">${o.name}</td></tr>`;
+  });
+  tbody.innerHTML = html || '<tr><td colspan="2" style="text-align:center;color:var(--t3);padding:20px">לא נמצאו תוצאות</td></tr>';
+}
+
+window.filterOffices = function(q){
+  const s = q.trim().toLowerCase();
+  filteredOffices = s ? OFFICES.filter(o=>o.name.toLowerCase().includes(s)||String(o.floor).includes(s)) : [...OFFICES];
+  renderOffices();
 };
 
 // TENANTS SEARCH
@@ -876,8 +998,11 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.getElementById('tab-'+t.dataset.tab).classList.add('on');
     if(t.dataset.tab==='tenants')renderTenants();
     if(t.dataset.tab==='list')renderGuestsList();
+    if(t.dataset.tab==='offices')renderOffices();
   };
 });
+
+initApp();
 </script>
 </body>
-</html>
+</html><!-- build: Sun Feb 15 10:41:56 UTC 2026 -->
