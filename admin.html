@@ -144,7 +144,8 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div class="tab on" data-tab="dash">דשבורד</div>
       <div class="tab" data-tab="guests">אורחים</div>
       <div class="tab" data-tab="tenants">דיירים</div>
-      <div class="tab" data-tab="users">👥 ניהול משתמשים</div>
+      <div class="tab" data-tab="archive">📁 ארכיון</div>
+      <div class="tab" data-tab="users">👥 משתמשים</div>
       <div class="tab" data-tab="settings">הגדרות</div>
     </div>
 
@@ -292,6 +293,16 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
         <span class="tcnt" id="tCnt"></span>
       </div>
       <div class="card tw"><table><thead><tr><th>שם מלא</th><th>קומה</th><th>דירה</th><th>טלפון</th><th></th></tr></thead><tbody id="tTbl"></tbody></table></div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <div class="sec" id="tab-archive">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700">📁 ארכיון כניסות</h2>
+      </div>
+      <div class="card tw" id="archiveList">
+        <div style="padding:32px;text-align:center;color:var(--t3)">טוען ארכיון... <span class="spinner"></span></div>
+      </div>
     </div>
 
     <!-- USERS MANAGEMENT -->
@@ -835,8 +846,21 @@ async function autoCleanOldGuests(){
       return date && date < TODAY;
     });
     if(!toDelete.length) return;
+
+    // גיבוי לארכיון לפי תאריך
+    const byDate = {};
+    toDelete.forEach(d => {
+      const data = d.data();
+      const date = data.date;
+      if(!byDate[date]) byDate[date] = [];
+      byDate[date].push({id:d.id, ...data});
+    });
+    for(const [date, entries] of Object.entries(byDate)){
+      await setDoc(doc(db,'archive',date),{date, entries, savedAt:new Date().toISOString(), count:entries.length});
+    }
+
     for(const d of toDelete){ await deleteDoc(doc(db,'guests',d.id)); }
-    console.log(`נמחקו ${toDelete.length} כניסות ישנות`);
+    console.log(`גובו ונמחקו ${toDelete.length} כניסות`);
   }catch(e){ console.log('שגיאה בניקוי אוטומטי:',e.message); }
 }
 
@@ -1030,6 +1054,47 @@ document.getElementById('tForm').onsubmit=function(e){
   tenants.push({id:'ta'+Date.now(),name,phone:document.getElementById('tPh').value.trim(),floor,apt});
   ['tN','tPh','tFl','tAp'].forEach(i=>document.getElementById(i).value='');
   renderDash();renderTenants();toast('דייר נוסף ✓','ok');
+};
+
+// ── ARCHIVE ──
+async function loadArchive(){
+  const el = document.getElementById('archiveList');
+  try{
+    const snap = await getDocs(collection(db,'archive'));
+    if(!snap.docs.length){
+      el.innerHTML='<div style="padding:32px;text-align:center;color:var(--t3)">אין ארכיון עדיין — הכניסות יישמרו אוטומטית בסוף כל יום</div>';
+      return;
+    }
+    const days = snap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
+    el.innerHTML = `<table>
+      <thead><tr><th>תאריך</th><th>מספר כניסות</th><th>נשמר בתאריך</th><th></th></tr></thead>
+      <tbody>${days.map(d=>`
+        <tr>
+          <td><strong>${fd(d.date)}</strong></td>
+          <td><span class="bdg bgr">${d.count} כניסות</span></td>
+          <td style="color:var(--t3);font-size:11px">${d.savedAt?new Date(d.savedAt).toLocaleString('he-IL'):'-'}</td>
+          <td><button class="sbtn" style="padding:6px 14px;font-size:12px" onclick="downloadArchive('${d.date}')">📥 הורד Excel</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }catch(e){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:var(--re)">שגיאה בטעינת ארכיון</div>';
+  }
+}
+
+window.downloadArchive = async function(date){
+  try{
+    const snap = await getDocs(collection(db,'archive'));
+    const d = snap.docs.find(x=>x.id===date);
+    if(!d){toast('לא נמצא ארכיון לתאריך זה','er');return;}
+    const entries = d.data().entries||[];
+    const rows = entries.map(g=>({'שם אורח':g.name,'קטגוריה':g.cat,'קומה':g.floor,'דירה':g.apt,'דייר מארח':g.tname,'תאריך':fd(g.date),'שעה':g.time,'נרשם ע"י':g.registeredBy||'—'}));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'כניסות');
+    XLSX.writeFile(wb,'כניסות_'+date+'.xlsx');
+    toast('יוצאו '+rows.length+' רשומות ✓','ok');
+  }catch(e){toast('שגיאה: '+e.message,'er');}
 };
 
 // ── USERS MANAGEMENT ──
@@ -1251,6 +1316,7 @@ function switchTab(name){
   if(name==='guests')renderGuestsList();
   if(name==='dash')renderDash();
   if(name==='users')renderUsers();
+  if(name==='archive')loadArchive();
 }
 document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>switchTab(t.dataset.tab);});
 window.switchTab=switchTab;

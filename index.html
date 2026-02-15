@@ -612,7 +612,7 @@ async function checkLobbyStatus(){
   }catch(e){ console.log('שגיאה בבדיקת סטטוס:',e.message); }
 }
 
-// מחיקה אוטומטית של כניסות מיום קודם
+// מחיקה אוטומטית + גיבוי לארכיון
 async function autoCleanOldGuests(){
   try{
     const snap = await getDocs(collection(db,'guests'));
@@ -621,7 +621,28 @@ async function autoCleanOldGuests(){
       return date && date < TODAY;
     });
     if(!toDelete.length) return;
+
+    // קבץ לפי תאריך ושמור לארכיון
+    const byDate = {};
+    toDelete.forEach(d => {
+      const data = d.data();
+      const date = data.date;
+      if(!byDate[date]) byDate[date] = [];
+      byDate[date].push({id:d.id, ...data});
+    });
+
+    for(const [date, entries] of Object.entries(byDate)){
+      await setDoc(doc(db,'archive',date), {
+        date,
+        entries,
+        savedAt: new Date().toISOString(),
+        count: entries.length
+      });
+    }
+
+    // מחק מ-guests
     for(const d of toDelete){ await deleteDoc(doc(db,'guests',d.id)); }
+    console.log(`גובו ונמחקו ${toDelete.length} כניסות`);
   }catch(e){ console.log('שגיאה בניקוי:',e.message); }
 }
 
