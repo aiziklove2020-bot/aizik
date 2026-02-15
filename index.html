@@ -27,7 +27,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .lbtn{width:100%;background:var(--gold);color:var(--k);border:none;padding:13px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .18s}
 .lbtn:hover{background:var(--gl)}
 .lload{text-align:center;font-size:12px;color:var(--t3);margin-top:10px;min-height:18px}
-#app{display:none}
+#app{display:block}
 .topbar{background:var(--d1);border-bottom:1px solid var(--gb);padding:0 24px;height:60px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;backdrop-filter:blur(14px)}
 .tlogo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
 .tright{margin-right:auto;display:flex;align-items:center;gap:10px}
@@ -118,28 +118,12 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 </head>
 <body>
 
-<div id="login">
-  <div class="lbox">
-    <div class="ltop">
-      <div class="ldv">DV</div>
-      <div class="lname">דה וינצ'י</div>
-      <div class="lsub">כניסת שומר לובי</div>
-    </div>
-    <div class="lfg"><label class="lfl">אימייל</label><input type="email" id="lU" class="linp" placeholder="lobby@davinci.com" autocomplete="off"></div>
-    <div class="lfg"><label class="lfl">סיסמה</label><input type="password" id="lP" class="linp" placeholder="••••••••"></div>
-    <div class="lerr" id="lErr">&nbsp;</div>
-    <button class="lbtn" id="lBtn">כניסה למערכת</button>
-    <div class="lload" id="lLoad"></div>
-  </div>
-</div>
-
 <div id="app">
   <header class="topbar">
     <span class="tlogo">דה וינצ'י</span>
     <span class="clk" id="clk"></span>
     <div class="tright">
-      <span class="tunm" id="uNm"></span>
-      <button class="tbtn" id="logoutBtn">יציאה</button>
+      <span class="tunm">לובי</span>
     </div>
   </header>
   <div class="wrap">
@@ -163,53 +147,45 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
             <div class="grid2" style="margin-bottom:12px">
               <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required placeholder="שם ושם משפחה"></div>
               <div class="fg"><label class="fl">קטגוריה *</label>
-                <select id="gCat" class="inp" required><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
+                <select id="gCat" class="inp" required onchange="toggleOther(this,'gCatOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
               </div>
+              <div class="fg" id="gCatOtherWrap" style="display:none;margin-top:-4px"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
             </div>
+
+            <!-- חיפוש דייר -->
+            <div class="fg" style="margin-bottom:12px;position:relative">
+              <label class="fl">חיפוש דייר מארח *</label>
+              <div style="position:relative">
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+                <input type="text" id="tenSearch" class="inp" placeholder="הקלד שם דייר..." autocomplete="off" style="padding-right:32px" oninput="searchTenant(this.value)">
+              </div>
+              <div id="tenDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+            </div>
+
+            <!-- קומה ודירה (מולאים אוטומטית) -->
             <div class="grid2" style="margin-bottom:12px">
-              <div class="fg"><label class="fl">קומה *</label><select id="gFlr" class="inp" required><option value="">בחר קומה</option><option value="3">קומה 3</option>
-<option value="4">קומה 4</option>
-<option value="5">קומה 5</option>
-<option value="6">קומה 6</option>
-<option value="7">קומה 7</option>
-<option value="8">קומה 8</option>
-<option value="9">קומה 9</option>
-<option value="10">קומה 10</option>
-<option value="11">קומה 11</option>
-<option value="12">קומה 12</option>
-<option value="13">קומה 13</option>
-<option value="14">קומה 14</option>
-<option value="15">קומה 15</option>
-<option value="16">קומה 16</option>
-<option value="17">קומה 17</option>
-<option value="18">קומה 18</option>
-<option value="19">קומה 19</option>
-<option value="20">קומה 20</option>
-<option value="21">קומה 21</option>
-<option value="22">קומה 22</option>
-<option value="23">קומה 23</option>
-<option value="24">קומה 24</option>
-<option value="25">קומה 25</option>
-<option value="26">קומה 26</option>
-<option value="27">קומה 27</option>
-<option value="28">קומה 28</option>
-<option value="29">קומה 29</option>
-<option value="30">קומה 30</option>
-<option value="31">קומה 31</option>
-<option value="32">קומה 32</option>
-<option value="33">קומה 33</option>
-<option value="34">קומה 34</option>
-<option value="35">קומה 35</option>
-<option value="36">קומה 36</option>
-<option value="37">קומה 37</option>
-<option value="38">קומה 38</option>
-<option value="39">קומה 39</option>
-<option value="40">קומה 40</option>
-<option value="41">קומה 41</option>
-<option value="42">קומה 42</option></select></div>
-              <div class="fg"><label class="fl">דירה *</label><select id="gApt" class="inp" required><option value="">בחר דירה</option></select></div>
+              <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+              <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptDisp" class="inp" readonly placeholder="ימולא אוטומטית"></div>
             </div>
+            <input type="hidden" id="gFlr">
+            <input type="hidden" id="gApt">
             <div class="fg" style="margin-bottom:12px"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
+            <div class="fg" style="margin-bottom:12px">
+              <label class="fl">נרשם על ידי *</label>
+              <select id="gEmployee" class="inp" required>
+                <option value="">בחר עובד...</option>
+                <option>אור צדוק</option>
+                <option>איציק קסטוריאנו</option>
+                <option>בנימין גורמו</option>
+                <option>ג'ו ביטון</option>
+                <option>יוסף מאיר עמדו</option>
+                <option>מאיר סבג</option>
+                <option>מיכאל אלקין</option>
+                <option>עמנואל לוי</option>
+                <option>ענת כהן</option>
+                <option>שלומית כהן</option>
+              </select>
+            </div>
             <div class="grid2" style="margin-bottom:16px">
               <div class="fg"><label class="fl">תאריך *</label><input type="date" id="gDt" class="inp" required></div>
               <div class="fg"><label class="fl">שעה *</label><input type="time" id="gTm" class="inp" required></div>
@@ -222,6 +198,10 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 
     <!-- רשימת כניסות -->
     <div class="sec" id="tab-list">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <span style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">רשימת כניסות</span>
+        <button class="sbtn" id="exportBtn">📥 ייצוא Excel</button>
+      </div>
       <div class="frow">
         <input type="date" id="fDate" class="fs">
         <select id="fCat" class="fs"><option value="">כל הקטגוריות</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select>
@@ -362,7 +342,6 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
 <script type="module">
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -375,7 +354,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
 
@@ -383,8 +361,10 @@ const TODAY = new Date().toISOString().split('T')[0];
 let tFld = 'all';
 
 function badge(cat){
-  const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr','אחר':'bgy'};
-  return `<span class="bdg ${m[cat]||'bgy'}">${cat||'—'}</span>`;
+  if(!cat) return '<span class="bdg bgy">—</span>';
+  const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr'};
+  const base = cat.startsWith('אחר') ? 'bgy' : (m[cat]||'bgy');
+  return `<span class="bdg ${base}">${cat}</span>`;
 }
 function fd(d){if(!d)return'—';const p=d.split('-');return`${p[2]}/${p[1]}/${p[0]}`;}
 function toast(msg,type){
@@ -589,67 +569,60 @@ var tenants=[
   {id:'t181',name:'איתי וליהי מילרד',phone:'054-4443520',floor:42,apt:'206'},
 ];
 
-// ── AUTH ──
-document.getElementById('lBtn').onclick = doLogin;
-document.getElementById('lP').onkeydown = e => { if(e.key==='Enter') doLogin(); };
-document.getElementById('lU').onkeydown = e => { if(e.key==='Enter') document.getElementById('lP').focus(); };
-
-async function doLogin(){
-  const u=document.getElementById('lU').value.trim();
-  const p=document.getElementById('lP').value.trim();
-  if(!u||!p){document.getElementById('lErr').textContent='נא למלא אימייל וסיסמה';return;}
-  document.getElementById('lLoad').innerHTML='מתחבר... <span class="spinner"></span>';
-  document.getElementById('lErr').textContent='\u00a0';
-  try{
-    const cred = await signInWithEmailAndPassword(auth,u,p);
-    // role check — lobby users only
-    const idToken = await cred.user.getIdTokenResult();
-    const role = idToken.claims.role;
-    if(role==='admin'){
-      await signOut(auth);
-      document.getElementById('lErr').textContent='דף זה מיועד לשומרי לובי בלבד';
-      document.getElementById('lLoad').textContent='';
-      return;
-    }
-  }catch(err){
-    document.getElementById('lErr').textContent='אימייל או סיסמה שגויים';
-    document.getElementById('lLoad').textContent='';
-  }
+function toggleOther(sel, inputId){
+  const wrap = document.getElementById(inputId+'Wrap');
+  if(sel.value==='אחר'){wrap.style.display='block';}
+  else{wrap.style.display='none';document.getElementById(inputId).value='';}
 }
+window.toggleOther=toggleOther;
+initApp();
 
-onAuthStateChanged(auth, async user => {
-  if(user){
-    // superadmin שייך לדף הניהול הגדול
-    if(user.email.startsWith('superadmin')){
-      await signOut(auth);
-      document.getElementById('lErr').textContent='מנהל גדול? היכנס דרך admin.html';
-      document.getElementById('lLoad').textContent='';
-      return;
-    }
-    document.getElementById('login').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('uNm').textContent=user.displayName||user.email;
-    document.getElementById('lLoad').textContent='';
-    initApp();
-  } else {
-    document.getElementById('app').style.display='none';
-    document.getElementById('login').style.display='flex';
-  }
-});
-
-document.getElementById('logoutBtn').onclick = ()=>signOut(auth);
 
 // ── INIT ──
 function initApp(){
   const n=new Date();
   document.getElementById('gDt').value=TODAY;
   document.getElementById('gTm').value=n.toTimeString().slice(0,5);
+  document.getElementById('sTen').textContent=tenants.length;
   autoCleanOldGuests();
+  checkLobbyStatus();
   loadGuests();
+  loadEmployeesLobby();
   renderTenants();
 }
 
-// מחיקה אוטומטית של כניסות מיום קודם
+async function loadEmployeesLobby(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='employees');
+    if(s && s.data().list){
+      const opts = '<option value="">בחר עובד...</option>'+s.data().list.map(e=>`<option>${e}</option>`).join('');
+      document.getElementById('gEmployee').innerHTML = opts;
+    }
+  }catch(e){ console.log('שגיאה בטעינת עובדים:',e.message); }
+}
+
+// בדיקת סטטוס לובי
+async function checkLobbyStatus(){
+  try{
+    const snap = await getDocs(collection(db,'settings'));
+    const s = snap.docs.find(d=>d.id==='lobby');
+    const isOpen = s ? s.data().open !== false : true;
+    if(!isOpen){
+      // הצג מסך סגור
+      document.getElementById('app').innerHTML = `
+        <div style="position:fixed;inset:0;background:#09090b;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:20px">
+          <div style="font-size:60px">🔴</div>
+          <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#c9a84c">דה וינצ'י</div>
+          <div style="font-size:18px;font-weight:700;color:#f0ead8">המערכת אינה פעילה כרגע</div>
+          <div style="font-size:14px;color:#a89878;max-width:300px;line-height:1.6">הלובי נסגר על ידי המנהל.<br>פנה למנהל לפתיחת המערכת.</div>
+          <button onclick="location.reload()" style="background:#1c1e22;border:1px solid #242629;color:#a89878;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:10px">🔄 בדוק שוב</button>
+        </div>`;
+    }
+  }catch(e){ console.log('שגיאה בבדיקת סטטוס:',e.message); }
+}
+
+// מחיקה אוטומטית + גיבוי לארכיון
 async function autoCleanOldGuests(){
   try{
     const snap = await getDocs(collection(db,'guests'));
@@ -658,7 +631,28 @@ async function autoCleanOldGuests(){
       return date && date < TODAY;
     });
     if(!toDelete.length) return;
+
+    // קבץ לפי תאריך ושמור לארכיון
+    const byDate = {};
+    toDelete.forEach(d => {
+      const data = d.data();
+      const date = data.date;
+      if(!byDate[date]) byDate[date] = [];
+      byDate[date].push({id:d.id, ...data});
+    });
+
+    for(const [date, entries] of Object.entries(byDate)){
+      await setDoc(doc(db,'archive',date), {
+        date,
+        entries,
+        savedAt: new Date().toISOString(),
+        count: entries.length
+      });
+    }
+
+    // מחק מ-guests
     for(const d of toDelete){ await deleteDoc(doc(db,'guests',d.id)); }
+    console.log(`גובו ונמחקו ${toDelete.length} כניסות`);
   }catch(e){ console.log('שגיאה בניקוי:',e.message); }
 }
 
@@ -680,38 +674,85 @@ function renderStats(){
 }
 
 // FORM
-document.getElementById('gFlr').onchange=function(){
-  const fl=this.value;
-  const apts=tenants.filter(t=>String(t.floor)===fl);
-  document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>'+apts.map(t=>`<option value="${t.id}">דירה ${t.apt} — ${t.name}</option>`).join('');
-  document.getElementById('gTen').value='';
+// ── חיפוש דייר ──
+let selectedTenant = null;
+
+window.searchTenant = function(q){
+  const dd = document.getElementById('tenDropdown');
+  if(!q || q.length < 1){ dd.style.display='none'; return; }
+  const s = q.trim().toLowerCase();
+  const results = tenants.filter(t =>
+    t.name.toLowerCase().includes(s) ||
+    String(t.apt).includes(s) ||
+    String(t.floor).includes(s) ||
+    (t.phone && t.phone.replace(/-/g,'').includes(s.replace(/-/g,'')))
+  ).slice(0,8);
+
+  if(!results.length){
+    dd.innerHTML='<div style="padding:12px;text-align:center;color:var(--t3);font-size:13px">לא נמצא דייר</div>';
+  } else {
+    dd.innerHTML = results.map(t=>`
+      <div onclick="selectTenant('${t.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--d4);transition:background .12s" onmouseover="this.style.background='var(--d3)'" onmouseout="this.style.background=''">
+        <div style="font-weight:700;font-size:13px;color:var(--tx)">${t.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">קומה ${t.floor} • דירה ${t.apt}${t.phone?' • '+t.phone:''}</div>
+      </div>`).join('');
+  }
+  dd.style.display='block';
 };
-document.getElementById('gApt').onchange=function(){
-  const t=tenants.find(x=>x.id===this.value);
-  document.getElementById('gTen').value=t?t.name:'';
+
+window.selectTenant = function(id){
+  const t = tenants.find(x=>x.id===id);
+  if(!t) return;
+  selectedTenant = t;
+  document.getElementById('tenSearch').value = t.name;
+  document.getElementById('gFlr').value = t.floor;
+  document.getElementById('gApt').value = t.id;
+  document.getElementById('gFlrDisp').value = 'קומה '+t.floor;
+  document.getElementById('gAptDisp').value = 'דירה '+t.apt;
+  document.getElementById('gTen').value = t.name;
+  document.getElementById('tenDropdown').style.display='none';
 };
+
+// סגור dropdown בלחיצה מחוץ
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#tenSearch') && !e.target.closest('#tenDropdown')){
+    document.getElementById('tenDropdown').style.display='none';
+  }
+});
 
 document.getElementById('gForm').onsubmit=async function(e){
   e.preventDefault();
   const aid=document.getElementById('gApt').value;
   const t=tenants.find(x=>x.id===aid);
-  if(!t){toast('יש לבחור דירה','er');return;}
+  if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
+  const employee=document.getElementById('gEmployee').value;
+  if(!employee){toast('יש לבחור עובד','er');return;}
   const btn=document.getElementById('saveGuestBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
+    const catVal = document.getElementById('gCat').value;
+    const catOther = document.getElementById('gCatOther').value.trim();
+    const finalCat = catVal==='אחר' && catOther ? 'אחר: '+catOther : catVal;
     await addDoc(collection(db,'guests'),{
       name:document.getElementById('gN').value.trim(),
-      cat:document.getElementById('gCat').value,
+      cat:finalCat,
       floor:parseInt(document.getElementById('gFlr').value),
       apt:t.apt,tid:aid,tname:t.name,
       date:document.getElementById('gDt').value,
       time:document.getElementById('gTm').value,
       createdAt:serverTimestamp(),
-      registeredBy:auth.currentUser?.email||'lobby'
+      registeredBy:employee
     });
     this.reset();
-    document.getElementById('gApt').innerHTML='<option value="">בחר דירה</option>';
+    selectedTenant = null;
+    document.getElementById('tenSearch').value='';
+    document.getElementById('gFlr').value='';
+    document.getElementById('gApt').value='';
+    document.getElementById('gFlrDisp').value='';
+    document.getElementById('gAptDisp').value='';
     document.getElementById('gTen').value='';
+    document.getElementById('gEmployee').value='';
+    document.getElementById('gCatOtherWrap').style.display='none';
     const n=new Date();
     document.getElementById('gDt').value=TODAY;
     document.getElementById('gTm').value=n.toTimeString().slice(0,5);
@@ -734,6 +775,17 @@ function renderGuestsList(){
 }
 ['fDate','fCat','fFlr'].forEach(id=>{
   document.getElementById(id).addEventListener('change',renderGuestsList);
+});
+
+// ייצוא Excel
+document.getElementById('exportBtn').addEventListener('click',function(){
+  if(!guests.length){toast('אין כניסות לייצוא','er');return;}
+  const rows=guests.map(g=>({'שם אורח':g.name,'קטגוריה':g.cat,'קומה':g.floor,'דירה':g.apt,'דייר מארח':g.tname,'תאריך':fd(g.date),'שעה':g.time}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'כניסות');
+  XLSX.writeFile(wb,'כניסות_'+TODAY+'.xlsx');
+  toast('יוצאו '+rows.length+' רשומות ✓','ok');
 });
 
 // DELETE + EDIT GUEST

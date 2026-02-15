@@ -8,141 +8,108 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Heebo',sans-serif;background:#09090b;color:#f0ead8;min-height:100vh;padding:30px 20px;direction:rtl}
-.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 h1{font-size:24px;font-weight:700;color:#c9a84c;text-align:center}
-.sub{text-align:center;color:#a89878;font-size:13px;margin-top:-12px}
+.sub{text-align:center;color:#a89878;font-size:13px}
 .card{background:#111214;border:1px solid rgba(201,168,76,.28);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
-.card h2{font-size:15px;font-weight:700;color:#f0ead8}
+.card h2{font-size:15px;font-weight:700}
 .fg{display:flex;flex-direction:column;gap:5px}
 label{font-size:11px;font-weight:600;color:#a89878}
-input{background:#1c1e22;border:1px solid #242629;border-radius:8px;padding:10px 12px;color:#f0ead8;font-family:inherit;font-size:13px;direction:rtl;outline:none;width:100%;transition:border-color .18s}
+input{background:#1c1e22;border:1px solid #242629;border-radius:8px;padding:10px 12px;color:#f0ead8;font-family:inherit;font-size:13px;direction:ltr;outline:none;width:100%}
 input:focus{border-color:rgba(201,168,76,.5)}
-.btn{background:#c9a84c;color:#09090b;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:background .18s}
+.btn{background:#c9a84c;color:#09090b;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
 .btn:hover{background:#e2c06a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.log{background:#0a0a0b;border:1px solid #242629;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:1.8;min-height:120px;direction:ltr;text-align:left;overflow-y:auto;max-height:280px;white-space:pre-wrap}
-.users-table{width:100%;border-collapse:collapse;font-size:12px}
-.users-table th{background:#1c1e22;color:#5c5444;padding:8px 10px;text-align:right;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
-.users-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a89878}
-.users-table td:first-child{color:#f0ead8;font-weight:600}
-.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
-.pill.super{background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.28)}
-.pill.admin{background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.28)}
-.pill.guard{background:rgba(91,142,240,.1);color:#5b8ef0;border:1px solid rgba(91,142,240,.18)}
-.done-box{background:rgba(76,175,122,.06);border:1px solid rgba(76,175,122,.25);border-radius:10px;padding:16px;text-align:center;display:none}
-.done-box h3{color:#4caf7a;font-size:16px;margin-bottom:6px}
-.done-box p{color:#a89878;font-size:12px;line-height:1.6}
+.log{background:#0a0a0b;border:1px solid #242629;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:2;min-height:120px;direction:ltr;text-align:left;overflow-y:auto;max-height:260px}
+.done{background:rgba(76,175,122,.06);border:1px solid rgba(76,175,122,.3);border-radius:10px;padding:18px;text-align:center;display:none}
+.done h3{color:#4caf7a;font-size:16px;margin-bottom:8px}
+.done p{color:#a89878;font-size:12px;line-height:1.8}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#1c1e22;color:#5c5444;padding:8px 10px;text-align:right;font-size:10px;text-transform:uppercase}
+td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a89878}
+td:first-child{color:#f0ead8;font-weight:600}
+.p{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.3)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🔥 Firebase Setup</h1>
-  <p class="sub">הגדרה אוטומטית של מערכת דה וינצ'י</p>
+  <p class="sub">הגדרה חד פעמית — דה וינצ'י</p>
 
   <div class="card">
-    <h2>1. פרטי Firebase</h2>
-    <div class="fg"><label>Web API Key</label><input type="text" id="apiKey" value="AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo"></div>
-    <div class="fg"><label>Project ID</label><input type="text" id="projectId" value="leonrdi-de-vinhi"></div>
+    <h2>פרטי Firebase</h2>
+    <div class="fg"><label>API Key</label><input id="apiKey" value="AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo"></div>
+    <div class="fg"><label>Project ID</label><input id="projectId" value="leonrdi-de-vinhi"></div>
   </div>
 
   <div class="card">
-    <h2>2. סיסמאות</h2>
-    <div class="fg"><label>🔴 סיסמה למנהל הגדול</label><input type="text" id="superPass" value="Super@0710" placeholder="לפחות 6 תווים"></div>
-    <div class="fg"><label>🟡 סיסמה למנהלים</label><input type="text" id="adminPass" value="0710" placeholder="לפחות 6 תווים"></div>
-    <div class="fg"><label>🔵 סיסמה לשומרים</label><input type="text" id="lobbyPass" value="2026" placeholder="לפחות 6 תווים"></div>
-
-    <h2 style="margin-top:4px">משתמשים שייווצרו:</h2>
-    <table class="users-table">
-      <thead><tr><th>אימייל</th><th>תפקיד</th><th>גישה</th></tr></thead>
+    <h2>סיסמה למנהלים</h2>
+    <div class="fg"><label>סיסמה (לשני המנהלים)</label><input id="adminPass" value="admin1234"></div>
+    <table style="margin-top:6px">
+      <thead><tr><th>אימייל</th><th>תפקיד</th></tr></thead>
       <tbody>
-        <tr><td>superadmin@davinci.com</td><td><span class="pill super">מנהל גדול</span></td><td style="color:#5c5444;font-size:11px">admin.html בלבד</td></tr>
-        <tr><td>admin1@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>admin2@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>admin3@davinci.com</td><td><span class="pill admin">מנהל</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>lobby1@davinci.com</td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
-        <tr><td>lobby2@davinci.com</td><td><span class="pill guard">שומר</span></td><td style="color:#5c5444;font-size:11px">index.html בלבד</td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa9b9e979394cbba9e9b8c93949993d4999597">[email&#160;protected]</a></td><td><span class="p">מנהל 1</span></td></tr>
+        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8beaefe6e2e5b9cbefeafde2e5e8e2a5e8e4e6">[email&#160;protected]</a></td><td><span class="p">מנהל 2</span></td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="card">
-    <h2>3. הפעל הגדרה אוטומטית</h2>
-    <button class="btn" id="setupBtn" onclick="runSetup()">🚀 התחל הגדרה אוטומטית</button>
-    <div class="log" id="log">ממתין להפעלה...</div>
-    <div class="done-box" id="doneBox">
-      <h3>✓ ההגדרה הושלמה!</h3>
-      <p>כל המשתמשים נוצרו בהצלחה.<br>כעת העלה את <strong>index.html</strong> ו-<strong>admin.html</strong> ל-GitHub Pages.</p>
+    <button class="btn" id="runBtn">🚀 צור משתמשים</button>
+    <div class="log" id="log">ממתין...</div>
+    <div class="done" id="done">
+      <h3>✅ הושלם!</h3>
+      <p>
+        שני המנהלים נוצרו בהצלחה.<br><br>
+        <strong style="color:#f0ead8">כניסה למערכת הניהול:</strong><br>
+        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8b8e878384dbaa8e8b9c83848983c4898587">[email&#160;protected]</a> / admin1234<br>
+        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e081848d898ed2a0848196898e8389ce838f8d">[email&#160;protected]</a> / admin1234<br><br>
+        <strong style="color:#f0ead8">דף הלובי:</strong> פתוח לכולם, ללא סיסמה
+      </p>
     </div>
   </div>
 </div>
 
-<script type="module">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-window.runSetup = async function() {
+function log(msg, color) {
+  const el = document.getElementById('log');
+  const c = {g:'#4caf7a',r:'#e05252',y:'#a89878',gold:'#c9a84c'};
+  el.innerHTML += '<span style="color:'+(c[color]||'#f0ead8')+'">'+msg+'</span>\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+document.getElementById('runBtn').addEventListener('click', async function() {
   const apiKey = document.getElementById('apiKey').value.trim();
   const projectId = document.getElementById('projectId').value.trim();
-  const superPass = document.getElementById('superPass').value.trim();
   const adminPass = document.getElementById('adminPass').value.trim();
-  const lobbyPass = document.getElementById('lobbyPass').value.trim();
 
-  if(!apiKey||!projectId){log('❌ נא למלא API Key ו-Project ID','er');return;}
-  if(superPass.length<6||adminPass.length<6||lobbyPass.length<6){log('❌ הסיסמה חייבת להיות לפחות 6 תווים','er');return;}
+  if(!apiKey||!projectId){log('❌ חסרים פרטי Firebase','r');return;}
+  if(adminPass.length<6){log('❌ סיסמה קצרה מדי (מינימום 6 תווים)','r');return;}
 
-  const btn=document.getElementById('setupBtn');
-  btn.disabled=true;
-  document.getElementById('log').textContent='';
+  this.disabled=true;
+  document.getElementById('log').innerHTML='';
 
-  const firebaseConfig={apiKey,authDomain:`${projectId}.firebaseapp.com`,projectId,storageBucket:`${projectId}.firebasestorage.app`};
-  log('🔧 מאתחל Firebase...','inf');
-  let app,auth,db;
+  let auth, db;
   try{
-    app=initializeApp(firebaseConfig,'setup-'+Date.now());
-    auth=getAuth(app);db=getFirestore(app);
-    log('✓ Firebase מחובר','ok');
-  }catch(e){log('❌ שגיאה: '+e.message,'er');btn.disabled=false;return;}
+    log('🔧 מתחבר...','y');
+    const app = initializeApp({apiKey, authDomain:projectId+'.firebaseapp.com', projectId}, 'setup'+Date.now());
+    auth = getAuth(app);
+    db = getFirestore(app);
+    log('✓ מחובר!','g');
+  }catch(e){log('❌ '+e.message,'r');this.disabled=false;return;}
 
-  const users=[
-    {email:'superadmin@davinci.com',pass:superPass,role:'superadmin',name:'מנהל גדול'},
-    {email:'admin1@davinci.com',pass:adminPass,role:'admin',name:'מנהל 1'},
-    {email:'admin2@davinci.com',pass:adminPass,role:'admin',name:'מנהל 2'},
-    {email:'admin3@davinci.com',pass:adminPass,role:'admin',name:'מנהל 3'},
-    {email:'lobby1@davinci.com',pass:lobbyPass,role:'guard',name:'לובי 1'},
-    {email:'lobby2@davinci.com',pass:lobbyPass,role:'guard',name:'לובי 2'},
+  const users = [
+    {email:'admin1@davinci.com', name:'מנהל 1', role:'admin'},
+    {email:'admin2@davinci.com', name:'מנהל 2', role:'admin'},
   ];
 
-  const roleNames={superadmin:'מנהל גדול',admin:'מנהל',guard:'שומר'};
-  let ok=0,fail=0;
+  let ok=0, fail=0;
   for(const u of users){
-    log(`⏳ יוצר: ${u.email}...`,'inf');
+    log('⏳ '+u.email+'...','y');
     try{
-      const cred=await createUserWithEmailAndPassword(auth,u.email,u.pass);
-      await setDoc(doc(db,'users',cred.user.uid),{email:u.email,role:u.role,name:u.name,createdAt:new Date().toISOString()});
-      await signOut(auth);
-      log(`✓ נוצר: ${u.email} [${roleNames[u.role]}]`,'ok');
-      ok++;
-    }catch(e){
-      if(e.code==='auth/email-already-in-use'){log(`⚠️ כבר קיים: ${u.email}`,'gd');ok++;}
-      else{log(`❌ שגיאה ב-${u.email}: ${e.message}`,'er');fail++;}
-    }
-    await new Promise(r=>setTimeout(r,400));
-  }
-  log('','');
-  if(fail===0){
-    log(`🎉 הושלם! ${ok} משתמשים מוכנים.`,'ok');
-    document.getElementById('doneBox').style.display='block';
-  }else{log(`⚠️ הושלם עם ${fail} שגיאות`,'er');}
-  btn.disabled=false;
-};
-
-function log(msg,type){
-  const el=document.getElementById('log');
-  const colors={ok:'#4caf7a',er:'#e05252',inf:'#a89878',gd:'#c9a84c'};
-  el.innerHTML+=`<span style="color:${colors[type]||'#f0ead8'}">${msg}</span>\n`;
-  el.scrollTop=el.scrollHeight;
-}
-</script>
-</body>
-</html>
+      const cred = await createUserWithEmailAndPassword(auth, u.email, adminPass);
+      await setDoc(doc(db,'users',cred.
