@@ -393,7 +393,8 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
       <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
         <div class="grid2">
           <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required></div>
-          <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required onchange="toggleOther(this,'gCatMOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg" id="gCatMOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatMOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
         </div>
         <div class="grid2">
           <div class="fg"><label class="fl">קומה *</label><select id="gFlrM" class="inp" required><option value="">בחר קומה</option><option value="3">קומה 3</option>
@@ -533,8 +534,12 @@ const TODAY = new Date().toISOString().split('T')[0];
 let tFld = 'all';
 
 function badge(cat){
-  const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr','אחר':'bgy'};
-  return `<span class="bdg ${m[cat]||'bgy'}">${cat||'—'}</span>`;
+function badge(cat){
+  if(!cat) return '<span class="bdg bgy">—</span>';
+  const m={'אורח פרטי':'bb','ספק/טכנאי':'bg','משלוח':'bgr'};
+  const base = cat.startsWith('אחר') ? 'bgy' : (m[cat]||'bgy');
+  return `<span class="bdg ${base}">${cat}</span>`;
+}
 }
 function fd(d){if(!d)return'—';const p=d.split('-');return`${p[2]}/${p[1]}/${p[0]}`;}
 function toast(msg,type){
@@ -779,6 +784,12 @@ onAuthStateChanged(auth, async user=>{
 
 document.getElementById('logoutBtn').onclick=()=>signOut(auth);
 
+window.toggleOther = function(sel, inputId){
+  const wrap = document.getElementById(inputId+'Wrap');
+  if(sel.value==='אחר'){wrap.style.display='block';}
+  else{wrap.style.display='none';if(document.getElementById(inputId))document.getElementById(inputId).value='';}
+};
+
 // ── LOBBY STATUS CONTROL ──
 let lobbyOpen = true;
 
@@ -988,9 +999,12 @@ document.getElementById('gForm').onsubmit=async function(e){
   const btn=document.getElementById('saveGuestBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
+    const catVal = document.getElementById('gCatM').value;
+    const catOther = document.getElementById('gCatMOther')?.value.trim()||'';
+    const finalCat = catVal==='אחר' && catOther ? 'אחר: '+catOther : catVal;
     await addDoc(collection(db,'guests'),{
       name:document.getElementById('gN').value.trim(),
-      cat:document.getElementById('gCatM').value,
+      cat:finalCat,
       floor:parseInt(document.getElementById('gFlrM').value),
       apt:t.apt,tid:aid,tname:t.name,
       date:document.getElementById('gDt').value,
