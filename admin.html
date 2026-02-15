@@ -405,31 +405,48 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
     </div>
     <form id="gForm">
       <div style="padding:18px 20px;display:flex;flex-direction:column;gap:13px">
+
+        <!-- טוגל דייר / מתווך -->
+        <div style="display:flex;gap:8px">
+          <button type="button" id="modeTenantM" onclick="setModeM('tenant')" style="flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gold);color:#09090b;border:none">🏠 דייר רשום</button>
+          <button type="button" id="modeBrokerM" onclick="setModeM('broker')" style="flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--d3);color:var(--t2);border:1px solid var(--d5)">🔑 מתווך / אורח חופשי</button>
+        </div>
+
         <div class="grid2">
           <div class="fg"><label class="fl">שם אורח *</label><input type="text" id="gN" class="inp" required></div>
-          <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required onchange="toggleOther(this,'gCatMOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>אחר</option></select></div>
+          <div class="fg"><label class="fl">קטגוריה *</label><select id="gCatM" class="inp" required onchange="toggleOther(this,'gCatMOther')"><option value="">בחר...</option><option>אורח פרטי</option><option>ספק/טכנאי</option><option>משלוח</option><option>מתווך</option><option>אחר</option></select></div>
           <div class="fg" id="gCatMOtherWrap" style="display:none"><label class="fl">פרט את הקטגוריה</label><input type="text" id="gCatMOther" class="inp" placeholder="לדוגמה: קבלן, רופא..."></div>
         </div>
 
-        <!-- חיפוש דייר -->
-        <div class="fg" style="position:relative">
-          <label class="fl">חיפוש דייר מארח *</label>
-          <div style="position:relative">
-            <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
-            <input type="text" id="tenSearchM" class="inp" placeholder="שם / דירה / קומה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenantM(this.value)">
+        <!-- מצב דייר רשום -->
+        <div id="tenantModeM">
+          <div class="fg" style="position:relative">
+            <label class="fl">חיפוש דייר מארח *</label>
+            <div style="position:relative">
+              <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none">🔍</span>
+              <input type="text" id="tenSearchM" class="inp" placeholder="שם / דירה / קומה / טלפון..." autocomplete="off" style="padding-right:32px" oninput="searchTenantM(this.value)">
+            </div>
+            <div id="tenDropdownM" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:200;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
+            <div id="selectedTenantBoxM" style="display:none;margin-top:8px;background:rgba(76,175,122,.08);border:1px solid rgba(76,175,122,.25);border-radius:8px;padding:9px 12px">
+              <div style="font-size:11px;color:#4caf7a;font-weight:700;margin-bottom:3px">✓ דייר נבחר</div>
+              <div id="selectedTenantNameM" style="font-size:13px;font-weight:700;color:var(--tx)"></div>
+              <div id="selectedTenantInfoM" style="font-size:11px;color:var(--t3);margin-top:2px"></div>
+            </div>
           </div>
-          <div id="tenDropdownM" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--d2);border:1px solid var(--gb);border-radius:var(--r2);z-index:200;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)"></div>
-          <div id="selectedTenantBoxM" style="display:none;margin-top:8px;background:rgba(76,175,122,.08);border:1px solid rgba(76,175,122,.25);border-radius:8px;padding:9px 12px">
-            <div style="font-size:11px;color:#4caf7a;font-weight:700;margin-bottom:3px">✓ דייר נבחר</div>
-            <div id="selectedTenantNameM" style="font-size:13px;font-weight:700;color:var(--tx)"></div>
-            <div id="selectedTenantInfoM" style="font-size:11px;color:var(--t3);margin-top:2px"></div>
+          <div class="grid2" style="margin-top:13px">
+            <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrMDisp" class="inp" readonly placeholder="אוטומטי"></div>
+            <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptMDisp" class="inp" readonly placeholder="אוטומטי"></div>
           </div>
         </div>
 
-        <div class="grid2">
-          <div class="fg"><label class="fl">קומה</label><input type="text" id="gFlrMDisp" class="inp" readonly placeholder="אוטומטי"></div>
-          <div class="fg"><label class="fl">דירה</label><input type="text" id="gAptMDisp" class="inp" readonly placeholder="אוטומטי"></div>
+        <!-- מצב מתווך -->
+        <div id="brokerModeM" style="display:none">
+          <div class="grid2">
+            <div class="fg"><label class="fl">קומה *</label><input type="number" id="gFlrManualM" class="inp" placeholder="לדוגמה: 7" min="1" max="42"></div>
+            <div class="fg"><label class="fl">דירה / מספר *</label><input type="text" id="gAptManualM" class="inp" placeholder="לדוגמה: 702"></div>
+          </div>
         </div>
+
         <input type="hidden" id="gFlrM">
         <input type="hidden" id="gApt">
         <div class="fg"><label class="fl">דייר מארח</label><input type="text" id="gTen" class="inp" readonly placeholder="ימולא אוטומטית"></div>
@@ -816,6 +833,27 @@ window.toggleOther = function(sel, inputId){
   else{wrap.style.display='none';if(document.getElementById(inputId))document.getElementById(inputId).value='';}
 };
 
+// ── מצב רישום מנהל: דייר / מתווך ──
+let regModeM = 'tenant';
+window.setModeM = function(mode){
+  regModeM = mode;
+  const isTenant = mode==='tenant';
+  document.getElementById('tenantModeM').style.display = isTenant ? 'block' : 'none';
+  document.getElementById('brokerModeM').style.display = isTenant ? 'none' : 'block';
+  document.getElementById('modeTenantM').style.cssText = isTenant
+    ? 'flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gold);color:#09090b;border:none'
+    : 'flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--d3);color:var(--t2);border:1px solid var(--d5)';
+  document.getElementById('modeBrokerM').style.cssText = isTenant
+    ? 'flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--d3);color:var(--t2);border:1px solid var(--d5)'
+    : 'flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gold);color:#09090b;border:none';
+  document.getElementById('gFlrM').value='';
+  document.getElementById('gApt').value='';
+  document.getElementById('gFlrMDisp').value='';
+  document.getElementById('gAptMDisp').value='';
+  document.getElementById('tenSearchM').value='';
+  document.getElementById('selectedTenantBoxM').style.display='none';
+};
+
 // ── חיפוש דייר במודל מנהל ──
 window.searchTenantM = function(q){
   const dd = document.getElementById('tenDropdownM');
@@ -1055,6 +1093,11 @@ document.getElementById('editForm').onsubmit=async function(e){
 // MODAL GUEST
 function openM(){
   const n=new Date();
+  regModeM='tenant';
+  document.getElementById('tenantModeM').style.display='block';
+  document.getElementById('brokerModeM').style.display='none';
+  document.getElementById('modeTenantM').style.cssText='flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gold);color:#09090b;border:none';
+  document.getElementById('modeBrokerM').style.cssText='flex:1;padding:9px;border-radius:var(--r2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--d3);color:var(--t2);border:1px solid var(--d5)';
   document.getElementById('gN').value='';
   document.getElementById('gCatM').value='';
   document.getElementById('gCatMOtherWrap').style.display='none';
@@ -1076,11 +1119,22 @@ document.getElementById('addGuestBtn').onclick=openM;
 
 document.getElementById('gForm').onsubmit=async function(e){
   e.preventDefault();
-  const aid=document.getElementById('gApt').value;
-  const t=tenants.find(x=>x.id===aid);
-  if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
   const employee=document.getElementById('gEmployeeM').value;
   if(!employee){toast('יש לבחור עובד','er');return;}
+
+  let floor, apt, tname, tid;
+  if(regModeM==='tenant'){
+    const aid=document.getElementById('gApt').value;
+    const t=tenants.find(x=>x.id===aid);
+    if(!t){toast('יש לבחור דייר מהרשימה','er');return;}
+    floor=parseInt(t.floor); apt=t.apt; tname=t.name; tid=aid;
+  } else {
+    const floorVal=document.getElementById('gFlrManualM').value.trim();
+    const aptVal=document.getElementById('gAptManualM').value.trim();
+    if(!floorVal||!aptVal){toast('יש להזין קומה ומספר דירה','er');return;}
+    floor=parseInt(floorVal); apt=aptVal; tname='מתווך'; tid='';
+  }
+
   const btn=document.getElementById('saveGuestBtn');
   btn.disabled=true;btn.textContent='שומר...';
   try{
@@ -1090,8 +1144,7 @@ document.getElementById('gForm').onsubmit=async function(e){
     await addDoc(collection(db,'guests'),{
       name:document.getElementById('gN').value.trim(),
       cat:finalCat,
-      floor:parseInt(document.getElementById('gFlrM').value),
-      apt:t.apt,tid:aid,tname:t.name,
+      floor, apt, tid, tname,
       date:document.getElementById('gDt').value,
       time:document.getElementById('gTm').value,
       createdAt:serverTimestamp(),
