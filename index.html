@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>דה וינצ'י — לובי</title>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap');
 
@@ -13,9 +12,10 @@
 body, html {
     font-family: 'Assistant', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
+    color: white;
 }
 
+/* רקע עם תמונת המגדלים */
 .main-bg {
     position: fixed;
     inset: 0;
@@ -32,19 +32,29 @@ body, html {
     z-index: -1;
 }
 
-/* Header */
-.header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 24px;
-    gap: 24px;
-    flex-wrap: wrap;
+/* זכוכית חלבית */
+.frosted-glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.status-row {
-    display: flex;
-    gap: 16px;
+.frosted-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    transition: all 0.3s;
+}
+
+.frosted-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(212,175,55,0.2);
 }
 
 .status-glass {
@@ -62,43 +72,70 @@ body, html {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.frosted-glass {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 40px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+.action-card {
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.logo-box {
-    padding: 20px 40px;
-    text-align: center;
+.action-card:active {
+    transform: scale(0.96);
 }
 
-.logo-title {
-    font-size: 48px;
-    font-weight: 800;
-    color: white;
-    letter-spacing: -2px;
-    font-style: italic;
-    line-height: 1;
-}
-
-.logo-subtitle {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
-    margin-top: 8px;
+.icon-wrapper {
+    width: 55px;
+    height: 55px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    padding-top: 16px;
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.status-row {
+    display: flex;
+    gap: 16px;
+}
+
+.logo-box {
+    padding: 20px 32px;
+    text-align: left;
+}
+
+.logo-title {
+    font-size: 24px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.logo-subtitle {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .pulse-dot {
     width: 6px;
     height: 6px;
-    background: #34d399;
+    background: #f59e0b;
     border-radius: 50%;
     animation: pulse 2s infinite;
 }
@@ -108,6 +145,35 @@ body, html {
     50% { opacity: 0.5; }
 }
 
+/* בלון עדכונים */
+.notifications-banner {
+    background: linear-gradient(135deg, rgba(251,146,60,0.25), rgba(251,146,60,0.15));
+    border: 2px solid rgba(251,146,60,0.4);
+    border-radius: 20px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(251,146,60,0.2);
+}
+
+.notification-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fdba74;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-text {
+    font-size: 14px;
+    color: white;
+    line-height: 1.6;
+    font-weight: 600;
+}
+
 /* Main */
 .main-content {
     max-width: 1024px;
@@ -115,154 +181,91 @@ body, html {
     padding: 0 24px;
 }
 
-/* Cards */
 .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 24px;
-    margin-top: 24px;
 }
 
-.frosted-card {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 24px;
-}
-
-.action-card {
-    cursor: pointer;
+.card {
     padding: 24px;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.action-card:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-4px);
-}
-
 .card-content {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
 }
 
-.icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
+.card-icon {
+    background: rgba(74,144,226,0.25);
+    border: 1px solid rgba(74,144,226,0.3);
+}
+
+.card-icon.purple {
+    background: rgba(168,85,247,0.25);
+    border-color: rgba(168,85,247,0.3);
+}
+
+.card-icon.green {
+    background: rgba(52,211,153,0.25);
+    border-color: rgba(52,211,153,0.3);
+}
+
+.card-icon.orange {
+    background: rgba(251,146,60,0.25);
+    border-color: rgba(251,146,60,0.3);
 }
 
 .card-title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
-    color: white;
-    margin-bottom: 4px;
 }
 
 .card-desc {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 2px;
 }
 
 .arrow-icon {
-    width: 24px;
-    height: 24px;
-    color: rgba(255, 255, 255, 0.6);
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
 }
 
-/* Sections */
-.section {
-    display: none;
-    margin-top: 24px;
+/* Footer */
+.footer {
+    margin-top: 48px;
+    margin-bottom: 16px;
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
 }
 
-.section.active {
-    display: block;
+.footer-box {
+    padding: 16px;
+    text-align: center;
 }
 
-.section-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 16px;
-}
-
-.back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-}
-
-.section-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
-}
-
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 12px;
-    text-align: right;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-}
-
-td {
-    padding: 16px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba(147, 197, 253, 0.2);
-    color: #93c5fd;
-    border: 1px solid rgba(147, 197, 253, 0.3);
-}
-
-.btn-icon {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    font-size: 18px;
+.footer-text {
+    font-size: 10px;
+    letter-spacing: 5px;
+    opacity: 0.5;
+    text-transform: uppercase;
+    font-weight: 300;
 }
 
 /* Modal */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0,0,0,0.7);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     display: none;
     align-items: center;
     justify-content: center;
@@ -275,10 +278,12 @@ td {
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 32px;
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
@@ -286,27 +291,31 @@ td {
 
 .modal-header {
     padding: 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
 }
 
 .modal-title {
     font-size: 24px;
     font-weight: 700;
-    color: #1f2937;
+    color: white;
 }
 
 .modal-close {
-    background: rgba(0, 0, 0, 0.05);
-    border: none;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
     cursor: pointer;
-    color: #6b7280;
+    font-size: 20px;
+    color: white;
+}
+
+.modal-close:hover {
+    background: rgba(255,255,255,0.2);
 }
 
 .modal-body {
@@ -319,26 +328,27 @@ td {
 
 .form-label {
     display: block;
-    margin-bottom: 6px;
     font-size: 14px;
-    font-weight: 600;
-    color: #374151;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
 }
 
-.form-input, .form-select {
+.form-input {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
+    background: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 14px 16px;
     font-size: 15px;
     font-family: 'Assistant', sans-serif;
     color: #1f2937;
-    background: white;
+    outline: none;
 }
 
-.form-input:focus, .form-select:focus {
-    outline: none;
-    border-color: #3b82f6;
+.form-input:focus {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(74,144,226,0.5);
 }
 
 .form-row {
@@ -350,28 +360,39 @@ td {
 .form-actions {
     display: flex;
     gap: 12px;
-    margin-top: 24px;
+    padding-top: 16px;
 }
 
 .btn {
     flex: 1;
-    padding: 14px;
-    border-radius: 16px;
+    padding: 16px;
+    border-radius: 20px;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     border: none;
-    font-family: 'Assistant', sans-serif;
+    transition: all 0.2s;
 }
 
 .btn-cancel {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-cancel:hover {
+    background: rgba(255,255,255,0.25);
 }
 
 .btn-submit {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
+    box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(59,130,246,0.4);
 }
 
 /* Toast */
@@ -380,32 +401,102 @@ td {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(20px);
     color: #1f2937;
     padding: 16px 32px;
     border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     transition: transform 0.3s;
     z-index: 99999;
-    font-weight: 600;
 }
 
 .toast.show {
     transform: translateX(-50%) translateY(0);
 }
 
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    text-align: right;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+tr:hover td {
+    background: rgba(255,255,255,0.05);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(74,144,226,0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(74,144,226,0.3);
+}
+
+.btn-icon {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #ef4444;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: 16px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+}
+
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
-        align-items: center;
+        gap: 16px;
     }
     
     .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .cards-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -427,26 +518,36 @@ td {
             </div>
             <div class="status-glass">
                 <span style="font-size: 12px; opacity: 1; font-weight: 700; color: white;">דיירים</span>
-                <span style="font-size: 32px; font-weight: 900; color: #34d399; text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="sTen">0</span>
+                <span style="font-size: 32px; font-weight: 900; color: #f59e0b; text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="sTen">0</span>
             </div>
         </div>
         <div class="frosted-glass logo-box">
             <h1 class="logo-title">DA VINCI</h1>
             <p class="logo-subtitle">
                 <span class="pulse-dot"></span>
-                לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24;">14:32</span>
+                לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></span>
             </p>
         </div>
     </header>
 
     <div class="main-content">
+        
+        <!-- בלון עדכונים מהמנהלים -->
+        <div id="notificationsBanner" class="notifications-banner">
+            <div class="notification-title">
+                <span>📢</span>
+                <span>עדכון למשמרת</span>
+            </div>
+            <div class="notification-text" id="notificationText" style="white-space:pre-line;" style="white-space:pre-line;">ברוכים הבאים למערכת דה וינצ'י</div>
+        </div>
+
         <!-- תפריט ראשי -->
         <div id="mainMenu" class="section active">
             <div class="cards-grid">
                 
-                <div class="frosted-card action-card" onclick="openRegModal()">
+                <div class="frosted-card card action-card" onclick="openRegModal()">
                     <div class="card-content">
-                        <div class="icon-wrapper">
+                        <div class="icon-wrapper card-icon">
                             <svg style="width: 28px; height: 28px; color: #93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                             </svg>
@@ -461,16 +562,65 @@ td {
                     </svg>
                 </div>
 
-                <div class="frosted-card action-card" onclick="showSection('list')">
+                <div class="frosted-card card action-card" onclick="showSection('list')">
                     <div class="card-content">
-                        <div class="icon-wrapper" style="background: rgba(196, 181, 253, 0.15);">
+                        <div class="icon-wrapper card-icon purple">
                             <svg style="width: 28px; height: 28px; color: #c4b5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
                         </div>
                         <div>
                             <h2 class="card-title">רשימת כניסות</h2>
-                            <p class="card-desc">צפה ברישומים קיימים</p>
+                            <p class="card-desc">צפייה וניהול אורחים</p>
+                        </div>
+                    </div>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+
+                <div class="frosted-card card action-card" onclick="showSection('tenants')">
+                    <div class="card-content">
+                        <div class="icon-wrapper card-icon green">
+                            <svg style="width: 28px; height: 28px; color: #6ee7b7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="card-title">חיפוש דיירים</h2>
+                            <p class="card-desc">בסיס נתוני דיירים</p>
+                        </div>
+                    </div>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+
+                <div class="frosted-card card action-card" onclick="showSection('offices')">
+                    <div class="card-content">
+                        <div class="icon-wrapper card-icon orange">
+                            <svg style="width: 28px; height: 28px; color: #fdba74;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="card-title">משרדים</h2>
+                            <p class="card-desc">מידע משרדי הבניין</p>
+                        </div>
+                    </div>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+
+                <div class="frosted-card card action-card" onclick="showSection('employees')">
+                    <div class="card-content">
+                        <div class="icon-wrapper card-icon" style="background:rgba(251,191,36,0.15);">
+                            <span style="font-size:26px">👔</span>
+                        </div>
+                        <div>
+                            <h2 class="card-title">עובדי דה וינצ'י</h2>
+                            <p class="card-desc">אנשי קשר וטלפונים</p>
                         </div>
                     </div>
                     <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -509,7 +659,79 @@ td {
             </div>
         </div>
 
+        <!-- דיירים -->
+        <div id="tenantsSection" class="section">
+            <div class="section-header">
+                <button class="back-btn" onclick="showSection('main')">←</button>
+                <h2 class="section-title">חיפוש דיירים</h2>
+            </div>
+            <div class="frosted-card" style="padding: 16px; margin-bottom: 16px;">
+                <input type="text" id="tenantFilterSearch" class="form-input" placeholder="🔍 חפש לפי שם, קומה או דירה..." oninput="filterTenants()">
+            </div>
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>קומה</th>
+                            <th>דירה</th>
+                            <th>טלפון</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tenantsTbody">
+                        <tr><td colspan="4" style="text-align: center; opacity: 0.6; padding: 32px;">אין דיירים</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- משרדים -->
+        <div id="officesSection" class="section">
+            <div class="section-header">
+                <button class="back-btn" onclick="showSection('main')">←</button>
+                <h2 class="section-title">משרדים</h2>
+            </div>
+            <div class="frosted-card" style="padding:16px; margin-bottom:16px;">
+                <input type="text" id="officeSearch" class="form-input" placeholder="🔍 חפש משרד לפי שם או קומה..." oninput="filterOffices()">
+            </div>
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>קומה</th>
+                            <th>שם חברה / משרד</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officesTbody">
+                        <tr><td colspan="2" style="text-align: center; opacity: 0.6; padding: 32px;">אין משרדים</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- עובדי דה וינצ'י -->
+        <div id="employeesSection" class="section">
+            <div class="section-header">
+                <button class="back-btn" onclick="showSection('main')">←</button>
+                <h2 class="section-title">👔 עובדי דה וינצ'י</h2>
+            </div>
+            <div class="frosted-card" style="padding:24px;overflow-x:auto;">
+                <table>
+                    <thead><tr><th>שם</th><th>טלפון</th></tr></thead>
+                    <tbody id="employeesTbody">
+                        <tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+
+    <footer class="footer">
+        <div class="frosted-glass footer-box">
+            <p class="footer-text">DA VINCI TOWERS • TEL AVIV</p>
+        </div>
+    </footer>
 </div>
 
 <!-- MODAL רישום -->
@@ -525,39 +747,71 @@ td {
                 <input type="text" id="gN" class="form-input" required>
             </div>
             
+            <!-- סוג יעד -->
             <div class="form-group">
-                <label class="form-label">חפש דייר או הקלד ידנית *</label>
-                <input type="text" id="tenantSearch" class="form-input" placeholder="הקלד שם דייר..." list="tenantList">
-                <datalist id="tenantList"></datalist>
+                <label class="form-label">יעד הביקור</label>
+                <div style="display:flex;gap:16px;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
+                        <input type="radio" name="destType" value="tenant" checked onchange="switchDestType(this.value)"> דייר
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
+                        <input type="radio" name="destType" value="office" onchange="switchDestType(this.value)"> משרד
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
+                        <input type="radio" name="destType" value="lobby" onchange="switchDestType(this.value)"> לובי
+                    </label>
+                </div>
+            </div>
+
+            <!-- חיפוש דייר -->
+            <div id="tenantSearchWrap" class="form-group" style="position:relative;">
+                <label class="form-label">חפש דייר</label>
+                <input type="text" id="tenantSearch" class="form-input" placeholder="הקלד שם דייר, קומה או דירה..." oninput="searchTenant()" autocomplete="off">
+                <div id="tenantResults" style="display:none; position:absolute; background:white; border:1px solid #ddd; border-radius:12px; max-height:220px; overflow-y:auto; width:100%; z-index:99999; margin-top:4px; box-shadow:0 8px 24px rgba(0,0,0,0.2); left:0; top:100%;"></div>
+            </div>
+            
+            <!-- חיפוש משרד -->
+            <div id="officeSearchWrap" class="form-group" style="position:relative;display:none;">
+                <label class="form-label">חפש משרד</label>
+                <input type="text" id="officeSearch" class="form-input" placeholder="הקלד שם חברה או קומה..." oninput="searchOffice()" autocomplete="off">
+                <div id="officeResults" style="display:none; position:absolute; background:white; border:1px solid #ddd; border-radius:12px; max-height:220px; overflow-y:auto; width:100%; z-index:99999; margin-top:4px; box-shadow:0 8px 24px rgba(0,0,0,0.2); left:0; top:100%;"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">קומה *</label>
+                    <input type="number" id="gFloor" class="form-input" readonly style="background:rgba(255,255,255,0.1);">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">דירה *</label>
+                    <input type="text" id="gApt" class="form-input" readonly style="background:rgba(255,255,255,0.1);">
+                </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">קומה *</label>
-                    <input type="number" id="gFloor" class="form-input" required>
+                    <label class="form-label">קטגוריה *</label>
+                    <select id="gCat" class="form-input" required onchange="toggleOtherField()">
+                        <option value="">בחר...</option>
+                        <option>אורח פרטי</option>
+                        <option>ספק/טכנאי</option>
+                        <option>משלוח</option>
+                        <option>אחר</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">דירה *</label>
-                    <input type="text" id="gApt" class="form-input" required>
+                    <label class="form-label">נרשם ע"י *</label>
+                    <select id="gEmployee" class="form-input" required>
+                        <option value="">בחר עובד...</option>
+                    </select>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">קטגוריה *</label>
-                <select id="gCat" class="form-input" required onchange="toggleOther()">
-                    <option value="">בחר...</option>
-                    <option>אורח פרטי</option>
-                    <option>ספק/טכנאי</option>
-                    <option>משלוח</option>
-                    <option>אחר</option>
-                </select>
+            <!-- שדה פירוט - מופיע רק עם "אחר" -->
+            <div id="otherFieldWrap" style="display:none;" class="form-group">
+                <label class="form-label">פירוט — מי הוא ולאן מגיע *</label>
+                <input type="text" id="gOther" class="form-input" placeholder="לדוגמה: בן משפחה של דייר 5B, מגיע לתיקון מזגן...">
             </div>
-            
-            <div class="form-group" id="otherWrap" style="display: none;">
-                <label class="form-label">פרט את הקטגוריה *</label>
-                <input type="text" id="otherText" class="form-input" placeholder="לדוגמה: קבלן, רופא...">
-            </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">תאריך *</label>
@@ -568,14 +822,6 @@ td {
                     <input type="time" id="gTm" class="form-input" required>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">נרשם ע"י *</label>
-                <select id="gEmployee" class="form-input" required>
-                    <option value="">בחר...</option>
-                </select>
-            </div>
-            
             <div class="form-actions">
                 <button type="button" class="btn btn-cancel" onclick="closeRegModal()">ביטול</button>
                 <button type="submit" class="btn btn-submit">שמור</button>
@@ -588,7 +834,7 @@ td {
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -603,7 +849,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const TODAY = new Date().toISOString().split('T')[0];
 
-let guests = [], tenants = [], employees = [];
+let guests = [], tenants = [], offices = [], employees = [];
+
+// הודעות real-time
+function loadNotifications() {
+  try {
+    onSnapshot(collection(db, 'notifications'), (snap) => {
+      const active = snap.docs.map(d => ({id: d.id, ...d.data()}))
+        .filter(n => n.active && n.forLobby)
+        .sort((a,b) => (a.createdAt||'') > (b.createdAt||'') ? 1 : -1);
+      const el = document.getElementById('notificationText');
+      el.textContent = active.length > 0 ? active[active.length-1].message : "ברוכים הבאים למערכת דה וינצ'י";
+    });
+  } catch(e) { console.error('notifications:', e); }
+}
 
 function toast(msg) {
   const el = document.getElementById('toastEl');
@@ -615,8 +874,184 @@ function toast(msg) {
 function updateClock() {
   document.getElementById('clk').textContent = new Date().toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
 }
-setInterval(updateClock, 1000);
 updateClock();
+setInterval(updateClock, 1000);
+
+// Auto load data
+loadData();
+
+window.switchDestType = (type) => {
+  const tenantWrap = document.getElementById('tenantSearchWrap');
+  const officeWrap = document.getElementById('officeSearchWrap');
+  const floorInput = document.getElementById('gFloor');
+  const aptInput = document.getElementById('gApt');
+  
+  // נקה שדות
+  document.getElementById('tenantSearch').value = '';
+  document.getElementById('tenantResults').style.display = 'none';
+  document.getElementById('officeSearch').value = '';
+  document.getElementById('officeResults').style.display = 'none';
+  floorInput.value = '';
+  aptInput.value = '';
+
+  if (type === 'tenant') {
+    tenantWrap.style.display = 'block';
+    officeWrap.style.display = 'none';
+    floorInput.required = true;
+    aptInput.required = true;
+  } else if (type === 'office') {
+    tenantWrap.style.display = 'none';
+    officeWrap.style.display = 'block';
+    floorInput.required = true;
+    aptInput.required = false;
+  } else { // lobby
+    tenantWrap.style.display = 'none';
+    officeWrap.style.display = 'none';
+    floorInput.required = false;
+    aptInput.required = false;
+    floorInput.value = 0;
+    aptInput.value = 'לובי';
+  }
+};
+
+window.searchOffice = () => {
+  const query = document.getElementById('officeSearch').value.toLowerCase();
+  const results = document.getElementById('officeResults');
+  if (!query || query.length < 1) { results.style.display = 'none'; return; }
+
+  const filtered = offices.filter(o =>
+    (o.name||'').toLowerCase().includes(query) ||
+    String(o.floor||'').includes(query)
+  );
+
+  if (filtered.length === 0) {
+    results.innerHTML = '<div style="padding:12px;color:#999;">לא נמצאו תוצאות</div>';
+    results.style.display = 'block';
+    return;
+  }
+
+  results.innerHTML = '';
+  filtered.slice(0, 15).forEach(o => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;';
+    div.innerHTML = '<strong>' + o.name + '</strong><br><small style="color:#666;">קומה ' + o.floor + '</small>';
+    div.addEventListener('mouseenter', () => div.style.background = '#f0f7ff');
+    div.addEventListener('mouseleave', () => div.style.background = 'white');
+    div.addEventListener('click', () => {
+      document.getElementById('officeSearch').value = o.name;
+      document.getElementById('gFloor').value = o.floor;
+      document.getElementById('gApt').value = o.name;
+      results.style.display = 'none';
+    });
+    results.appendChild(div);
+  });
+  results.style.display = 'block';
+};
+
+window.toggleOtherField = () => {
+  const cat = document.getElementById('gCat').value;
+  const wrap = document.getElementById('otherFieldWrap');
+  const input = document.getElementById('gOther');
+  if (cat === 'אחר') {
+    wrap.style.display = 'block';
+    input.required = true;
+  } else {
+    wrap.style.display = 'none';
+    input.required = false;
+    input.value = '';
+  }
+};
+
+window.openRegModal = () => {
+  document.getElementById('gDt').value = TODAY;
+  document.getElementById('gTm').value = new Date().toTimeString().slice(0,5);
+  document.getElementById('regModal').classList.add('show');
+};
+
+window.searchTenant = () => {
+  const query = document.getElementById('tenantSearch').value.toLowerCase();
+  const results = document.getElementById('tenantResults');
+  
+  if (!query || query.length < 1) {
+    results.style.display = 'none';
+    return;
+  }
+  
+  const filtered = tenants.filter(t => 
+    (t.name||'').toLowerCase().includes(query) || 
+    String(t.floor||'').includes(query) ||
+    String(t.apt||'').toLowerCase().includes(query)
+  );
+  
+  if (filtered.length === 0) {
+    results.innerHTML = '<div style="padding:12px;color:#999;">לא נמצאו תוצאות</div>';
+    results.style.display = 'block';
+    return;
+  }
+  
+  results.innerHTML = '';
+  filtered.slice(0, 15).forEach(t => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;';
+    div.innerHTML = '<strong>' + t.name + '</strong><br><small style="color:#666;">קומה ' + t.floor + ', דירה ' + t.apt + '</small>';
+    div.addEventListener('mouseenter', () => div.style.background = '#f0f7ff');
+    div.addEventListener('mouseleave', () => div.style.background = 'white');
+    div.addEventListener('click', () => {
+      document.getElementById('tenantSearch').value = t.name;
+      document.getElementById('gFloor').value = t.floor;
+      document.getElementById('gApt').value = t.apt;
+      results.style.display = 'none';
+    });
+    results.appendChild(div);
+  });
+  results.style.display = 'block';
+};
+
+window.closeRegModal = () => {
+  document.getElementById('regModal').classList.remove('show');
+  document.getElementById('gForm').reset();
+  document.getElementById('tenantSearch').value = '';
+  document.getElementById('officeSearch').value = '';
+  document.getElementById('gFloor').value = '';
+  document.getElementById('gApt').value = '';
+  document.getElementById('tenantResults').style.display = 'none';
+  document.getElementById('officeResults').style.display = 'none';
+  document.getElementById('tenantSearchWrap').style.display = 'block';
+  document.getElementById('officeSearchWrap').style.display = 'none';
+  // reset radio to tenant
+  document.querySelector('input[name="destType"][value="tenant"]').checked = true;
+  document.getElementById('otherFieldWrap').style.display = 'none';
+  document.getElementById('gOther').required = false;
+};
+
+document.getElementById('gForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const floor = parseInt(document.getElementById('gFloor').value) || 0;
+  const apt = document.getElementById('gApt').value.trim() || 'לובי';
+  const tenantName = document.getElementById('tenantSearch').value.trim() || 'לובי';
+  
+  const data = {
+    name: document.getElementById('gN').value.trim(),
+    cat: document.getElementById('gCat').value === 'אחר'
+      ? 'אחר: ' + (document.getElementById('gOther').value.trim() || '')
+      : document.getElementById('gCat').value,
+    registeredBy: document.getElementById('gEmployee').value,
+    date: document.getElementById('gDt').value,
+    time: document.getElementById('gTm').value,
+    floor: floor,
+    apt: apt,
+    tname: tenantName
+  };
+  try {
+    await addDoc(collection(db, 'guests'), data);
+    toast('אורח נרשם בהצלחה ✓');
+    closeRegModal();
+    loadData();
+  } catch(e) {
+    toast('שגיאה בשמירה');
+  }
+};
 
 async function loadData() {
   try {
@@ -628,39 +1063,35 @@ async function loadData() {
       });
     document.getElementById('sToday').textContent = guests.filter(g => g.date === TODAY).length;
     renderGuests();
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error('guests:', e); }
 
   try {
     const tSnap = await getDocs(collection(db, 'tenants'));
     tenants = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
     document.getElementById('sTen').textContent = tenants.length;
-    
-    // עדכן רשימת דיירים ב-datalist
-    const datalist = document.getElementById('tenantList');
-    datalist.innerHTML = tenants.map(t => 
-      `<option value="${t.name}" data-floor="${t.floor}" data-apt="${t.apt}">`
-    ).join('');
-  } catch(e) { console.error(e); }
+    renderTenants();
+  } catch(e) { console.error('tenants:', e); }
+
+  try {
+    const oSnap = await getDocs(collection(db, 'offices'));
+    offices = oSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.floor - b.floor);
+    renderOffices();
+  } catch(e) { console.error('offices:', e); }
 
   try {
     const eSnap = await getDocs(collection(db, 'employees'));
     employees = eSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    const select = document.getElementById('gEmployee');
-    select.innerHTML = '<option value="">בחר...</option>' + 
-      employees.map(e => `<option>${e.name}</option>`).join('');
-  } catch(e) { console.error(e); }
+    renderEmployees();
+  } catch(e) { console.error('employees:', e); }
 }
 
 function renderGuests() {
   const tbody = document.getElementById('guestsTbody');
-  if(!guests.length) { 
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; 
-    return; 
-  }
+  if(!guests.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; return; }
   tbody.innerHTML = guests.map(g => `
     <tr>
       <td>${g.name}</td>
-      <td>${g.tname || '—'}</td>
+      <td>${g.tname || 'לובי'}</td>
       <td>${g.floor || '—'}</td>
       <td>${g.apt || '—'}</td>
       <td><span class="badge">${g.cat}</span></td>
@@ -683,80 +1114,139 @@ window.deleteGuest = async (id) => {
   }
 };
 
-window.openRegModal = () => {
-  document.getElementById('gDt').value = TODAY;
-  document.getElementById('gTm').value = new Date().toTimeString().slice(0,5);
-  document.getElementById('regModal').classList.add('show');
+function renderTenants() {
+  const tbody = document.getElementById('tenantsTbody');
+  if(!tenants.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">אין דיירים</td></tr>'; return; }
+  tbody.innerHTML = tenants.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
+}
+
+window.filterTenants = () => {
+  const q = document.getElementById('tenantFilterSearch').value.toLowerCase();
+  const filtered = tenants.filter(t => t.name.toLowerCase().includes(q) || String(t.floor).includes(q) || t.apt.toLowerCase().includes(q));
+  const tbody = document.getElementById('tenantsTbody');
+  if(!filtered.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">לא נמצאו תוצאות</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
 };
 
-window.closeRegModal = () => {
-  document.getElementById('regModal').classList.remove('show');
-  document.getElementById('gForm').reset();
-  document.getElementById('otherWrap').style.display = 'none';
-};
+function renderOffices() {
+  const tbody = document.getElementById('officesTbody');
+  if(!offices.length) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">אין משרדים</td></tr>'; return; }
+  tbody.innerHTML = offices.map(o => `<tr><td>קומה ${o.floor}</td><td>${o.name}</td></tr>`).join('');
+}
 
-window.toggleOther = () => {
-  const cat = document.getElementById('gCat').value;
-  const wrap = document.getElementById('otherWrap');
-  const input = document.getElementById('otherText');
-  if (cat === 'אחר') {
-    wrap.style.display = 'block';
-    input.required = true;
-  } else {
-    wrap.style.display = 'none';
-    input.required = false;
-    input.value = '';
+function renderEmployees() {
+  const tbody = document.getElementById('employeesTbody');
+  if (tbody) {
+    tbody.innerHTML = employees.length
+      ? employees.map(e => `<tr><td style="font-weight:600">${e.name}</td><td><a href="tel:${e.phone}" style="color:#f59e0b;text-decoration:none;font-weight:700">${e.phone}</a></td></tr>`).join('')
+      : '<tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">אין עובדים</td></tr>';
   }
+  const sel = document.getElementById('gEmployee');
+  if (sel && employees.length) {
+    sel.innerHTML = '<option value="">בחר עובד...</option>';
+    employees.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e.name;
+      opt.textContent = e.name;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+window.filterOffices = () => {
+  const q = document.getElementById('officeSearch').value.toLowerCase();
+  const filtered = offices.filter(o => 
+    (o.name||'').toLowerCase().includes(q) || String(o.floor||'').includes(q)
+  );
+  const tbody = document.getElementById('officesTbody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">לא נמצאו תוצאות</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(o => `<tr><td>קומה ${o.floor}</td><td>${o.name}</td></tr>`).join('');
 };
 
-// כשבוחרים דייר מהרשימה - מלא אוטומטית קומה/דירה
-document.getElementById('tenantSearch').addEventListener('input', (e) => {
-  const value = e.target.value;
-  const tenant = tenants.find(t => t.name === value);
-  if (tenant) {
-    document.getElementById('gFloor').value = tenant.floor;
-    document.getElementById('gApt').value = tenant.apt;
-  }
-});
-
-document.getElementById('gForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const tenantName = document.getElementById('tenantSearch').value.trim();
+window.switchDestType = (type) => {
+  const tenantWrap = document.getElementById('tenantSearchWrap');
+  const officeWrap = document.getElementById('officeSearchWrap');
+  const floorInput = document.getElementById('gFloor');
+  const aptInput = document.getElementById('gApt');
   
-  let category = document.getElementById('gCat').value;
-  if (category === 'אחר') {
-    const other = document.getElementById('otherText').value.trim();
-    if (other) category = 'אחר - ' + other;
-  }
-  
-  const data = {
-    name: document.getElementById('gN').value.trim(),
-    tname: tenantName || 'לובי',
-    floor: parseInt(document.getElementById('gFloor').value) || 0,
-    apt: document.getElementById('gApt').value.trim() || 'לובי',
-    cat: category,
-    date: document.getElementById('gDt').value,
-    time: document.getElementById('gTm').value,
-    registeredBy: document.getElementById('gEmployee').value
-  };
-  try {
-    await addDoc(collection(db, 'guests'), data);
-    toast('אורח נרשם בהצלחה ✓');
-    closeRegModal();
-    loadData();
-  } catch(e) {
-    toast('שגיאה בשמירה');
+  // נקה שדות
+  document.getElementById('tenantSearch').value = '';
+  document.getElementById('tenantResults').style.display = 'none';
+  document.getElementById('officeSearch').value = '';
+  document.getElementById('officeResults').style.display = 'none';
+  floorInput.value = '';
+  aptInput.value = '';
+
+  if (type === 'tenant') {
+    tenantWrap.style.display = 'block';
+    officeWrap.style.display = 'none';
+    floorInput.required = true;
+    aptInput.required = true;
+  } else if (type === 'office') {
+    tenantWrap.style.display = 'none';
+    officeWrap.style.display = 'block';
+    floorInput.required = true;
+    aptInput.required = false;
+  } else { // lobby
+    tenantWrap.style.display = 'none';
+    officeWrap.style.display = 'none';
+    floorInput.required = false;
+    aptInput.required = false;
+    floorInput.value = 0;
+    aptInput.value = 'לובי';
   }
 };
+
+window.searchOffice = () => {
+  const query = document.getElementById('officeSearch').value.toLowerCase();
+  const results = document.getElementById('officeResults');
+  if (!query || query.length < 1) { results.style.display = 'none'; return; }
+
+  const filtered = offices.filter(o =>
+    (o.name||'').toLowerCase().includes(query) ||
+    String(o.floor||'').includes(query)
+  );
+
+  if (filtered.length === 0) {
+    results.innerHTML = '<div style="padding:12px;color:#999;">לא נמצאו תוצאות</div>';
+    results.style.display = 'block';
+    return;
+  }
+
+  results.innerHTML = '';
+  filtered.slice(0, 15).forEach(o => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;';
+    div.innerHTML = '<strong>' + o.name + '</strong><br><small style="color:#666;">קומה ' + o.floor + '</small>';
+    div.addEventListener('mouseenter', () => div.style.background = '#f0f7ff');
+    div.addEventListener('mouseleave', () => div.style.background = 'white');
+    div.addEventListener('click', () => {
+      document.getElementById('officeSearch').value = o.name;
+      document.getElementById('gFloor').value = o.floor;
+      document.getElementById('gApt').value = o.name;
+      results.style.display = 'none';
+    });
+    results.appendChild(div);
+  });
+  results.style.display = 'block';
+};
+
 
 window.showSection = (sec) => {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   if(sec === 'main') document.getElementById('mainMenu').classList.add('active');
   else if(sec === 'list') document.getElementById('listSection').classList.add('active');
+  else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
+  else if(sec === 'offices') document.getElementById('officesSection').classList.add('active');
+  else if(sec === 'employees') document.getElementById('employeesSection').classList.add('active');
 };
 
-loadData();
-</script>
+// Load notifications on startup
+loadNotifications();
 
+</script>
 </body>
 </html>

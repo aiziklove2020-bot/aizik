@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>מחיקת ארכיון ישן</title>
+<style>
+body { font-family: Arial; background: #111; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+.box { background: #1c1c1c; border-radius: 16px; padding: 40px; width: 500px; }
+h1 { color: #f59e0b; margin-bottom: 20px; }
+.btn { background: #f59e0b; color: #111; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
+.log { background: #000; border-radius: 8px; padding: 12px; height: 200px; overflow-y: auto; font-size: 12px; font-family: monospace; line-height: 1.9; margin-top: 20px; }
+.ok { color: #22c55e; }
+.err { color: #ef4444; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🗑️ מחיקת ארכיון ישן</h1>
+  <p style="color: #888; margin-bottom: 20px;">מוחק את כל הרישומים הישנים עם undefined</p>
+  <button class="btn" onclick="clearArchive()">מחק ארכיון ישן</button>
+  <div class="log" id="log"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const db = getFirestore(initializeApp({
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+}));
+
+const log = (m, c='#888') => {
+  document.getElementById('log').innerHTML += '<div style="color:'+c+'">'+m+'</div>';
+};
+
+window.clearArchive = async () => {
+  log('מתחיל מחיקת ארכיון...', '#f59e0b');
+  try {
+    const snap = await getDocs(collection(db, 'archive'));
+    log(`נמצאו ${snap.docs.length} רישומים בארכיון`, '#888');
+    
+    for (const d of snap.docs) {
+      await deleteDoc(doc(db, 'archive', d.id));
+    }
+    
+    log(`✅ נמחקו ${snap.docs.length} רישומים!`, '#22c55e');
+    log('עכשיו הארכיון נקי ומוכן לרישומים חדשים', '#22c55e');
+  } catch(e) {
+    log('❌ שגיאה: ' + e.message, '#ef4444');
+  }
+};
+</script>
+</body>
+</html>
