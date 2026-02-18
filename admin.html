@@ -211,6 +211,9 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                     <thead>
                         <tr>
                             <th>שם</th>
+                            <th>אצל דייר</th>
+                            <th>קומה</th>
+                            <th>דירה</th>
                             <th>קטגוריה</th>
                             <th>תאריך</th>
                             <th>שעה</th>
@@ -219,7 +222,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                         </tr>
                     </thead>
                     <tbody id="guestsTbody">
-                        <tr><td colspan="6" class="text-center opacity-60 py-8">טוען...</td></tr>
+                        <tr><td colspan="9" class="text-center opacity-60 py-8">טוען...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -644,12 +647,15 @@ function updateStats() {
 function renderGuests() {
   const tbody = document.getElementById('guestsTbody');
   if (!guests.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין רישומים</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center opacity-60 py-8">אין רישומים</td></tr>';
     return;
   }
   tbody.innerHTML = guests.map(g => `
     <tr>
       <td>${g.name}</td>
+      <td>${g.tname || 'לובי'}</td>
+      <td>${g.floor || '—'}</td>
+      <td>${g.apt || '—'}</td>
       <td><span class="badge">${g.cat || ''}</span></td>
       <td>${g.date}</td>
       <td>${g.time}</td>
@@ -743,6 +749,9 @@ async function loadAnalytics() {
     recentTbody.innerHTML = recent.map(g => `
       <tr>
         <td>${g.name}</td>
+      <td>${g.tname || 'לובי'}</td>
+      <td>${g.floor || '—'}</td>
+      <td>${g.apt || '—'}</td>
         <td>${g.date}</td>
         <td>${g.time}</td>
         <td>${g.cat || ''}</td>
