@@ -122,20 +122,20 @@ body, html {
 }
 
 .logo-subtitle {
-    font-size: 9px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-weight: 700;
-    color: #34d399;
+    font-weight: 800;
+    color: #f59e0b;
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
 .pulse-dot {
-    width: 6px;
-    height: 6px;
-    background: #34d399;
+    width: 8px;
+    height: 8px;
+    background: #f59e0b;
     border-radius: 50%;
     animation: pulse 2s infinite;
 }
@@ -613,6 +613,21 @@ tr:hover td {
                     </svg>
                 </div>
 
+                <div class="frosted-card card action-card" onclick="showSection('employees')">
+                    <div class="card-content">
+                        <div class="icon-wrapper card-icon" style="background: rgba(251,191,36,0.15);">
+                            <span style="font-size:26px">👔</span>
+                        </div>
+                        <div>
+                            <h2 class="card-title">עובדי דה וינצ'י</h2>
+                            <p class="card-desc">אנשי קשר וטלפונים</p>
+                        </div>
+                    </div>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+
             </div>
         </div>
 
@@ -676,7 +691,7 @@ tr:hover td {
                 <button class="back-btn" onclick="showSection('main')">←</button>
                 <h2 class="section-title">משרדים</h2>
             </div>
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto; margin-bottom: 24px;">
                 <table>
                     <thead>
                         <tr>
@@ -689,8 +704,47 @@ tr:hover td {
                     </tbody>
                 </table>
             </div>
+
+            <!-- עובדי דה וינצ'י -->
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+                <h3 style="color: #f59e0b; font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <span>👔</span> אנשי קשר — דה וינצ'י
+                </h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>טלפון</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTbody">
+                        <tr><td colspan="2" style="text-align: center; opacity: 0.6; padding: 32px;">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+        <!-- עובדי דה וינצ'י -->
+        <div id="employeesSection" class="section">
+            <div class="section-header">
+                <button class="back-btn" onclick="showSection('main')">←</button>
+                <h2 class="section-title">👔 עובדי דה וינצ'י</h2>
+            </div>
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>טלפון</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTbody">
+                        <tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     <footer class="footer">
         <div class="frosted-glass footer-box">
@@ -744,8 +798,7 @@ tr:hover td {
                 <div class="form-group">
                     <label class="form-label">נרשם ע"י *</label>
                     <select id="gEmployee" class="form-input" required>
-                        <option value="">בחר...</option>
-                        <option>שומר לובי</option>
+                        <option value="">בחר עובד...</option>
                     </select>
                 </div>
             </div>
@@ -771,7 +824,7 @@ tr:hover td {
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -786,26 +839,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const TODAY = new Date().toISOString().split('T')[0];
 
-let guests = [], tenants = [], offices = [];
+let guests = [], tenants = [], offices = [], employees = [];
 
-// הודעות מהניהול — real-time, מתעדכן אוטומטית בלי רענון
-function loadNotifications() {
+// Load notifications from Firebase
+async function loadNotifications() {
   try {
-    onSnapshot(collection(db, 'notifications'), (snap) => {
-      const active = snap.docs
-        .map(d => ({id: d.id, ...d.data()}))
-        .filter(n => n.active && n.forLobby)
-        .sort((a,b) => (a.createdAt || '') > (b.createdAt || '') ? 1 : -1);
-      
-      const el = document.getElementById('notificationText');
-      if (active.length > 0) {
-        el.textContent = active[active.length - 1].message;
-      } else {
-        el.textContent = 'ברוכים הבאים למערכת דה וינצ\'י';
-      }
-    });
+    const notifSnap = await getDocs(collection(db, 'notifications'));
+    const notifications = notifSnap.docs.map(d => ({id: d.id, ...d.data()}))
+      .filter(n => n.active && n.forLobby)
+      .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+    
+    if (notifications.length > 0) {
+      const latest = notifications[0];
+      document.getElementById('notificationText').textContent = latest.message;
+    }
   } catch(e) {
-    console.error('loadNotifications error:', e);
+    // Keep default message
   }
 }
 
@@ -832,32 +881,38 @@ window.openRegModal = () => {
 };
 
 window.searchTenant = () => {
-  const query = document.getElementById('tenantSearch').value.toLowerCase();
+  const query = document.getElementById('tenantSearch').value.toLowerCase().trim();
   const results = document.getElementById('tenantResults');
   
-  if (!query || query.length < 2) {
+  if (!query || query.length < 1) {
     results.style.display = 'none';
     return;
   }
-  
-  const filtered = tenants.filter(t => 
-    t.name.toLowerCase().includes(query) || 
-    String(t.floor).includes(query) ||
-    t.apt.toLowerCase().includes(query)
-  );
-  
-  if (filtered.length === 0) {
-    results.innerHTML = '<div style="padding: 12px; color: #999;">לא נמצאו תוצאות</div>';
+
+  if (tenants.length === 0) {
+    results.innerHTML = '<div style="padding:12px;color:#e53e3e;font-size:13px">⚠️ הדיירים לא נטענו — רענן את הדף</div>';
     results.style.display = 'block';
     return;
   }
   
-  results.innerHTML = filtered.slice(0, 10).map(t => `
-    <div onclick="selectTenant('${t.name}', ${t.floor}, '${t.apt}')" style="padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
-      <strong>${t.name}</strong><br>
-      <small style="color: #666;">קומה ${t.floor}, דירה ${t.apt}</small>
-    </div>
-  `).join('');
+  const filtered = tenants.filter(t => 
+    (t.name || '').toLowerCase().includes(query) || 
+    String(t.floor || '').includes(query) ||
+    String(t.apt || '').includes(query)
+  );
+  
+  if (filtered.length === 0) {
+    results.innerHTML = '<div style="padding:12px;color:#999;">לא נמצאו תוצאות עבור "' + query + '"</div>';
+    results.style.display = 'block';
+    return;
+  }
+  
+  results.innerHTML = filtered.slice(0, 15).map(t => 
+    '<div onclick="selectTenant(' + JSON.stringify(t.name) + ',' + t.floor + ',' + JSON.stringify(t.apt) + ')" style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;" onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='white'">' +
+    '<strong>' + t.name + '</strong><br>' +
+    '<small style="color:#666;">קומה ' + t.floor + ' | דירה ' + t.apt + '</small>' +
+    '</div>'
+  ).join('');
   results.style.display = 'block';
 };
 
@@ -911,29 +966,30 @@ async function loadData() {
     guests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
     document.getElementById('sToday').textContent = guests.filter(g => g.date === TODAY).length;
     renderGuests();
-  } catch(e) {
-    console.error('שגיאה בטעינת אורחים:', e);
-  }
-  
-  // דיירים
+  } catch(e) { console.error('guests error:', e); }
+
+  // דיירים - הכי חשוב לחיפוש
   try {
     const tSnap = await getDocs(collection(db, 'tenants'));
     tenants = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
     document.getElementById('sTen').textContent = tenants.length;
     renderTenants();
-  } catch(e) {
-    console.error('שגיאה בטעינת דיירים:', e);
-    document.getElementById('tenantsTbody').innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ef4444;padding:32px">⚠️ ${e.message}</td></tr>`;
-  }
-  
+    console.log('נטענו ' + tenants.length + ' דיירים');
+  } catch(e) { console.error('tenants error:', e); }
+
   // משרדים
   try {
     const oSnap = await getDocs(collection(db, 'offices'));
     offices = oSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.floor - b.floor);
     renderOffices();
-  } catch(e) {
-    console.error('שגיאה בטעינת משרדים:', e);
-  }
+  } catch(e) { console.error('offices error:', e); }
+
+  // עובדים
+  try {
+    const eSnap = await getDocs(collection(db, 'employees'));
+    employees = eSnap.docs.map(d => ({id: d.id, ...d.data()}));
+    renderEmployees();
+  } catch(e) { console.error('employees error:', e); }
 }
 
 function renderGuests() {
@@ -985,12 +1041,40 @@ function renderOffices() {
   tbody.innerHTML = offices.map(o => `<tr><td>קומה ${o.floor}</td><td>${o.name}</td></tr>`).join('');
 }
 
+function renderEmployees() {
+  const tbody = document.getElementById('employeesTbody');
+  if (!tbody) return;
+  if (!employees.length) {
+    tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">אין עובדים</td></tr>';
+    return;
+  }
+  tbody.innerHTML = employees.map(e => `
+    <tr>
+      <td style="font-weight:600">${e.name}</td>
+      <td><a href="tel:${e.phone}" style="color:#f59e0b;text-decoration:none;font-weight:700">${e.phone}</a></td>
+    </tr>
+  `).join('');
+
+  // מלא גם את ה-select בטופס רישום אורח
+  const sel = document.getElementById('gEmployee');
+  if (sel) {
+    sel.innerHTML = '<option value="">בחר עובד...</option>';
+    employees.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e.name;
+      opt.textContent = e.name;
+      sel.appendChild(opt);
+    });
+  }
+}
+
 window.showSection = (sec) => {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   if(sec === 'main') document.getElementById('mainMenu').classList.add('active');
   else if(sec === 'list') document.getElementById('listSection').classList.add('active');
   else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
   else if(sec === 'offices') document.getElementById('officesSection').classList.add('active');
+  else if(sec === 'employees') document.getElementById('employeesSection').classList.add('active');
 };
 
 // Load notifications on startup

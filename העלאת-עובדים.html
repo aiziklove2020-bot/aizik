@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>העלאת עובדים</title>
+<style>
+body { font-family: Arial; background: #111; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+.box { background: #1c1c1c; border-radius: 16px; padding: 40px; width: 500px; }
+h1 { color: #f59e0b; margin-bottom: 20px; }
+.bar-bg { background: #333; border-radius: 99px; height: 14px; margin: 16px 0; overflow: hidden; }
+.bar { height: 100%; width: 0%; background: #f59e0b; border-radius: 99px; transition: width 0.2s; }
+.num { font-size: 52px; font-weight: bold; color: #f59e0b; text-align: center; margin: 10px 0; }
+.status { text-align: center; color: #888; margin-bottom: 20px; font-size: 15px; }
+.log { background: #000; border-radius: 8px; padding: 12px; height: 200px; overflow-y: auto; font-size: 12px; font-family: monospace; line-height: 1.9; }
+.ok { color: #22c55e; } .err { color: #ef4444; } .info { color: #888; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>👔 העלאת עובדי דה וינצ'י</h1>
+  <div class="bar-bg"><div class="bar" id="bar"></div></div>
+  <div class="num" id="num">0</div>
+  <div class="status" id="status">מתחבר ל-Firebase...</div>
+  <div class="log" id="log"></div>
+</div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const db = getFirestore(initializeApp({
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+}));
+
+const EMPLOYEES = [{"name": "עמנואל לוי", "role": "עובד דה וינצ'י", "phone": "052-2348378"}, {"name": "מאיר סבג", "role": "עובד דה וינצ'י", "phone": "052-8992882"}, {"name": "אור צדוק", "role": "עובד דה וינצ'י", "phone": "052-3024191"}, {"name": "מיכאל אלקין", "role": "עובד דה וינצ'י", "phone": "052-5861666"}, {"name": "ג'ו יוסף ביטון", "role": "עובד דה וינצ'י", "phone": "054-4877821"}, {"name": "ענת כהן", "role": "עובד דה וינצ'י", "phone": "052-2024202"}, {"name": "בנימין גורמו", "role": "עובד דה וינצ'י", "phone": "053-3363853"}, {"name": "איציק קסטוריאנו", "role": "עובד דה וינצ'י", "phone": "052-6196765"}, {"name": "שולמית כהן", "role": "עובד דה וינצ'י", "phone": "052-9426748"}, {"name": "מאיר אמדו", "role": "עובד דה וינצ'י", "phone": "052-5613515"}, {"name": "יוסף (היסוף) עבד (אבדר רחי)", "role": "עובד דה וינצ'י", "phone": "054-2243271"}, {"name": "ויטלי סבירין", "role": "עובד דה וינצ'י", "phone": "052-6860166"}, {"name": "עובדיה ג'וזב", "role": "עובד דה וינצ'י", "phone": "050-5761522"}, {"name": "דוד מנשה", "role": "עובד דה וינצ'י", "phone": "050-9913824"}, {"name": "אלכס דובינצ'יק", "role": "עובד דה וינצ'י", "phone": "052-8555505"}, {"name": "קנת מגבו", "role": "עובד דה וינצ'י", "phone": "054-8621201"}, {"name": "אלכס קליאניקוב (הרזה)", "role": "עובד דה וינצ'י", "phone": "052-7520437"}, {"name": "יוליה מגיד", "role": "עובד דה וינצ'י", "phone": "055-2670753"}, {"name": "מרי מגיד", "role": "עובד דה וינצ'י", "phone": "054-8233007"}, {"name": "אלכס פשניצ'ני (קפלן)", "role": "עובד דה וינצ'י", "phone": "052-5039006"}];
+
+const log = (m, c='info') => {
+  const el = document.getElementById('log');
+  el.innerHTML += '<div class="'+c+'">'+m+'</div>';
+  el.scrollTop = el.scrollHeight;
+};
+
+(async () => {
+  try {
+    document.getElementById('status').textContent = 'מוחק עובדים ישנים...';
+    const old = await getDocs(collection(db, 'employees'));
+    for (const d of old.docs) await deleteDoc(doc(db, 'employees', d.id));
+    log('נמחקו ' + old.docs.length + ' עובדים ישנים', 'info');
+
+    let ok = 0;
+    for (let i = 0; i < EMPLOYEES.length; i++) {
+      try {
+        await addDoc(collection(db, 'employees'), EMPLOYEES[i]);
+        ok++;
+        document.getElementById('num').textContent = ok;
+        document.getElementById('bar').style.width = Math.round(ok/EMPLOYEES.length*100)+'%';
+        document.getElementById('status').textContent = ok + ' / ' + EMPLOYEES.length;
+        log('✓ ' + EMPLOYEES[i].name + ' — ' + EMPLOYEES[i].phone, 'ok');
+      } catch(e) {
+        log('✗ ' + EMPLOYEES[i].name + ': ' + e.message, 'err');
+      }
+    }
+    document.getElementById('status').textContent = '✅ הושלם! ' + ok + ' עובדים הועלו';
+    document.getElementById('bar').style.width = '100%';
+    log('✅ סיום — ' + ok + ' עובדים הועלו בהצלחה', 'ok');
+  } catch(e) {
+    document.getElementById('status').textContent = '❌ שגיאה: ' + e.message;
+    log('❌ ' + e.message, 'err');
+  }
+})();
+</script>
+</body>
+</html>
