@@ -58,17 +58,18 @@ body, html {
 }
 
 .status-glass {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 50%;
-    width: 75px;
-    height: 75px;
+    width: 110px;
+    height: 110px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .action-card {
@@ -142,6 +143,35 @@ body, html {
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
+}
+
+/* בלון עדכונים */
+.notifications-banner {
+    background: linear-gradient(135deg, rgba(251,146,60,0.25), rgba(251,146,60,0.15));
+    border: 2px solid rgba(251,146,60,0.4);
+    border-radius: 20px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(251,146,60,0.2);
+}
+
+.notification-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fdba74;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-text {
+    font-size: 14px;
+    color: white;
+    line-height: 1.6;
+    font-weight: 600;
 }
 
 /* Main */
@@ -483,24 +513,34 @@ tr:hover td {
     <header class="header">
         <div class="status-row">
             <div class="status-glass">
-                <span style="font-size: 10px; opacity: 0.7;">אורחים</span>
-                <span style="font-size: 14px; font-weight: 700;" id="sToday">0</span>
+                <span style="font-size: 12px; opacity: 1; font-weight: 700; color: white;">אורחים היום</span>
+                <span style="font-size: 32px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="sToday">0</span>
             </div>
             <div class="status-glass">
-                <span style="font-size: 10px; opacity: 0.7;">דיירים</span>
-                <span style="font-size: 14px; font-weight: 700; color: #34d399;" id="sTen">0</span>
+                <span style="font-size: 12px; opacity: 1; font-weight: 700; color: white;">דיירים</span>
+                <span style="font-size: 32px; font-weight: 900; color: #34d399; text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="sTen">0</span>
             </div>
         </div>
         <div class="frosted-glass logo-box">
             <h1 class="logo-title">DA VINCI</h1>
             <p class="logo-subtitle">
                 <span class="pulse-dot"></span>
-                לובי • <span id="clk">14:32</span>
+                לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">14:32</span>
             </p>
         </div>
     </header>
 
     <div class="main-content">
+        
+        <!-- בלון עדכונים מהמנהלים -->
+        <div id="notificationsBanner" class="notifications-banner">
+            <div class="notification-title">
+                <span>📢</span>
+                <span>עדכון למשמרת</span>
+            </div>
+            <div class="notification-text" id="notificationText">ברוכים הבאים למערכת דה וינצ'י</div>
+        </div>
+
         <!-- תפריט ראשי -->
         <div id="mainMenu" class="section active">
             <div class="cards-grid">
@@ -726,6 +766,23 @@ const TODAY = new Date().toISOString().split('T')[0];
 
 let guests = [], tenants = [], offices = [];
 
+// Load notifications from Firebase
+async function loadNotifications() {
+  try {
+    const notifSnap = await getDocs(collection(db, 'notifications'));
+    const notifications = notifSnap.docs.map(d => ({id: d.id, ...d.data()}))
+      .filter(n => n.active && n.forLobby)
+      .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+    
+    if (notifications.length > 0) {
+      const latest = notifications[0];
+      document.getElementById('notificationText').textContent = latest.message;
+    }
+  } catch(e) {
+    // Keep default message
+  }
+}
+
 function toast(msg) {
   const el = document.getElementById('toastEl');
   el.textContent = msg;
@@ -848,6 +905,9 @@ window.showSection = (sec) => {
   else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
   else if(sec === 'offices') document.getElementById('officesSection').classList.add('active');
 };
+
+// Load notifications on startup
+loadNotifications();
 
 </script>
 </body>

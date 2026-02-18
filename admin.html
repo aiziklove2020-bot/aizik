@@ -85,8 +85,8 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
 .toast.show { transform: translateX(-50%) translateY(0); }
 
 table { width: 100%; border-collapse: collapse; }
-th { background: rgba(255,255,255,0.1); padding: 12px; text-align: right; font-size: 12px; }
-td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+th { background: rgba(255,255,255,0.1); padding: 12px; text-align: right; font-size: 12px; color: white; }
+td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: white; }
 
 .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.7);
@@ -106,6 +106,19 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
 #app { display: none; }
 #app.show { display: block; }
+
+.badge {
+    display: inline-block; padding: 4px 12px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+    background: rgba(74,144,226,0.2); color: #60a5fa;
+    border: 1px solid rgba(74,144,226,0.3);
+}
+
+.btn-icon {
+    background: rgba(255,255,255,0.1); border: none;
+    padding: 8px; border-radius: 8px; cursor: pointer;
+    color: white; font-size: 18px;
+}
 </style>
 </head>
 <body class="text-white">
@@ -141,149 +154,341 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
             </p>
         </div>
         <div class="flex gap-4">
+            <button id="lobbyStatusBtn" onclick="toggleLobbyStatus()" class="frosted-card px-6 py-3 text-sm font-bold"></button>
             <button onclick="auth.signOut()" class="frosted-card px-6 py-3 text-sm font-bold hover:bg-white/30">יציאה</button>
         </div>
     </header>
 
+    <!-- סטטיסטיקות -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="status-glass">
+                <div class="text-3xl font-bold" id="statToday">0</div>
+                <div class="text-sm opacity-70 mt-1">אורחים היום</div>
+            </div>
+            <div class="status-glass">
+                <div class="text-3xl font-bold text-green-300" id="statTenants">0</div>
+                <div class="text-sm opacity-70 mt-1">דיירים במערכת</div>
+            </div>
+            <div class="status-glass">
+                <div class="text-3xl font-bold text-orange-300" id="statOffices">0</div>
+                <div class="text-sm opacity-70 mt-1">משרדים</div>
+            </div>
+            <div class="status-glass">
+                <div class="text-3xl font-bold text-blue-300" id="statEmployees">0</div>
+                <div class="text-sm opacity-70 mt-1">עובדים</div>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto">
         
         <!-- טאבים -->
-        <div class="frosted-card p-4 mb-8 flex gap-3">
-            <button class="tab-btn active" onclick="showTab('dashboard')">דשבורד</button>
-            <button class="tab-btn" onclick="showTab('guests')">אורחים</button>
-            <button class="tab-btn" onclick="showTab('tenants')">דיירים</button>
-            <button class="tab-btn" onclick="showTab('offices')">משרדים</button>
+        <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
+            <button class="tab-btn active" onclick="showTab('guests')">👥 אורחים</button>
+            <button class="tab-btn" onclick="showTab('archive')">📁 ארכיון</button>
+            <button class="tab-btn" onclick="showTab('tenants')">🏠 דיירים</button>
+            <button class="tab-btn" onclick="showTab('offices')">🏢 משרדים</button>
+            <button class="tab-btn" onclick="showTab('employees')">👔 עובדים</button>
+            <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
+            <button class="tab-btn" onclick="showTab('users')">⚙️ ניהול משתמשים</button>
+            <button class="tab-btn" onclick="showTab('analytics')">📊 דוחות</button>
         </div>
 
-        <!-- דשבורד -->
-        <div id="dashboard" class="section active">
-            <div class="grid grid-cols-4 gap-6 mb-8">
-                <div class="status-glass">
-                    <div class="text-4xl font-bold" id="statGuests">0</div>
-                    <div class="text-sm opacity-70 mt-2">אורחים היום</div>
+        <!-- טאב אורחים -->
+        <div id="tabGuests" class="section active">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <h2 class="text-2xl font-bold">רשימת אורחים</h2>
+                    <div class="flex gap-3">
+                        <button onclick="downloadGuestsExcel()" class="sbtn">📥 הורד Excel</button>
+                        <button onclick="deleteOldGuests()" class="sbtn bg-red-500">🗑 מחק ישנים</button>
+                    </div>
                 </div>
-                <div class="status-glass">
-                    <div class="text-4xl font-bold text-green-300" id="statTenants">0</div>
-                    <div class="text-sm opacity-70 mt-2">דיירים</div>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>קטגוריה</th>
+                            <th>תאריך</th>
+                            <th>שעה</th>
+                            <th>נרשם ע"י</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guestsTbody">
+                        <tr><td colspan="6" class="text-center opacity-60 py-8">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב ארכיון -->
+        <div id="tabArchive" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <h2 class="text-2xl font-bold mb-4">ארכיון כניסות</h2>
+                <p class="opacity-70 text-sm">כניסות ישנות שנמחקו אוטומטית</p>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>תאריך</th>
+                            <th>שעה</th>
+                            <th>קטגוריה</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archiveTbody">
+                        <tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב דיירים -->
+        <div id="tabTenants" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center flex-wrap">
+                    <h2 class="text-2xl font-bold">ניהול דיירים</h2>
+                    <div class="flex gap-3">
+                        <label class="sbtn cursor-pointer">
+                            📤 העלה Excel
+                            <input type="file" id="tenantsFileInput" accept=".xlsx,.xls" class="hidden" onchange="uploadTenantsExcel(event)">
+                        </label>
+                        <button onclick="openAddTenant()" class="sbtn">➕ הוסף דייר</button>
+                    </div>
                 </div>
-                <div class="status-glass">
-                    <div class="text-4xl font-bold text-blue-300" id="statOffices">0</div>
-                    <div class="text-sm opacity-70 mt-2">משרדים</div>
+                <input type="text" id="tenantSearchInput" placeholder="🔍 חפש דייר..." class="inp mt-4" oninput="filterTenants()">
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>קומה</th>
+                            <th>דירה</th>
+                            <th>טלפון</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tenantsTbody">
+                        <tr><td colspan="5" class="text-center opacity-60 py-8">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב משרדים -->
+        <div id="tabOffices" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <h2 class="text-2xl font-bold">ניהול משרדים</h2>
+                    <button onclick="openAddOffice()" class="sbtn">➕ הוסף משרד</button>
                 </div>
-                <div class="status-glass">
-                    <div class="text-4xl font-bold text-orange-300">42</div>
-                    <div class="text-sm opacity-70 mt-2">קומות</div>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>קומה</th>
+                            <th>שם חברה / משרד</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officesTbody">
+                        <tr><td colspan="3" class="text-center opacity-60 py-8">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב עובדים -->
+        <div id="tabEmployees" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <h2 class="text-2xl font-bold">ניהול עובדים</h2>
+                    <button onclick="openAddEmployee()" class="sbtn">➕ הוסף עובד</button>
                 </div>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>תפקיד</th>
+                            <th>טלפון</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTbody">
+                        <tr><td colspan="4" class="text-center opacity-60 py-8">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב עדכונים -->
+        <div id="tabNotifications" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <h2 class="text-2xl font-bold">עדכונים למשמרת לובי</h2>
+                    <button onclick="openAddNotification()" class="sbtn">➕ הוסף הודעה</button>
+                </div>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>הודעה</th>
+                            <th>נוצר ב</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notificationsTbody">
+                        <tr><td colspan="4" class="text-center opacity-60 py-8">אין הודעות</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- טאב ניהול משתמשים -->
+        <div id="tabUsers" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <h2 class="text-2xl font-bold">ניהול משתמשי מערכת</h2>
+                    <button onclick="openAddUser()" class="sbtn">➕ הוסף מנהל</button>
+                </div>
+            </div>
+            <div class="frosted-card p-6">
+                <p class="opacity-70">ניהול משתמשי מערכת (מנהלים) מתבצע דרך Firebase Console</p>
+                <p class="text-sm mt-2">קישור: <a href="https://console.firebase.google.com" target="_blank" class="text-blue-300 underline">Firebase Console</a></p>
+            </div>
+        </div>
+
+        <!-- טאב דוחות -->
+        <div id="tabAnalytics" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <h2 class="text-2xl font-bold mb-4">דוחות ואנליטיקה</h2>
             </div>
             
-            <div class="frosted-card p-8">
-                <h2 class="text-2xl font-bold mb-6">פעולות מהירות</h2>
-                <div class="grid grid-cols-3 gap-4">
-                    <button onclick="showTab('guests')" class="p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold">
-                        📋 ניהול אורחים
-                    </button>
-                    <button onclick="showTab('tenants')" class="p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold">
-                        👥 ניהול דיירים
-                    </button>
-                    <button onclick="showTab('offices')" class="p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold">
-                        🏢 ניהול משרדים
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- אורחים -->
-        <div id="guests" class="section">
-            <div class="frosted-card p-6 overflow-x-auto">
-                <h2 class="text-2xl font-bold mb-4">רשימת אורחים</h2>
+            <!-- כניסות אחרונות -->
+            <div class="frosted-card p-6 mb-4">
+                <h3 class="text-xl font-bold mb-4">כניסות אחרונות (10 אחרונים)</h3>
                 <table>
-                    <thead><tr><th>שם</th><th>קטגוריה</th><th>תאריך</th><th>שעה</th><th>נרשם ע"י</th><th>פעולות</th></tr></thead>
-                    <tbody id="guestsTbody"></tbody>
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>תאריך</th>
+                            <th>שעה</th>
+                            <th>קטגוריה</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTbody">
+                        <tr><td colspan="4" class="text-center opacity-60 py-8">אין נתונים</td></tr>
+                    </tbody>
                 </table>
             </div>
-        </div>
 
-        <!-- דיירים -->
-        <div id="tenants" class="section">
+            <!-- פעילות לפי קומה -->
             <div class="frosted-card p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">דיירים</h2>
-                    <button onclick="openAddTenant()" class="sbtn">+ הוסף דייר</button>
+                <h3 class="text-xl font-bold mb-4">פעילות לפי קומה (היום)</h3>
+                <div id="floorActivity" class="space-y-2">
+                    <p class="opacity-60">אין נתונים</p>
                 </div>
-                <table>
-                    <thead><tr><th>שם</th><th>קומה</th><th>דירה</th><th>טלפון</th><th>פעולות</th></tr></thead>
-                    <tbody id="tenantsTbody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- משרדים -->
-        <div id="offices" class="section">
-            <div class="frosted-card p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">משרדים</h2>
-                    <button onclick="openAddOffice()" class="sbtn">+ הוסף משרד</button>
-                </div>
-                <table>
-                    <thead><tr><th>קומה</th><th>שם משרד/חברה</th><th>פעולות</th></tr></thead>
-                    <tbody id="officesTbody"></tbody>
-                </table>
             </div>
         </div>
 
     </div>
 </div>
 
-<!-- MODAL הוסף דייר -->
+<!-- MODALS -->
+
+<!-- Modal הוסף דייר -->
 <div id="addTenantModal" class="modal-overlay">
-    <div class="modal-content text-gray-800">
-        <div class="p-6 border-b">
-            <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold">הוסף דייר</h3>
-                <button onclick="closeAddTenant()" class="w-10 h-10 rounded-full bg-gray-200">✕</button>
-            </div>
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף דייר</h3>
         </div>
         <form id="tenantForm" class="p-6 space-y-4">
-            <div><label class="block text-sm font-bold mb-2">שם מלא *</label><input type="text" id="tName" class="inp" required></div>
+            <input type="text" id="tenantName" placeholder="שם מלא" class="inp" required>
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-sm font-bold mb-2">קומה *</label><input type="number" id="tFloor" class="inp" required></div>
-                <div><label class="block text-sm font-bold mb-2">דירה *</label><input type="text" id="tApt" class="inp" required></div>
+                <input type="number" id="tenantFloor" placeholder="קומה" class="inp" required>
+                <input type="text" id="tenantApt" placeholder="דירה" class="inp" required>
             </div>
-            <div><label class="block text-sm font-bold mb-2">טלפון</label><input type="text" id="tPhone" class="inp"></div>
-            <div class="flex gap-3 pt-4">
-                <button type="button" onclick="closeAddTenant()" class="flex-1 py-4 rounded-2xl bg-gray-200 font-bold">ביטול</button>
+            <input type="tel" id="tenantPhone" placeholder="טלפון" class="inp">
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addTenantModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
                 <button type="submit" class="flex-1 sbtn">שמור</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL הוסף משרד -->
+<!-- Modal הוסף משרד -->
 <div id="addOfficeModal" class="modal-overlay">
-    <div class="modal-content text-gray-800">
-        <div class="p-6 border-b">
-            <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold">הוסף משרד</h3>
-                <button onclick="closeAddOffice()" class="w-10 h-10 rounded-full bg-gray-200">✕</button>
-            </div>
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף משרד</h3>
         </div>
         <form id="officeForm" class="p-6 space-y-4">
-            <div><label class="block text-sm font-bold mb-2">קומה *</label><input type="number" id="oFloor" class="inp" required></div>
-            <div><label class="block text-sm font-bold mb-2">שם משרד/חברה *</label><input type="text" id="oName" class="inp" required></div>
-            <div class="flex gap-3 pt-4">
-                <button type="button" onclick="closeAddOffice()" class="flex-1 py-4 rounded-2xl bg-gray-200 font-bold">ביטול</button>
+            <input type="number" id="officeFloor" placeholder="קומה" class="inp" required>
+            <input type="text" id="officeName" placeholder="שם חברה / משרד" class="inp" required>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addOfficeModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
                 <button type="submit" class="flex-1 sbtn">שמור</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="toast" id="toastEl"></div>
+<!-- Modal הוסף עובד -->
+<div id="addEmployeeModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף עובד</h3>
+        </div>
+        <form id="employeeForm" class="p-6 space-y-4">
+            <input type="text" id="employeeName" placeholder="שם מלא" class="inp" required>
+            <input type="text" id="employeeRole" placeholder="תפקיד" class="inp" required>
+            <input type="tel" id="employeePhone" placeholder="טלפון" class="inp">
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addEmployeeModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
+                <button type="submit" class="flex-1 sbtn">שמור</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal הוסף הודעה -->
+<div id="addNotificationModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף עדכון למשמרת</h3>
+        </div>
+        <form id="notificationForm" class="p-6 space-y-4">
+            <textarea id="notificationMessage" placeholder="תוכן ההודעה..." class="inp" rows="4" required></textarea>
+            <label class="flex items-center gap-3 text-gray-900">
+                <input type="checkbox" id="notificationActive" checked class="w-5 h-5">
+                <span>הצג בלובי</span>
+            </label>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addNotificationModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
+                <button type="submit" class="flex-1 sbtn">שמור</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -295,188 +500,601 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-window.auth = getAuth(app);
+const auth = getAuth(app);
 const db = getFirestore(app);
+window.auth = auth;
+
 const TODAY = new Date().toISOString().split('T')[0];
 
-let guests = [], tenants = [], offices = [];
+let guests = [], tenants = [], offices = [], employees = [], notifications = [];
+let lobbyOpen = true;
 
 function toast(msg) {
-  const el = document.getElementById('toastEl');
+  const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3000);
 }
 
+// Login
 document.getElementById('loginBtn').onclick = async () => {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
   const err = document.getElementById('loginErr');
-  err.textContent = '';
-  if(!email || !pass) { err.textContent = 'נא למלא שדות'; return; }
+  
+  if (!email || !pass) {
+    err.textContent = 'נא למלא את כל השדות';
+    return;
+  }
+  
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-  } catch(e) {
+  } catch (e) {
     err.textContent = 'שגיאה בהתחברות';
   }
 };
 
-onAuthStateChanged(auth, user => {
-  if(user) {
+onAuthStateChanged(auth, (user) => {
+  if (user) {
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').classList.add('show');
-    loadData();
+    loadAllData();
+  } else {
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('app').classList.remove('show');
   }
 });
 
-async function loadData() {
+// Load all data
+async function loadAllData() {
+  await Promise.all([
+    loadGuests(),
+    loadTenants(),
+    loadOffices(),
+    loadEmployees(),
+    loadNotifications(),
+    loadLobbyStatus()
+  ]);
+  updateStats();
+  loadAnalytics();
+}
+
+async function loadGuests() {
+  const snap = await getDocs(collection(db, 'guests'));
+  guests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderGuests();
+}
+
+async function loadTenants() {
+  const snap = await getDocs(collection(db, 'tenants'));
+  tenants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderTenants();
+}
+
+async function loadOffices() {
+  const snap = await getDocs(collection(db, 'offices'));
+  offices = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.floor - b.floor);
+  renderOffices();
+}
+
+async function loadEmployees() {
   try {
-    const gSnap = await getDocs(collection(db, 'guests'));
-    guests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    document.getElementById('statGuests').textContent = guests.filter(g => g.date === TODAY).length;
-    renderGuests();
-    
-    const tSnap = await getDocs(collection(db, 'tenants'));
-    tenants = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    document.getElementById('statTenants').textContent = tenants.length;
-    renderTenants();
-    
-    const oSnap = await getDocs(collection(db, 'offices'));
-    offices = oSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    document.getElementById('statOffices').textContent = offices.length;
-    renderOffices();
+    const snap = await getDocs(collection(db, 'employees'));
+    employees = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderEmployees();
   } catch(e) {
-    console.error(e);
+    employees = [];
+    renderEmployees();
   }
+}
+
+async function loadNotifications() {
+  try {
+    const snap = await getDocs(collection(db, 'notifications'));
+    notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderNotifications();
+  } catch(e) {
+    notifications = [];
+    renderNotifications();
+  }
+}
+
+async function loadLobbyStatus() {
+  try {
+    const snap = await getDocs(collection(db, 'settings'));
+    const settings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const lobbySetting = settings.find(s => s.id === 'lobby');
+    lobbyOpen = lobbySetting ? lobbySetting.open : true;
+    updateLobbyButton();
+  } catch(e) {
+    lobbyOpen = true;
+    updateLobbyButton();
+  }
+}
+
+function updateLobbyButton() {
+  const btn = document.getElementById('lobbyStatusBtn');
+  if (lobbyOpen) {
+    btn.textContent = '🟢 לובי פתוח';
+    btn.className = 'frosted-card px-6 py-3 text-sm font-bold bg-green-500/20';
+  } else {
+    btn.textContent = '🔴 לובי סגור';
+    btn.className = 'frosted-card px-6 py-3 text-sm font-bold bg-red-500/20';
+  }
+}
+
+window.toggleLobbyStatus = async () => {
+  lobbyOpen = !lobbyOpen;
+  try {
+    await setDoc(doc(db, 'settings', 'lobby'), { open: lobbyOpen });
+    updateLobbyButton();
+    toast(lobbyOpen ? 'הלובי נפתח' : 'הלובי נסגר');
+  } catch(e) {
+    toast('שגיאה בעדכון');
+  }
+};
+
+function updateStats() {
+  document.getElementById('statToday').textContent = guests.filter(g => g.date === TODAY).length;
+  document.getElementById('statTenants').textContent = tenants.length;
+  document.getElementById('statOffices').textContent = offices.length;
+  document.getElementById('statEmployees').textContent = employees.length;
 }
 
 function renderGuests() {
   const tbody = document.getElementById('guestsTbody');
-  if(!guests.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60">אין</td></tr>'; return; }
+  if (!guests.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין רישומים</td></tr>';
+    return;
+  }
   tbody.innerHTML = guests.map(g => `
     <tr>
       <td>${g.name}</td>
-      <td>${g.cat}</td>
+      <td><span class="badge">${g.cat || ''}</span></td>
       <td>${g.date}</td>
       <td>${g.time}</td>
-      <td>${g.registeredBy||'—'}</td>
-      <td><button onclick="delGuest('${g.id}')" class="text-red-400">🗑</button></td>
+      <td>${g.registeredBy || '—'}</td>
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteGuest('${g.id}')">🗑</button>
+      </td>
     </tr>
   `).join('');
 }
 
-window.delGuest = async (id) => {
-  if(!confirm('למחוק?')) return;
-  try {
-    await deleteDoc(doc(db, 'guests', id));
-    toast('נמחק');
-    loadData();
-  } catch(e) {
-    toast('שגיאה');
-  }
-};
-
 function renderTenants() {
   const tbody = document.getElementById('tenantsTbody');
-  if(!tenants.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center opacity-60">אין</td></tr>'; return; }
+  if (!tenants.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
+    return;
+  }
   tbody.innerHTML = tenants.map(t => `
     <tr>
       <td>${t.name}</td>
       <td>${t.floor}</td>
       <td>${t.apt}</td>
-      <td>${t.phone||'—'}</td>
-      <td><button onclick="delTenant('${t.id}')" class="text-red-400">🗑</button></td>
+      <td>${t.phone || '—'}</td>
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
+      </td>
     </tr>
   `).join('');
 }
 
-window.delTenant = async (id) => {
-  if(!confirm('למחוק?')) return;
-  try {
-    await deleteDoc(doc(db, 'tenants', id));
-    toast('נמחק');
-    loadData();
-  } catch(e) {
-    toast('שגיאה');
-  }
-};
-
 function renderOffices() {
   const tbody = document.getElementById('officesTbody');
-  if(!offices.length) { tbody.innerHTML = '<tr><td colspan="3" class="text-center opacity-60">אין</td></tr>'; return; }
+  if (!offices.length) {
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center opacity-60 py-8">אין משרדים</td></tr>';
+    return;
+  }
   tbody.innerHTML = offices.map(o => `
     <tr>
       <td>קומה ${o.floor}</td>
       <td>${o.name}</td>
-      <td><button onclick="delOffice('${o.id}')" class="text-red-400">🗑</button></td>
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteOffice('${o.id}')">🗑</button>
+      </td>
     </tr>
   `).join('');
 }
 
-window.delOffice = async (id) => {
-  if(!confirm('למחוק?')) return;
-  try {
-    await deleteDoc(doc(db, 'offices', id));
-    toast('נמחק');
-    loadData();
-  } catch(e) {
-    toast('שגיאה');
+function renderEmployees() {
+  const tbody = document.getElementById('employeesTbody');
+  if (!employees.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין עובדים</td></tr>';
+    return;
   }
-};
+  tbody.innerHTML = employees.map(e => `
+    <tr>
+      <td>${e.name}</td>
+      <td>${e.role}</td>
+      <td>${e.phone || '—'}</td>
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteEmployee('${e.id}')">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+}
 
+function renderNotifications() {
+  const tbody = document.getElementById('notificationsTbody');
+  if (!notifications.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין הודעות</td></tr>';
+    return;
+  }
+  tbody.innerHTML = notifications.map(n => `
+    <tr>
+      <td>${n.message}</td>
+      <td>${new Date(n.createdAt).toLocaleString('he-IL')}</td>
+      <td>${n.active && n.forLobby ? '🟢 פעיל' : '⚫ כבוי'}</td>
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteNotification('${n.id}')">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadAnalytics() {
+  // Recent entries
+  const recent = guests.slice(-10).reverse();
+  const recentTbody = document.getElementById('recentTbody');
+  if (recent.length === 0) {
+    recentTbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין נתונים</td></tr>';
+  } else {
+    recentTbody.innerHTML = recent.map(g => `
+      <tr>
+        <td>${g.name}</td>
+        <td>${g.date}</td>
+        <td>${g.time}</td>
+        <td>${g.cat || ''}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Floor activity
+  const todayGuests = guests.filter(g => g.date === TODAY);
+  const floorCount = {};
+  todayGuests.forEach(g => {
+    const floor = g.floor || 0;
+    floorCount[floor] = (floorCount[floor] || 0) + 1;
+  });
+  
+  const floorDiv = document.getElementById('floorActivity');
+  const floors = Object.entries(floorCount).sort((a,b) => b[1] - a[1]);
+  
+  if (floors.length === 0) {
+    floorDiv.innerHTML = '<p class="opacity-60">אין נתונים</p>';
+  } else {
+    floorDiv.innerHTML = floors.map(([floor, count]) => `
+      <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+        <span>קומה ${floor}</span>
+        <span class="font-bold text-orange-300">${count} כניסות</span>
+      </div>
+    `).join('');
+  }
+
+  // Load archive
+  try {
+    const archiveSnap = await getDocs(collection(db, 'archive'));
+    const archive = archiveSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const archiveTbody = document.getElementById('archiveTbody');
+    if (archive.length === 0) {
+      archiveTbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
+    } else {
+      archiveTbody.innerHTML = archive.slice(-50).reverse().map(a => `
+        <tr>
+          <td>${a.name}</td>
+          <td>${a.date}</td>
+          <td>${a.time}</td>
+          <td>${a.cat || ''}</td>
+        </tr>
+      `).join('');
+    }
+  } catch(e) {
+    document.getElementById('archiveTbody').innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
+  }
+}
+
+// Tab switching
 window.showTab = (tab) => {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  
   event.target.classList.add('active');
-  document.getElementById(tab).classList.add('active');
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
 };
 
-window.openAddTenant = () => document.getElementById('addTenantModal').classList.add('show');
-window.closeAddTenant = () => {
-  document.getElementById('addTenantModal').classList.remove('show');
-  document.getElementById('tenantForm').reset();
-};
-
-document.getElementById('tenantForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const data = {
-    name: document.getElementById('tName').value.trim(),
-    floor: parseInt(document.getElementById('tFloor').value),
-    apt: document.getElementById('tApt').value.trim(),
-    phone: document.getElementById('tPhone').value.trim()
-  };
+// Delete functions
+window.deleteGuest = async (id) => {
+  if (!confirm('למחוק רישום זה?')) return;
   try {
-    await addDoc(collection(db, 'tenants'), data);
-    toast('נוסף בהצלחה');
-    closeAddTenant();
-    loadData();
+    await deleteDoc(doc(db, 'guests', id));
+    toast('נמחק');
+    loadGuests();
   } catch(e) {
     toast('שגיאה');
   }
 };
 
-window.openAddOffice = () => document.getElementById('addOfficeModal').classList.add('show');
-window.closeAddOffice = () => {
-  document.getElementById('addOfficeModal').classList.remove('show');
-  document.getElementById('officeForm').reset();
+window.deleteTenant = async (id) => {
+  if (!confirm('למחוק דייר זה?')) return;
+  try {
+    await deleteDoc(doc(db, 'tenants', id));
+    toast('נמחק');
+    loadTenants();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+window.deleteOffice = async (id) => {
+  if (!confirm('למחוק משרד זה?')) return;
+  try {
+    await deleteDoc(doc(db, 'offices', id));
+    toast('נמחק');
+    loadOffices();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+window.deleteEmployee = async (id) => {
+  if (!confirm('למחוק עובד זה?')) return;
+  try {
+    await deleteDoc(doc(db, 'employees', id));
+    toast('נמחק');
+    loadEmployees();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+window.deleteNotification = async (id) => {
+  if (!confirm('למחוק הודעה זו?')) return;
+  try {
+    await deleteDoc(doc(db, 'notifications', id));
+    toast('נמחק');
+    loadNotifications();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+// Delete old guests (auto-cleanup)
+window.deleteOldGuests = async () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  const oldGuests = guests.filter(g => g.date < yesterdayStr);
+  
+  if (oldGuests.length === 0) {
+    toast('אין רישומים ישנים למחוק');
+    return;
+  }
+  
+  if (!confirm(`למחוק ${oldGuests.length} רישומים ישנים ולהעביר לארכיון?`)) return;
+  
+  try {
+    // Move to archive
+    for (const g of oldGuests) {
+      const {id, ...data} = g;
+      await addDoc(collection(db, 'archive'), {...data, archivedAt: new Date().toISOString()});
+      await deleteDoc(doc(db, 'guests', id));
+    }
+    toast(`${oldGuests.length} רישומים הועברו לארכיון`);
+    loadGuests();
+    loadAnalytics();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+// Download Excel
+window.downloadGuestsExcel = () => {
+  if (!guests || guests.length === 0) {
+    toast('אין נתונים להורדה');
+    return;
+  }
+  
+  const data = guests.map(g => ({
+    'שם': g.name,
+    'קטגוריה': g.cat,
+    'תאריך': g.date,
+    'שעה': g.time,
+    'נרשם ע"י': g.registeredBy || '',
+    'קומה': g.floor || '',
+    'דירה': g.apt || ''
+  }));
+  
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(wb, ws, 'אורחים');
+  XLSX.writeFile(wb, `אורחים_${TODAY}.xlsx`);
+  toast('הקובץ הורד');
+};
+
+// Upload tenants Excel
+window.uploadTenantsExcel = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet);
+      
+      let count = 0;
+      for (const row of json) {
+        const tenant = {
+          name: row['שם'] || row['name'] || '',
+          floor: parseInt(row['קומה'] || row['floor'] || 0),
+          apt: String(row['דירה'] || row['apt'] || ''),
+          phone: row['טלפון'] || row['phone'] || ''
+        };
+        
+        if (tenant.name && tenant.floor) {
+          await addDoc(collection(db, 'tenants'), tenant);
+          count++;
+        }
+      }
+      
+      toast(`${count} דיירים נוספו`);
+      loadTenants();
+      updateStats();
+    } catch(error) {
+      toast('שגיאה בקריאת הקובץ');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = '';
+};
+
+// Filter tenants
+window.filterTenants = () => {
+  const q = document.getElementById('tenantSearchInput').value.toLowerCase();
+  if (!q) {
+    renderTenants();
+    return;
+  }
+  
+  const filtered = tenants.filter(t => 
+    t.name.toLowerCase().includes(q) || 
+    String(t.floor).includes(q) || 
+    t.apt.toLowerCase().includes(q)
+  );
+  
+  const tbody = document.getElementById('tenantsTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center opacity-60 py-8">לא נמצאו תוצאות</td></tr>';
+  } else {
+    tbody.innerHTML = filtered.map(t => `
+      <tr>
+        <td>${t.name}</td>
+        <td>${t.floor}</td>
+        <td>${t.apt}</td>
+        <td>${t.phone || '—'}</td>
+        <td>
+          <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+};
+
+// Modal functions
+window.openAddTenant = () => {
+  document.getElementById('addTenantModal').classList.add('show');
+};
+
+window.openAddOffice = () => {
+  document.getElementById('addOfficeModal').classList.add('show');
+};
+
+window.openAddEmployee = () => {
+  document.getElementById('addEmployeeModal').classList.add('show');
+};
+
+window.openAddNotification = () => {
+  document.getElementById('addNotificationModal').classList.add('show');
+};
+
+window.openAddUser = () => {
+  toast('ניהול משתמשים מתבצע דרך Firebase Console');
+};
+
+window.closeModal = (id) => {
+  document.getElementById(id).classList.remove('show');
+};
+
+// Form handlers
+document.getElementById('tenantForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById('tenantName').value.trim(),
+    floor: parseInt(document.getElementById('tenantFloor').value),
+    apt: document.getElementById('tenantApt').value.trim(),
+    phone: document.getElementById('tenantPhone').value.trim()
+  };
+  
+  try {
+    await addDoc(collection(db, 'tenants'), data);
+    toast('דייר נוסף');
+    closeModal('addTenantModal');
+    document.getElementById('tenantForm').reset();
+    loadTenants();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
 };
 
 document.getElementById('officeForm').onsubmit = async (e) => {
   e.preventDefault();
   const data = {
-    floor: parseInt(document.getElementById('oFloor').value),
-    name: document.getElementById('oName').value.trim()
+    floor: parseInt(document.getElementById('officeFloor').value),
+    name: document.getElementById('officeName').value.trim()
   };
+  
   try {
     await addDoc(collection(db, 'offices'), data);
-    toast('נוסף בהצלחה');
-    closeAddOffice();
-    loadData();
+    toast('משרד נוסף');
+    closeModal('addOfficeModal');
+    document.getElementById('officeForm').reset();
+    loadOffices();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+document.getElementById('employeeForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById('employeeName').value.trim(),
+    role: document.getElementById('employeeRole').value.trim(),
+    phone: document.getElementById('employeePhone').value.trim()
+  };
+  
+  try {
+    await addDoc(collection(db, 'employees'), data);
+    toast('עובד נוסף');
+    closeModal('addEmployeeModal');
+    document.getElementById('employeeForm').reset();
+    loadEmployees();
+    updateStats();
+  } catch(e) {
+    toast('שגיאה');
+  }
+};
+
+document.getElementById('notificationForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const data = {
+    message: document.getElementById('notificationMessage').value.trim(),
+    active: document.getElementById('notificationActive').checked,
+    forLobby: true,
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    await addDoc(collection(db, 'notifications'), data);
+    toast('הודעה נוספה');
+    closeModal('addNotificationModal');
+    document.getElementById('notificationForm').reset();
+    loadNotifications();
   } catch(e) {
     toast('שגיאה');
   }
 };
 
 </script>
+
 </body>
 </html>
