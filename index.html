@@ -627,9 +627,6 @@ tr:hover td {
                     <thead>
                         <tr>
                             <th>שם</th>
-                            <th>אצל דייר</th>
-                            <th>קומה</th>
-                            <th>דירה</th>
                             <th>קטגוריה</th>
                             <th>תאריך</th>
                             <th>שעה</th>
@@ -638,7 +635,7 @@ tr:hover td {
                         </tr>
                     </thead>
                     <tbody id="guestsTbody">
-                        <tr><td colspan="9" style="text-align: center; opacity: 0.6; padding: 32px;">אין רישומים</td></tr>
+                        <tr><td colspan="6" style="text-align: center; opacity: 0.6; padding: 32px;">אין רישומים</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -711,29 +708,10 @@ tr:hover td {
                 <label class="form-label">שם אורח *</label>
                 <input type="text" id="gN" class="form-input" required>
             </div>
-            
-            <!-- חיפוש דייר -->
-            <div class="form-group">
-                <label class="form-label">חפש דייר *</label>
-                <input type="text" id="tenantSearch" class="form-input" placeholder="הקלד שם דייר או קומה..." oninput="searchTenant()" autocomplete="off">
-                <div id="tenantResults" style="display: none; position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; max-height: 200px; overflow-y: auto; width: calc(100% - 48px); z-index: 1000; margin-top: 4px;"></div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">קומה *</label>
-                    <input type="number" id="gFloor" class="form-input" required readonly style="background: #f5f5f5;">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">דירה *</label>
-                    <input type="text" id="gApt" class="form-input" required readonly style="background: #f5f5f5;">
-                </div>
-            </div>
-            
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">קטגוריה *</label>
-                    <select id="gCat" class="form-input" required>
+                    <select id="gCat" class="form-input" required onchange="toggleOtherCat()">
                         <option value="">בחר...</option>
                         <option>אורח פרטי</option>
                         <option>ספק/טכנאי</option>
@@ -741,6 +719,10 @@ tr:hover td {
                         <option>אחר</option>
                     </select>
                 </div>
+            <div class="form-group" id="otherCatWrap" style="display: none;">
+                <label class="form-label">פרט את הקטגוריה *</label>
+                <input type="text" id="otherCat" class="form-input" placeholder="לדוגמה: קבלן, רופא...">
+            </div>
                 <div class="form-group">
                     <label class="form-label">נרשם ע"י *</label>
                     <select id="gEmployee" class="form-input" required>
@@ -818,6 +800,21 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+
+window.toggleOtherCat = () => {
+  const cat = document.getElementById('gCat').value;
+  const wrap = document.getElementById('otherCatWrap');
+  const input = document.getElementById('otherCat');
+  if (cat === 'אחר') {
+    wrap.style.display = 'block';
+    input.required = true;
+  } else {
+    wrap.style.display = 'none';
+    input.required = false;
+    input.value = '';
+  }
+};
+
 // Auto load data
 loadData();
 
@@ -827,68 +824,29 @@ window.openRegModal = () => {
   document.getElementById('regModal').classList.add('show');
 };
 
-window.searchTenant = () => {
-  const query = document.getElementById('tenantSearch').value.toLowerCase();
-  const results = document.getElementById('tenantResults');
-  
-  if (!query || query.length < 2) {
-    results.style.display = 'none';
-    return;
-  }
-  
-  const filtered = tenants.filter(t => 
-    t.name.toLowerCase().includes(query) || 
-    String(t.floor).includes(query) ||
-    t.apt.toLowerCase().includes(query)
-  );
-  
-  if (filtered.length === 0) {
-    results.innerHTML = '<div style="padding: 12px; color: #999;">לא נמצאו תוצאות</div>';
-    results.style.display = 'block';
-    return;
-  }
-  
-  results.innerHTML = filtered.slice(0, 10).map(t => `
-    <div onclick="selectTenant('${t.name}', ${t.floor}, '${t.apt}')" style="padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
-      <strong>${t.name}</strong><br>
-      <small style="color: #666;">קומה ${t.floor}, דירה ${t.apt}</small>
-    </div>
-  `).join('');
-  results.style.display = 'block';
-};
-
-window.selectTenant = (name, floor, apt) => {
-  document.getElementById('tenantSearch').value = name;
-  document.getElementById('gFloor').value = floor;
-  document.getElementById('gApt').value = apt;
-  document.getElementById('tenantResults').style.display = 'none';
-};
-
 window.closeRegModal = () => {
   document.getElementById('regModal').classList.remove('show');
   document.getElementById('gForm').reset();
-  document.getElementById('tenantSearch').value = '';
-  document.getElementById('gFloor').value = '';
-  document.getElementById('gApt').value = '';
-  document.getElementById('tenantResults').style.display = 'none';
 };
 
 document.getElementById('gForm').onsubmit = async (e) => {
   e.preventDefault();
   
-  const floor = parseInt(document.getElementById('gFloor').value) || 0;
-  const apt = document.getElementById('gApt').value.trim() || 'לובי';
-  const tenantName = document.getElementById('tenantSearch').value.trim() || 'לובי';
+  let category = document.getElementById('gCat').value;
+  if (category === 'אחר') {
+    const other = document.getElementById('otherCat').value.trim();
+    if (other) category = 'אחר - ' + other;
+  }
   
   const data = {
     name: document.getElementById('gN').value.trim(),
-    cat: document.getElementById('gCat').value,
+    cat: category,
     registeredBy: document.getElementById('gEmployee').value,
     date: document.getElementById('gDt').value,
     time: document.getElementById('gTm').value,
-    floor: floor,
-    apt: apt,
-    tname: tenantName
+    floor: 0,
+    apt: 'לובי',
+    tname: 'לובי'
   };
   try {
     await addDoc(collection(db, 'guests'), data);
@@ -922,13 +880,10 @@ async function loadData() {
 
 function renderGuests() {
   const tbody = document.getElementById('guestsTbody');
-  if(!guests.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; return; }
+  if(!guests.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; return; }
   tbody.innerHTML = guests.map(g => `
     <tr>
       <td>${g.name}</td>
-      <td>${g.tname || 'לובי'}</td>
-      <td>${g.floor || '—'}</td>
-      <td>${g.apt || '—'}</td>
       <td><span class="badge">${g.cat}</span></td>
       <td>${g.date}</td>
       <td>${g.time}</td>
