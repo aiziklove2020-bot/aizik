@@ -574,10 +574,7 @@ async function loadGuests() {
     const snap = await getDocs(collection(db, 'guests'));
     guests = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       .sort((a, b) => {
-        // Sort by date DESC, then by time DESC
-        if (a.date !== b.date) {
-          return (b.date || '').localeCompare(a.date || '');
-        }
+        if (a.date !== b.date) return (b.date || '').localeCompare(a.date || '');
         return (b.time || '').localeCompare(a.time || '');
       });
     renderGuests();

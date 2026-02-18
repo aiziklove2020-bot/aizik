@@ -1234,6 +1234,15 @@ window.searchOffice = () => {
   results.style.display = 'block';
 };
 
+window.toggleOtherField = () => {
+  const cat = document.getElementById('gCat').value;
+  const wrap = document.getElementById('otherFieldWrap');
+  if (wrap) wrap.style.display = cat === 'אחר' ? 'block' : 'none';
+  if (cat !== 'אחר') {
+    const f = document.getElementById('gOther');
+    if (f) f.value = '';
+  }
+};
 
 window.showSection = (sec) => {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
