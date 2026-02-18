@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>העלאת משרדים דה וינצ'י</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+#status { background: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
+h1 { color: #333; }
+.success { color: green; }
+.error { color: red; }
+</style>
+</head>
+<body>
+<h1>מעלה משרדים למערכת דה וינצ'י...</h1>
+<div id="status">מתחיל...</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const offices = [
+  // קומה 3
+  { floor: 3, name: "חברה - רפט משרדות מידע יח 307+306" },
+  { floor: 3, name: "אור-אסיה בע\"מ Euro-Asia Ltd ולרקס" },
+  { floor: 3, name: "חיים לוי ושות - משרד עורכי דין + קלימגיה 310" },
+  { floor: 3, name: "יהודה 311 אפריס-וויטנברג, יהל בן עובד, משרד עו\"ד" },
+  { floor: 3, name: "אקו סטפי יח Echo 308" },
+  { floor: 3, name: "Ledge 309 יח" },
+  { floor: 3, name: "313 Jefferies International Limited" },
+  { floor: 3, name: "ד\"ר תהל-מרפאת שיניים 312" },
+  { floor: 3, name: "RESIDENT הדיירים" },
+  { floor: 3, name: "איקונת ל\"צ 304" },
+  
+  // קומה 4
+  { floor: 4, name: "AI21labs" },
+  
+  // קומה 5
+  { floor: 5, name: "CB Health ס\"י איגס היית בע\"מ" },
+  { floor: 5, name: "moshal program /Entrée Capital משה ענתנות של אנטרי/ ס\"י ני ל מנקו" },
+  { floor: 5, name: "AI21labs" },
+  { floor: 5, name: "Dux" },
+  { floor: 5, name: "שוכר משנה זפרן סקיוריטי (A21) Zafran Security" },
+  { floor: 5, name: "Inbar Group Finance and Nostro (מומ אגד מומ)" },
+  { floor: 5, name: "איקס 5 עובדות בע\"מ 502B" },
+  { floor: 5, name: "שוכר משנה NEO security (A21)" },
+  
+  // קומה 6
+  { floor: 6, name: "PSG Equity Ltd מ° 602" },
+  { floor: 6, name: "לחצ ע.ד. אתדקת 601" },
+  { floor: 6, name: "ישר אדריכלים" },
+  { floor: 6, name: "A+B 606 PARADOX" },
+  { floor: 6, name: "גולדוין זקס יח 606 בקן GS" },
+  { floor: 6, name: "גב טריבל א.א.י. בע\"מ 601B Tribal" },
+  { floor: 6, name: "טרם TRES Finance יח 603" },
+  
+  // קומה 7
+  { floor: 7, name: "אקטולוג אינק" },
+  { floor: 7, name: "בנק לאומי בנתאות פרטית נדן (626)" },
+  { floor: 7, name: "Bank Leumi בנק לאומי" },
+  { floor: 7, name: "קונקטים - Connecteam (קנדיבור Candivore)" },
+  
+  // קומה 8
+  { floor: 8, name: "קונקטים - Connecteam (סייקוד Cycode)" },
+  { floor: 8, name: "Connecteam - קונקטים" },
+  { floor: 8, name: "קונקטים - Connecteam (שלט סיקיוריטי Salt Security)" },
+  { floor: 8, name: "קונקטים - Connecteam (gloat)" },
+  
+  // קומה 9
+  { floor: 9, name: "Connecteam - קונקטים" }
+];
+
+async function addOffices() {
+  const status = document.getElementById('status');
+  status.innerHTML = '<p>מתחיל להעלות משרדים...</p>';
+  
+  let count = 0;
+  try {
+    for (const office of offices) {
+      await addDoc(collection(db, 'offices'), office);
+      count++;
+      status.innerHTML += `<p>✓ ${count}/${offices.length} - קומה ${office.floor}: ${office.name}</p>`;
+    }
+    status.innerHTML += `<h2 class="success">✓ הצלחה! ${count} משרדים נוספו למערכת!</h2>`;
+    status.innerHTML += '<p><strong>עכשיו תוכל לסגור דף זה ולרענן את מערכת הלובי/ניהול</strong></p>';
+  } catch(e) {
+    status.innerHTML += `<p class="error">שגיאה: ${e.message}</p>`;
+  }
+}
+
+addOffices();
+</script>
+
+</body>
+</html>
