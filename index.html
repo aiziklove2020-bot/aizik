@@ -525,7 +525,7 @@ tr:hover td {
             <h1 class="logo-title">DA VINCI</h1>
             <p class="logo-subtitle">
                 <span class="pulse-dot"></span>
-                לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">14:32</span>
+                לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></span>
             </p>
         </div>
     </header>
@@ -705,25 +705,7 @@ tr:hover td {
                 </table>
             </div>
 
-            <!-- עובדי דה וינצ'י -->
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
-                <h3 style="color: #f59e0b; font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                    <span>👔</span> אנשי קשר — דה וינצ'י
-                </h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>שם</th>
-                            <th>טלפון</th>
-                        </tr>
-                    </thead>
-                    <tbody id="employeesTbody">
-                        <tr><td colspan="2" style="text-align: center; opacity: 0.6; padding: 32px;">טוען...</td></tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
-    </div>
 
         <!-- עובדי דה וינצ'י -->
         <div id="employeesSection" class="section">
@@ -866,10 +848,11 @@ function toast(msg) {
 }
 
 function updateClock() {
-  document.getElementById('clk').textContent = new Date().toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
+  const now = new Date();
+  document.getElementById('clk').textContent = now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
 }
-setInterval(updateClock, 1000);
 updateClock();
+setInterval(updateClock, 1000);
 
 // Auto load data
 loadData();
