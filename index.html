@@ -1,854 +1,531 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>דה וינצ'י — לובי</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap');
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body, html {
-    font-family: 'Assistant', sans-serif;
-    min-height: 100vh;
-    color: white;
-}
-
-/* רקע עם תמונת המגדלים */
-.main-bg {
-    position: fixed;
-    inset: 0;
-    background-image: url('IMG_9285.jpeg');
-    background-size: cover;
-    background-position: center;
-    z-index: -2;
-}
-
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    z-index: -1;
-}
-
-/* זכוכית חלבית */
-.frosted-glass {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 40px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.frosted-card {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 24px;
-    transition: all 0.3s;
-}
-
-.frosted-card:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(212,175,55,0.2);
-}
-
-.status-glass {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 50%;
-    width: 75px;
-    height: 75px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.action-card {
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.action-card:active {
-    transform: scale(0.96);
-}
-
-.icon-wrapper {
-    width: 55px;
-    height: 55px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Header */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 40px;
-    padding-top: 16px;
-    max-width: 1024px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.status-row {
-    display: flex;
-    gap: 16px;
-}
-
-.logo-box {
-    padding: 20px 32px;
-    text-align: left;
-}
-
-.logo-title {
-    font-size: 24px;
-    font-weight: 800;
-    font-style: italic;
-    letter-spacing: -0.5px;
-    line-height: 1;
-    margin-bottom: 4px;
-}
-
-.logo-subtitle {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 700;
-    color: #34d399;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.pulse-dot {
-    width: 6px;
-    height: 6px;
-    background: #34d399;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-/* Main */
-.main-content {
-    max-width: 1024px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-.cards-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.card {
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.card-content {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.card-icon {
-    background: rgba(74,144,226,0.25);
-    border: 1px solid rgba(74,144,226,0.3);
-}
-
-.card-icon.purple {
-    background: rgba(168,85,247,0.25);
-    border-color: rgba(168,85,247,0.3);
-}
-
-.card-icon.green {
-    background: rgba(52,211,153,0.25);
-    border-color: rgba(52,211,153,0.3);
-}
-
-.card-icon.orange {
-    background: rgba(251,146,60,0.25);
-    border-color: rgba(251,146,60,0.3);
-}
-
-.card-title {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.card-desc {
-    font-size: 10px;
-    opacity: 0.6;
-    margin-top: 2px;
-}
-
-.arrow-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.4;
-}
-
-/* Footer */
-.footer {
-    margin-top: 48px;
-    margin-bottom: 16px;
-    max-width: 1024px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 24px;
-}
-
-.footer-box {
-    padding: 16px;
-    text-align: center;
-}
-
-.footer-text {
-    font-size: 10px;
-    letter-spacing: 5px;
-    opacity: 0.5;
-    text-transform: uppercase;
-    font-weight: 300;
-}
-
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal-content {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 32px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    padding: 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: white;
-}
-
-.modal-close {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    cursor: pointer;
-    font-size: 20px;
-    color: white;
-}
-
-.modal-close:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 8px;
-}
-
-.form-input {
-    width: 100%;
-    background: rgba(255,255,255,0.8);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 16px;
-    padding: 14px 16px;
-    font-size: 15px;
-    font-family: 'Assistant', sans-serif;
-    color: #1f2937;
-    outline: none;
-}
-
-.form-input:focus {
-    background: rgba(255,255,255,0.95);
-    border-color: rgba(74,144,226,0.5);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 12px;
-    padding-top: 16px;
-}
-
-.btn {
-    flex: 1;
-    padding: 16px;
-    border-radius: 20px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.btn-cancel {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.btn-cancel:hover {
-    background: rgba(255,255,255,0.25);
-}
-
-.btn-submit {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    box-shadow: 0 8px 20px rgba(59,130,246,0.3);
-}
-
-.btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(59,130,246,0.4);
-}
-
-/* Toast */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(20px);
-    color: #1f2937;
-    padding: 16px 32px;
-    border-radius: 24px;
-    font-weight: 600;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
-    z-index: 99999;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-}
-
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background: rgba(255,255,255,0.05);
-    padding: 12px;
-    text-align: right;
-    font-size: 12px;
-    text-transform: uppercase;
-    font-weight: 600;
-}
-
-td {
-    padding: 14px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-tr:hover td {
-    background: rgba(255,255,255,0.05);
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba(74,144,226,0.2);
-    color: #60a5fa;
-    border: 1px solid rgba(74,144,226,0.3);
-}
-
-.btn-icon {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #ef4444;
-}
-
-.section {
-    display: none;
-}
-
-.section.active {
-    display: block;
-}
-
-.back-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 12px;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    margin-left: 16px;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.section-title {
-    font-size: 32px;
-    font-weight: 700;
-}
-
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        gap: 16px;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Da Vinci - לובי</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap');
+        
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Assistant', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* רקע תמונת המגדלים */
+        .main-bg {
+            position: fixed;
+            inset: 0;
+            background-image: url('IMG_9285.jpeg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        /* שכבת הצללה */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+            z-index: -1;
+        }
+
+        /* זכוכית חלבית (Frosted Glass) */
+        .frosted-glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        .status-glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 50%;
+            width: 75px;
+            height: 75px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .action-card {
+            transition: all 0.3s ease;
+        }
+
+        .action-card:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .icon-wrapper {
+            width: 55px;
+            height: 55px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(40px);
+            border-radius: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            float: left;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Assistant', sans-serif;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-family: 'Assistant', sans-serif;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            color: #1f2937;
+            padding: 16px 32px;
+            border-radius: 24px;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+            z-index: 99999;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            text-align: right;
+            font-size: 12px;
+            color: white;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(74,144,226,0.2);
+            color: #60a5fa;
+        }
+    </style>
 </head>
-<body>
+<body class="text-white">
 
-<div class="main-bg"></div>
-<div class="overlay"></div>
+    <div class="main-bg"></div>
+    <div class="overlay"></div>
 
-<div style="position: relative; z-index: 10; min-height: 100vh; padding: 24px;">
-    
-    <!-- Header -->
-    <header class="header">
-        <div class="status-row">
-            <div class="status-glass">
-                <span style="font-size: 10px; opacity: 0.7;">אורחים</span>
-                <span style="font-size: 14px; font-weight: 700;" id="sToday">0</span>
+    <div style="position: relative; z-10; height: 100%; display: flex; flex-direction: column; padding: 24px; max-width: 500px; margin: 0 auto;">
+        
+        <!-- Header Section -->
+        <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-top: 16px;">
+            <div style="display: flex; gap: 16px;">
+                <div class="status-glass">
+                    <span style="font-size: 10px; opacity: 0.7;">אבטחה</span>
+                    <span style="font-size: 14px; font-weight: 700; color: white;">פעיל</span>
+                </div>
+                <div class="status-glass">
+                    <span style="font-size: 10px; opacity: 0.7;">מעליות</span>
+                    <span style="font-size: 14px; font-weight: 700; color: #6ee7b7;">תקין</span>
+                </div>
             </div>
-            <div class="status-glass">
-                <span style="font-size: 10px; opacity: 0.7;">דיירים</span>
-                <span style="font-size: 14px; font-weight: 700; color: #34d399;" id="sTen">0</span>
+
+            <div class="frosted-glass" style="padding: 20px 32px; text-align: left;">
+                <h1 style="font-size: 24px; font-weight: 800; font-style: italic; letter-spacing: -0.5px; line-height: 1; margin-bottom: 4px;">DA VINCI</h1>
+                <p style="font-size: 9px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #6ee7b7; display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 6px; height: 6px; background: #34d399; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                    <span id="clock">00:00</span>
+                </p>
             </div>
-        </div>
-        <div class="frosted-glass logo-box">
-            <h1 class="logo-title">DA VINCI</h1>
-            <p class="logo-subtitle">
-                <span class="pulse-dot"></span>
-                לובי • <span id="clk">14:32</span>
-            </p>
-        </div>
-    </header>
+        </header>
 
-    <div class="main-content">
-        <!-- תפריט ראשי -->
-        <div id="mainMenu" class="section active">
-            <div class="cards-grid">
-                
-                <div class="frosted-card card action-card" onclick="openRegModal()">
-                    <div class="card-content">
-                        <div class="icon-wrapper card-icon">
-                            <svg style="width: 28px; height: 28px; color: #93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="card-title">רישום אורח חדש</h2>
-                            <p class="card-desc">הוסף כניסת אורח למערכת</p>
-                        </div>
+        <!-- Main Actions Grid -->
+        <div id="mainMenu" class="section active" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+            
+            <!-- רישום אורח -->
+            <div class="frosted-glass action-card" style="padding: 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="openRegModal()">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="icon-wrapper" style="background: rgba(74,144,226,0.4); border: 1px solid rgba(74,144,226,0.3);">
+                        <svg style="width: 28px; height: 28px; color: #93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </div>
-                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </div>
-
-                <div class="frosted-card card action-card" onclick="showSection('list')">
-                    <div class="card-content">
-                        <div class="icon-wrapper card-icon purple">
-                            <svg style="width: 28px; height: 28px; color: #c4b5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="card-title">רשימת כניסות</h2>
-                            <p class="card-desc">צפייה וניהול אורחים</p>
-                        </div>
+                    <div>
+                        <h2 style="font-size: 24px; font-weight: 700;">רישום אורח</h2>
+                        <p style="font-size: 10px; opacity: 0.6;">הוסף כניסת אורח חדשה</p>
                     </div>
-                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
                 </div>
-
-                <div class="frosted-card card action-card" onclick="showSection('tenants')">
-                    <div class="card-content">
-                        <div class="icon-wrapper card-icon green">
-                            <svg style="width: 28px; height: 28px; color: #6ee7b7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="card-title">חיפוש דיירים</h2>
-                            <p class="card-desc">בסיס נתוני דיירים</p>
-                        </div>
-                    </div>
-                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </div>
-
-                <div class="frosted-card card action-card" onclick="showSection('offices')">
-                    <div class="card-content">
-                        <div class="icon-wrapper card-icon orange">
-                            <svg style="width: 28px; height: 28px; color: #fdba74;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="card-title">משרדים</h2>
-                            <p class="card-desc">מידע משרדי הבניין</p>
-                        </div>
-                    </div>
-                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </div>
-
+                <svg style="width: 20px; height: 20px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </div>
+
+            <!-- רשימת כניסות -->
+            <div class="frosted-glass action-card" style="padding: 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="showSection('list')">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="icon-wrapper" style="background: rgba(251,146,60,0.4); border: 1px solid rgba(251,146,60,0.3);">
+                        <svg style="width: 28px; height: 28px; color: #fdba74;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 24px; font-weight: 700;">רשימת כניסות</h2>
+                        <p style="font-size: 10px; opacity: 0.6;">צפה בכל הכניסות</p>
+                    </div>
+                </div>
+                <svg style="width: 20px; height: 20px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+
+            <!-- חיפוש דיירים -->
+            <div class="frosted-glass action-card" style="padding: 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="showSection('tenants')">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="icon-wrapper" style="background: rgba(52,211,153,0.4); border: 1px solid rgba(52,211,153,0.3);">
+                        <svg style="width: 28px; height: 28px; color: #6ee7b7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 24px; font-weight: 700;">חיפוש דיירים</h2>
+                        <p style="font-size: 10px; opacity: 0.6;">מידע על דיירי הבניין</p>
+                    </div>
+                </div>
+                <svg style="width: 20px; height: 20px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+
         </div>
 
         <!-- רשימת אורחים -->
-        <div id="listSection" class="section">
-            <div class="section-header">
-                <button class="back-btn" onclick="showSection('main')">←</button>
-                <h2 class="section-title">רשימת כניסות</h2>
-            </div>
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+        <div id="listSection" class="section" style="flex: 1; overflow-y: auto;">
+            <button onclick="showSection('main')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 12px 20px; border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 16px;">← חזור</button>
+            <div class="frosted-glass" style="padding: 20px; overflow-x: auto;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">רשימת כניסות</h2>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>שם</th>
-                            <th>קטגוריה</th>
-                            <th>תאריך</th>
-                            <th>שעה</th>
-                            <th>נרשם ע"י</th>
-                            <th>פעולות</th>
-                        </tr>
-                    </thead>
-                    <tbody id="guestsTbody">
-                        <tr><td colspan="6" style="text-align: center; opacity: 0.6; padding: 32px;">אין רישומים</td></tr>
-                    </tbody>
+                    <thead><tr><th>שם</th><th>תאריך</th><th>שעה</th></tr></thead>
+                    <tbody id="guestsTbody"><tr><td colspan="3" style="text-align: center; padding: 32px; opacity: 0.6;">אין רישומים</td></tr></tbody>
                 </table>
             </div>
         </div>
 
         <!-- דיירים -->
-        <div id="tenantsSection" class="section">
-            <div class="section-header">
-                <button class="back-btn" onclick="showSection('main')">←</button>
-                <h2 class="section-title">חיפוש דיירים</h2>
-            </div>
-            <div class="frosted-card" style="padding: 16px; margin-bottom: 16px;">
-                <input type="text" id="tenantSearch" class="form-input" placeholder="🔍 חפש לפי שם, קומה או דירה..." oninput="filterTenants()">
-            </div>
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+        <div id="tenantsSection" class="section" style="flex: 1; overflow-y: auto;">
+            <button onclick="showSection('main')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 12px 20px; border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 16px;">← חזור</button>
+            <div class="frosted-glass" style="padding: 20px; overflow-x: auto;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">דיירים</h2>
+                <input type="text" id="tenantSearch" placeholder="🔍 חפש דייר..." style="width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; margin-bottom: 16px; background: rgba(255,255,255,0.1); color: white;" oninput="filterTenants()">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>שם</th>
-                            <th>קומה</th>
-                            <th>דירה</th>
-                            <th>טלפון</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tenantsTbody">
-                        <tr><td colspan="4" style="text-align: center; opacity: 0.6; padding: 32px;">אין דיירים</td></tr>
-                    </tbody>
+                    <thead><tr><th>שם</th><th>קומה</th><th>דירה</th><th>טלפון</th></tr></thead>
+                    <tbody id="tenantsTbody"><tr><td colspan="4" style="text-align: center; padding: 32px; opacity: 0.6;">אין דיירים</td></tr></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- משרדים -->
-        <div id="officesSection" class="section">
-            <div class="section-header">
-                <button class="back-btn" onclick="showSection('main')">←</button>
-                <h2 class="section-title">משרדים</h2>
+        <!-- Footer -->
+        <footer style="margin-top: 32px; margin-bottom: 16px;">
+            <div class="frosted-glass" style="padding: 16px; text-align: center;">
+                <p style="font-size: 10px; letter-spacing: 5px; opacity: 0.5; text-transform: uppercase; font-weight: 300;">DA VINCI TOWERS • TEL AVIV</p>
             </div>
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>קומה</th>
-                            <th>שם חברה / משרד</th>
-                        </tr>
-                    </thead>
-                    <tbody id="officesTbody">
-                        <tr><td colspan="2" style="text-align: center; opacity: 0.6; padding: 32px;">אין משרדים</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        </footer>
     </div>
 
-    <footer class="footer">
-        <div class="frosted-glass footer-box">
-            <p class="footer-text">DA VINCI TOWERS • TEL AVIV</p>
-        </div>
-    </footer>
-</div>
-
-<!-- MODAL רישום -->
-<div id="regModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">רישום אורח חדש</h3>
-            <button class="modal-close" onclick="closeRegModal()">✕</button>
-        </div>
-        <form id="gForm" class="modal-body">
-            <div class="form-group">
-                <label class="form-label">שם אורח *</label>
-                <input type="text" id="gN" class="form-input" required>
+    <!-- MODAL רישום אורח -->
+    <div id="regModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeRegModal()">✕</button>
+                <h3 class="modal-title">רישום אורח חדש</h3>
             </div>
-            <div class="form-row">
+            <form id="gForm" class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">קטגוריה *</label>
-                    <select id="gCat" class="form-input" required>
-                        <option value="">בחר...</option>
-                        <option>אורח פרטי</option>
-                        <option>ספק/טכנאי</option>
-                        <option>משלוח</option>
-                        <option>אחר</option>
+                    <label class="form-label">סוג רישום *</label>
+                    <select id="gMode" class="form-input" onchange="toggleMode()" required>
+                        <option value="tenant">רישום רגיל (דייר)</option>
+                        <option value="broker">מתווך / רישום ידני</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">נרשם ע"י *</label>
-                    <select id="gEmployee" class="form-input" required>
-                        <option value="">בחר...</option>
-                        <option>שומר לובי</option>
-                    </select>
+                    <label class="form-label">שם אורח *</label>
+                    <input type="text" id="gN" class="form-input" required>
                 </div>
-            </div>
-            <div class="form-row">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">קטגוריה *</label>
+                        <select id="gCat" class="form-input" required>
+                            <option value="">בחר...</option>
+                            <option>אורח פרטי</option>
+                            <option>ספק/טכנאי</option>
+                            <option>משלוח</option>
+                            <option>מתווך</option>
+                            <option>אחר</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">נרשם ע"י *</label>
+                        <select id="gEmployee" class="form-input" required>
+                            <option value="">בחר...</option>
+                            <option>שומר לובי</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">תאריך *</label>
+                        <input type="date" id="gDt" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">שעה *</label>
+                        <input type="time" id="gTm" class="form-input" required>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label class="form-label">תאריך *</label>
-                    <input type="date" id="gDt" class="form-input" required>
+                    <label class="form-label">הערות (אופציונלי)</label>
+                    <textarea id="gNotes" class="form-input" rows="3" placeholder="הערות נוספות..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">שעה *</label>
-                    <input type="time" id="gTm" class="form-input" required>
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn btn-cancel" style="flex: 1;" onclick="closeRegModal()">ביטול</button>
+                    <button type="submit" class="btn btn-submit" style="flex: 1;">שמור</button>
                 </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-cancel" onclick="closeRegModal()">ביטול</button>
-                <button type="submit" class="btn btn-submit">שמור</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="toast" id="toastEl"></div>
+    <div class="toast" id="toastEl"></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
-  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
-  projectId: "leonrdi-de-vinhi",
-  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
-  messagingSenderId: "287853664744",
-  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+      authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+      projectId: "leonrdi-de-vinhi",
+      storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+      messagingSenderId: "287853664744",
+      appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const TODAY = new Date().toISOString().split('T')[0];
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const TODAY = new Date().toISOString().split('T')[0];
 
-let guests = [], tenants = [], offices = [];
+    let guests = [], tenants = [];
 
-function toast(msg) {
-  const el = document.getElementById('toastEl');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
+    // Update clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString('he-IL', {hour: '2-digit', minute: '2-digit'});
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-function updateClock() {
-  document.getElementById('clk').textContent = new Date().toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
-}
-setInterval(updateClock, 1000);
-updateClock();
+    window.toggleMode = () => {
+      // Mode toggle logic can be added here if needed
+    };
 
-// Auto load data
-loadData();
+    function toast(msg) {
+      const el = document.getElementById('toastEl');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
 
-window.openRegModal = () => {
-  document.getElementById('gDt').value = TODAY;
-  document.getElementById('gTm').value = new Date().toTimeString().slice(0,5);
-  document.getElementById('regModal').classList.add('show');
-};
+    window.openRegModal = () => {
+      document.getElementById('gDt').value = TODAY;
+      document.getElementById('gTm').value = new Date().toTimeString().slice(0,5);
+      document.getElementById('regModal').classList.add('show');
+    };
 
-window.closeRegModal = () => {
-  document.getElementById('regModal').classList.remove('show');
-  document.getElementById('gForm').reset();
-};
+    window.closeRegModal = () => {
+      document.getElementById('regModal').classList.remove('show');
+      document.getElementById('gForm').reset();
+    };
 
-document.getElementById('gForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const data = {
-    name: document.getElementById('gN').value.trim(),
-    cat: document.getElementById('gCat').value,
-    registeredBy: document.getElementById('gEmployee').value,
-    date: document.getElementById('gDt').value,
-    time: document.getElementById('gTm').value,
-    floor: 0,
-    apt: 'לובי',
-    tname: 'לובי'
-  };
-  try {
-    await addDoc(collection(db, 'guests'), data);
-    toast('אורח נרשם בהצלחה ✓');
-    closeRegModal();
+    document.getElementById('gForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('gN').value.trim(),
+        cat: document.getElementById('gCat').value,
+        registeredBy: document.getElementById('gEmployee').value,
+        date: document.getElementById('gDt').value,
+        time: document.getElementById('gTm').value,
+        mode: document.getElementById('gMode').value,
+        notes: document.getElementById('gNotes').value.trim(),
+        floor: 0,
+        apt: 'לובי',
+        timestamp: new Date().toISOString()
+      };
+      try {
+        await addDoc(collection(db, 'guests'), data);
+        toast('אורח נרשם בהצלחה ✓');
+        closeRegModal();
+        loadData();
+      } catch(e) {
+        toast('שגיאה בשמירה');
+      }
+    };
+
+    async function loadData() {
+      try {
+        const gSnap = await getDocs(collection(db, 'guests'));
+        guests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
+        renderGuests();
+        
+        const tSnap = await getDocs(collection(db, 'tenants'));
+        tenants = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
+        renderTenants();
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function renderGuests() {
+      const tbody = document.getElementById('guestsTbody');
+      if(!guests.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; return; }
+      tbody.innerHTML = guests.map(g => `<tr><td>${g.name}</td><td>${g.date}</td><td>${g.time}</td></tr>`).join('');
+    }
+
+    function renderTenants() {
+      const tbody = document.getElementById('tenantsTbody');
+      if(!tenants.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">אין דיירים</td></tr>'; return; }
+      tbody.innerHTML = tenants.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
+    }
+
+    window.filterTenants = () => {
+      const q = document.getElementById('tenantSearch').value.toLowerCase();
+      const filtered = tenants.filter(t => t.name.toLowerCase().includes(q) || String(t.floor).includes(q) || t.apt.toLowerCase().includes(q));
+      const tbody = document.getElementById('tenantsTbody');
+      if(!filtered.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">לא נמצאו תוצאות</td></tr>'; return; }
+      tbody.innerHTML = filtered.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
+    };
+
+    window.showSection = (sec) => {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      if(sec === 'main') document.getElementById('mainMenu').classList.add('active');
+      else if(sec === 'list') document.getElementById('listSection').classList.add('active');
+      else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
+    };
+
     loadData();
-  } catch(e) {
-    toast('שגיאה בשמירה');
-  }
-};
+    </script>
 
-async function loadData() {
-  try {
-    const gSnap = await getDocs(collection(db, 'guests'));
-    guests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    document.getElementById('sToday').textContent = guests.filter(g => g.date === TODAY).length;
-    renderGuests();
-    
-    const tSnap = await getDocs(collection(db, 'tenants'));
-    tenants = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    document.getElementById('sTen').textContent = tenants.length;
-    renderTenants();
-    
-    const oSnap = await getDocs(collection(db, 'offices'));
-    offices = oSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.floor - b.floor);
-    renderOffices();
-  } catch(e) {
-    console.error(e);
-  }
-}
+    <style>
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    </style>
 
-function renderGuests() {
-  const tbody = document.getElementById('guestsTbody');
-  if(!guests.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;opacity:0.6;padding:32px">אין רישומים</td></tr>'; return; }
-  tbody.innerHTML = guests.map(g => `
-    <tr>
-      <td>${g.name}</td>
-      <td><span class="badge">${g.cat}</span></td>
-      <td>${g.date}</td>
-      <td>${g.time}</td>
-      <td>${g.registeredBy||'—'}</td>
-      <td><button class="btn-icon" onclick="deleteGuest('${g.id}')">🗑</button></td>
-    </tr>
-  `).join('');
-}
-
-window.deleteGuest = async (id) => {
-  if(!confirm('למחוק רישום זה?')) return;
-  try {
-    await deleteDoc(doc(db, 'guests', id));
-    toast('נמחק בהצלחה');
-    loadData();
-  } catch(e) {
-    toast('שגיאה במחיקה');
-  }
-};
-
-function renderTenants() {
-  const tbody = document.getElementById('tenantsTbody');
-  if(!tenants.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">אין דיירים</td></tr>'; return; }
-  tbody.innerHTML = tenants.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
-}
-
-window.filterTenants = () => {
-  const q = document.getElementById('tenantSearch').value.toLowerCase();
-  const filtered = tenants.filter(t => t.name.toLowerCase().includes(q) || String(t.floor).includes(q) || t.apt.toLowerCase().includes(q));
-  const tbody = document.getElementById('tenantsTbody');
-  if(!filtered.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;opacity:0.6;padding:32px">לא נמצאו תוצאות</td></tr>'; return; }
-  tbody.innerHTML = filtered.map(t => `<tr><td>${t.name}</td><td>${t.floor}</td><td>${t.apt}</td><td>${t.phone||'—'}</td></tr>`).join('');
-};
-
-function renderOffices() {
-  const tbody = document.getElementById('officesTbody');
-  if(!offices.length) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;opacity:0.6;padding:32px">אין משרדים</td></tr>'; return; }
-  tbody.innerHTML = offices.map(o => `<tr><td>קומה ${o.floor}</td><td>${o.name}</td></tr>`).join('');
-}
-
-window.showSection = (sec) => {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  if(sec === 'main') document.getElementById('mainMenu').classList.add('active');
-  else if(sec === 'list') document.getElementById('listSection').classList.add('active');
-  else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
-  else if(sec === 'offices') document.getElementById('officesSection').classList.add('active');
-};
-
-</script>
 </body>
 </html>
