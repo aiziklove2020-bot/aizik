@@ -540,16 +540,6 @@ mark{background:rgba(201,168,76,.25);color:var(--gl);border-radius:3px;padding:0
         <div class="fg"><label class="fl">נרשם על ידי</label>
           <select id="editEmployee" class="inp">
             <option value="">בחר עובד...</option>
-            <option>אור צדוק</option>
-            <option>איציק קסטוריאנו</option>
-            <option>בנימין גורמו</option>
-            <option>ג'ו ביטון</option>
-            <option>יוסף מאיר עמדו</option>
-            <option>מאיר סבג</option>
-            <option>מיכאל אלקין</option>
-            <option>עמנואל לוי</option>
-            <option>ענת כהן</option>
-            <option>שלומית כהן</option>
           </select>
         </div>
         <div class="grid2">
@@ -1472,6 +1462,8 @@ function updateEmployeeDropdowns(){
   const opts = '<option value="">בחר עובד...</option>'+employees.map(e=>`<option>${e}</option>`).join('');
   const mEl = document.getElementById('gEmployeeM');
   if(mEl) mEl.innerHTML = opts;
+  const editEl = document.getElementById('editEmployee');
+  if(editEl) editEl.innerHTML = opts;
 }
 
 async function saveEmployees(){
@@ -1515,10 +1507,19 @@ document.getElementById('xlFile').addEventListener('change', function(e){
       const wb = XLSX.read(ev.target.result, {type:'array'});
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-      if(rows.length < 2){toast('הקובץ ריק או לא תקין','er');return;}
+      if(rows.length < 3){toast('הקובץ ריק או לא תקין','er');return;}
 
-      // Try to auto-detect columns
-      const header = rows[0].map(h=>String(h).trim());
+      // Find header row (look for "קומה" or "דירה")
+      let headerRow = 0;
+      for(let i=0; i<Math.min(5, rows.length); i++){
+        const rowStr = rows[i].join(' ');
+        if(rowStr.includes('קומה') || rowStr.includes('דירה')){
+          headerRow = i;
+          break;
+        }
+      }
+
+      const header = rows[headerRow].map(h=>String(h).trim());
       let iFloor=-1, iApt=-1, iFname=-1, iLname=-1, iPhone=-1, iName=-1;
       header.forEach((h,i)=>{
         const l=h.toLowerCase();
@@ -1526,12 +1527,12 @@ document.getElementById('xlFile').addEventListener('change', function(e){
         if(l.includes('דירה')||l.includes('apt')||l.includes('unit')) iApt=i;
         if(l.includes('שם פרטי')||l.includes('first')) iFname=i;
         if(l.includes('משפחה')||l.includes('last')) iLname=i;
-        if(l.includes('טלפון')||l.includes('phone')||l.includes('נייד')) iPhone=i;
+        if(l.includes('טלפון')||l.includes('phone')||l.includes('נייד')||l.includes('מספר')) iPhone=i;
         if(l.includes('שם הדייר')||l.includes('שם מלא')||l.includes('name')) iName=i;
       });
 
       xlData = [];
-      for(let i=1;i<rows.length;i++){
+      for(let i=headerRow+1;i<rows.length;i++){
         const r=rows[i];
         if(!r.some(c=>c!='')) continue;
         let name='';
@@ -1541,7 +1542,8 @@ document.getElementById('xlFile').addEventListener('change', function(e){
         const apt=String(r[iApt]||'').trim();
         const phone=String(r[iPhone]>=0?r[iPhone]:'').trim();
         if(!name||!floor||!apt) continue;
-        if(name.includes('מדינה')||name.includes('ריק')) continue;
+        // Skip empty apartments
+        if(name.toLowerCase().includes('מדינה')||name.toLowerCase().includes('ריק')||name.toLowerCase().includes('פנוי')) continue;
         xlData.push({name, floor, apt, phone});
       }
 
