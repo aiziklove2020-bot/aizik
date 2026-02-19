@@ -66,6 +66,14 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
     color: #333; outline: none;
 }
 
+textarea.inp {
+    font-family: 'Assistant', sans-serif;
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
 .sbtn {
     background: linear-gradient(135deg, #4a90e2, #357abd);
     color: white; border: none; padding: 16px 32px; border-radius: 20px;
@@ -513,7 +521,9 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <h3 class="text-2xl font-bold text-gray-900">הוסף עדכון למשמרת</h3>
         </div>
         <form id="notificationForm" class="p-6 space-y-4">
-            <textarea id="notificationMessage" placeholder="תוכן ההודעה..." class="inp" rows="4" required></textarea>
+            <textarea id="notificationMessage" placeholder="תוכן ההודעה...
+לחץ Enter למעבר לשורה הבאה
+כתוב כמה שורות שתרצה" class="inp" rows="6" required></textarea>
             <label class="flex items-center gap-3 text-gray-900">
                 <input type="checkbox" id="notificationActive" checked class="w-5 h-5">
                 <span>הצג בלובי</span>
@@ -811,7 +821,7 @@ function renderNotifications() {
   }
   tbody.innerHTML = notifications.map(n => `
     <tr>
-      <td>${n.message}</td>
+      <td style="white-space: pre-wrap; max-width: 400px;">${n.message}</td>
       <td>${new Date(n.createdAt).toLocaleString('he-IL')}</td>
       <td>${n.active && n.forLobby ? '🟢 פעיל' : '⚫ כבוי'}</td>
       <td>
