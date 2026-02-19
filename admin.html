@@ -200,6 +200,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <button class="tab-btn" onclick="showTab('employees')">👔 עובדים</button>
             <button class="tab-btn" onclick="showTab('keys')">🔑 מפתחות</button>
             <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
+            <button class="tab-btn" onclick="showTab('users')">👤 ניהול משתמשים</button>
             <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
             <button class="tab-btn" onclick="showTab('users')">⚙️ ניהול משתמשים</button>
             <button class="tab-btn" onclick="showTab('analytics')">📊 דוחות</button>
@@ -405,6 +406,34 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             </div>
         </div>
 
+        <!-- טאב ניהול מנהלים -->
+        <div id="tabUsers" class="section">
+            <div class="frosted-card p-6 mb-4">
+                <div class="flex gap-4 justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold">👤 ניהול מנהלי מערכת</h2>
+                        <p style="color: rgba(255,255,255,0.6); margin-top: 8px;">רק מנהלים ברשימה יכולים להיכנס למערכת הניהול</p>
+                    </div>
+                    <button onclick="openAddUserModal()" class="sbtn">➕ הוסף מנהל</button>
+                </div>
+            </div>
+            <div class="frosted-card p-6 overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>אימייל</th>
+                            <th>שם</th>
+                            <th>נוצר ב</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTbody">
+                        <tr><td colspan="4" class="text-center opacity-60 py-8">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- טאב דוחות -->
         <div id="tabAnalytics" class="section">
             <div class="frosted-card p-6 mb-4">
@@ -567,11 +596,32 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
     </div>
 </div>
 
+<!-- Modal הוסף מנהל -->
+<div id="addUserModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף מנהל חדש</h3>
+        </div>
+        <form id="userForm" class="p-6 space-y-4">
+            <input type="email" id="userEmail" placeholder="כתובת אימייל" class="inp" required>
+            <input type="text" id="userName" placeholder="שם מלא" class="inp" required>
+            <input type="password" id="userPassword" placeholder="סיסמה (לפחות 6 תווים)" class="inp" minlength="6" required>
+            <div style="background: rgba(59,130,246,0.1); padding: 12px; border-radius: 12px; color: rgba(255,255,255,0.8); font-size: 14px;">
+                💡 המנהל החדש יוכל להיכנס למערכת הניהול עם האימייל והסיסמה
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addUserModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
+                <button type="submit" class="flex-1 sbtn">שמור</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -612,17 +662,47 @@ document.getElementById('loginBtn').onclick = async () => {
   }
   
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    
+    // Check if user is authorized admin
+    const adminSnap = await getDocs(collection(db, 'admins'));
+    const isAdmin = adminSnap.docs.some(doc => doc.data().email === email);
+    
+    if (!isAdmin) {
+      await auth.signOut();
+      err.textContent = 'אין לך הרשאות גישה למערכת';
+      return;
+    }
   } catch (e) {
-    err.textContent = 'שגיאה בהתחברות';
+    if (e.code === 'auth/invalid-credential') {
+      err.textContent = 'אימייל או סיסמה שגויים';
+    } else {
+      err.textContent = 'שגיאה בהתחברות';
+    }
   }
 };
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('app').classList.add('show');
-    loadAllData();
+    // Verify user is authorized admin
+    try {
+      const adminSnap = await getDocs(collection(db, 'admins'));
+      const isAdmin = adminSnap.docs.some(doc => doc.data().email === user.email);
+      
+      if (!isAdmin) {
+        await auth.signOut();
+        document.getElementById('login').style.display = 'flex';
+        document.getElementById('app').classList.remove('show');
+        return;
+      }
+      
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      loadAllData();
+    } catch(e) {
+      console.error('Admin check error:', e);
+      await auth.signOut();
+    }
   } else {
     document.getElementById('login').style.display = 'flex';
     document.getElementById('app').classList.remove('show');
@@ -918,6 +998,10 @@ window.showTab = (tab) => {
   // Load keys table when switching to keys tab
   if (tab === 'keys') {
     loadKeysTable();
+  }
+  // Load users when switching to users tab
+  if (tab === 'users') {
+    loadUsers();
   }
 };
 
@@ -1489,6 +1573,89 @@ window.loadKeysTable = async () => {
     `).join('');
   } catch(e) {
     console.error('keys load error:', e);
+  }
+};
+
+// ==================== USER MANAGEMENT ====================
+
+// Open add user modal
+window.openAddUserModal = () => {
+  document.getElementById('addUserModal').classList.add('show');
+};
+
+// Load admins
+async function loadUsers() {
+  try {
+    const snap = await getDocs(collection(db, 'admins'));
+    const users = snap.docs.map(d => ({id: d.id, ...d.data()}))
+      .sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+    
+    const tbody = document.getElementById('usersTbody');
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין מנהלים</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td>${u.email}</td>
+        <td>${u.name}</td>
+        <td>${new Date(u.createdAt).toLocaleDateString('he-IL')}</td>
+        <td>
+          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    console.error('users error:', e);
+  }
+}
+
+// Add admin
+document.getElementById('userForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('userEmail').value.trim();
+  const password = document.getElementById('userPassword').value;
+  const name = document.getElementById('userName').value.trim();
+  
+  try {
+    // Create user in Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Save admin in Firestore 'admins' collection
+    await addDoc(collection(db, 'admins'), {
+      uid: userCredential.user.uid,
+      email: email,
+      name: name,
+      createdAt: new Date().toISOString()
+    });
+    
+    toast('✅ מנהל נוסף בהצלחה');
+    closeModal('addUserModal');
+    document.getElementById('userForm').reset();
+    loadUsers();
+  } catch(e) {
+    if (e.code === 'auth/email-already-in-use') {
+      toast('❌ האימייל כבר קיים במערכת');
+    } else if (e.code === 'auth/weak-password') {
+      toast('❌ הסיסמה חלשה מדי');
+    } else {
+      toast('❌ שגיאה: ' + e.message);
+    }
+  }
+};
+
+// Delete admin
+window.deleteUser = async (userId, email) => {
+  if (!confirm(`למחוק את המנהל ${email}?\n\nהוא לא יוכל יותר להיכנס למערכת הניהול.`)) return;
+  
+  try {
+    await deleteDoc(doc(db, 'admins', userId));
+    toast('✅ מנהל נמחק');
+    loadUsers();
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
   }
 };
 
