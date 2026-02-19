@@ -1494,6 +1494,89 @@ window.loadKeysTable = async () => {
   }
 };
 
+// ===== ניהול מנהלים =====
+
+window.openAddUserModal = () => {
+  document.getElementById('addUserModal').style.display = 'flex';
+};
+
+async function loadUsers() {
+  try {
+    const snap = await getDocs(collection(db, 'admins'));
+    const tbody = document.getElementById('usersTbody');
+    if (!tbody) return;
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;opacity:0.5">אין מנהלים עדיין</td></tr>';
+      return;
+    }
+    tbody.innerHTML = snap.docs.map(d => {
+      const u = d.data();
+      const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('he-IL') : '—';
+      return `<tr>
+        <td style="font-weight:700">${u.name || '—'}</td>
+        <td style="direction:ltr;font-size:13px">${u.email || '—'}</td>
+        <td>${date}</td>
+        <td><button onclick="deleteAdmin('${d.id}','${u.email}')" style="background:none;border:none;cursor:pointer;font-size:18px;color:#f87171;">🗑</button></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('loadUsers error:', e);
+  }
+}
+
+window.deleteAdmin = async (id, email) => {
+  if (!confirm('למחוק את המנהל ' + email + '?')) return;
+  try {
+    await deleteDoc(doc(db, 'admins', id));
+    toast('✅ מנהל נמחק');
+    loadUsers();
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+  }
+};
+
+document.getElementById('userForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const email    = document.getElementById('userEmail').value.trim();
+  const password = document.getElementById('userPassword').value.trim();
+  const name     = document.getElementById('userName').value.trim();
+  if (!email || !password || !name) { toast('❌ מלא את כל השדות'); return; }
+  if (password.length < 6) { toast('❌ סיסמה קצרה — לפחות 6 תווים'); return; }
+  try {
+    toast('⏳ יוצר מנהל...');
+    // שמור פרטי מנהל נוכחי
+    const meEmail = auth.currentUser ? auth.currentUser.email : '';
+    const mePass  = sessionStorage.getItem('adminPass') || '';
+    // צור מנהל חדש
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'admins', cred.user.uid), {
+      uid: cred.user.uid, email, name, role: 'admin',
+      createdAt: new Date().toISOString()
+    });
+    // חזור להתחבר כמנהל הנוכחי
+    if (meEmail && mePass) {
+      await signInWithEmailAndPassword(auth, meEmail, mePass);
+    }
+    toast('✅ מנהל ' + name + ' נוסף!');
+    document.getElementById('addUserModal').style.display = 'none';
+    document.getElementById('userForm').reset();
+    loadUsers();
+  } catch(err) {
+    if (err.code === 'auth/email-already-in-use') toast('❌ האימייל כבר קיים');
+    else if (err.code === 'auth/weak-password')   toast('❌ סיסמה חלשה');
+    else if (err.code === 'auth/invalid-email')   toast('❌ אימייל לא תקין');
+    else toast('❌ שגיאה: ' + err.message);
+  }
+};
+
+// טען מנהלים כשעוברים לטאב
+const origShowTab = window.showTab;
+window.showTab = (tab) => {
+  origShowTab && origShowTab(tab);
+  if (tab === 'users') loadUsers();
+};
+
+
 </script>
 
 
