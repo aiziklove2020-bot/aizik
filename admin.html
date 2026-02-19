@@ -198,7 +198,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <button class="tab-btn" onclick="showTab('tenants')">🏠 דיירים</button>
             <button class="tab-btn" onclick="showTab('offices')">🏢 משרדים</button>
             <button class="tab-btn" onclick="showTab('employees')">👔 עובדים</button>
-            <button class="tab-btn" onclick="showTab('keys')">🔑 מפתחות משרדים</button>
+            <button class="tab-btn" onclick="showTab('keys')">🔑 מפתחות</button>
             <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
             <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
             <button class="tab-btn" onclick="showTab('users')">⚙️ ניהול משתמשים</button>
@@ -337,113 +337,20 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             </div>
         </div>
 
-        <!-- טאב מפתחות משרדים -->
+
+        <!-- טאב מפתחות -->
         <div id="tabKeys" class="section">
             <div class="frosted-card p-6 mb-4">
-                <h2 class="text-2xl font-bold">🔑 מעקב מפתחות משרדים</h2>
+                <h2 class="text-2xl font-bold">🔑 צפייה בטבלת מפתחות</h2>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 8px;">הטבלה ניתנת לעריכה מהלובי בלבד</p>
             </div>
             
-            <!-- טבלת מפתחות -->
             <div class="frosted-card p-6 overflow-x-auto">
-                <div style="direction: rtl;">
-                    <table style="width: 100%; border-collapse: collapse; font-family: Arial;">
-                        <thead>
-                            <tr style="background: rgba(255,255,255,0.1);">
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">משרד</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">קומה א' צד דרום</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">קומה א' צד צפון</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">קומה ב' צד דרום</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">קומה ב' צד צפון</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">מעליות</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">דלת בניין</th>
-                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; writing-mode: vertical-rl; transform: rotate(180deg); min-width: 60px;">חניון</th>
-                            </tr>
-                        </thead>
-                        <tbody id="keysTableBody">
-                            <!-- 8 rows -->
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="1" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="1" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="2" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="2" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="3" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="3" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="4" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="4" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="5" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="5" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="6" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="6" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="7" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="7" data-col="parking"></td>
-                            </tr>
-                            <tr>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; background: rgba(255,255,255,0.05);" contenteditable="true" data-row="8" data-col="office"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="floor1_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="floor1_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="floor2_south"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="floor2_north"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="elevators"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="door"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; text-align: center;" contenteditable="true" data-row="8" data-col="parking"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table id="keysAdminTable" style="width: 100%; border-collapse: collapse; border: 3px solid rgba(255,255,255,0.3);">
+                    <tbody>
+                        <tr><td colspan="11" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">טוען...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -1537,6 +1444,38 @@ window.saveKeysTable = async () => {
     toast('✅ הטבלה נשמרה');
   } catch(e) {
     toast('❌ שגיאה: ' + e.message);
+  }
+};
+
+// ==================== KEYS MANAGEMENT ====================
+
+// Load keys table in admin (readonly view)
+window.loadKeysTable = async () => {
+  try {
+    const snap = await getDocs(collection(db, 'keys'));
+    const keysData = {};
+    snap.docs.forEach(d => {
+      const data = d.data();
+      keysData[`${data.row}_${data.col}`] = data.value || '';
+    });
+    
+    const tbody = document.querySelector('#keysAdminTable tbody');
+    const rowLabels = ['משרד', 'קומה א\' צד דרום', 'קומה א\' צד צפון', 'קומה ב\' צד דרום', 'קומה ב\' צד צפון', 'מעליות', 'דלת', 'חניון'];
+    let html = '';
+    
+    for (let i = 1; i <= 8; i++) {
+      html += '<tr style="height: 70px;">';
+      for (let j = 1; j <= 10; j++) {
+        const value = keysData[`${i}_${j}`] || '';
+        const bg = j === 1 ? 'background: rgba(255,255,255,0.05);' : '';
+        html += `<td style="border: 2px solid rgba(255,255,255,0.3); width: 9%; padding: 8px; text-align: center; ${bg}">${value}</td>`;
+      }
+      html += `<td style="border: 2px solid rgba(255,255,255,0.3); width: 10%; vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.1);">${rowLabels[i-1]}</td>`;
+      html += '</tr>';
+    }
+    tbody.innerHTML = html;
+  } catch(e) {
+    console.error('keys load error:', e);
   }
 };
 

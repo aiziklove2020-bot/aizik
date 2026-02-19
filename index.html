@@ -155,8 +155,6 @@ body, html {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 16px rgba(251,146,60,0.2);
-    max-height: 300px;
-    overflow-y: auto;
 }
 
 .notification-title {
@@ -167,12 +165,6 @@ body, html {
     display: flex;
     align-items: center;
     gap: 8px;
-    position: sticky;
-    top: 0;
-    background: linear-gradient(135deg, rgba(251,146,60,0.3), rgba(251,146,60,0.2));
-    padding: 4px 0;
-    margin: -4px 0 8px 0;
-    z-index: 1;
 }
 
 .notification-text {
@@ -636,6 +628,147 @@ tr:hover td {
                     </svg>
                 </div>
 
+                <div class="frosted-card card action-card" onclick="showSection('keys')">
+                    <div class="card-content">
+                        <div class="icon-wrapper card-icon" style="background:rgba(234,179,8,0.15);">
+                            <span style="font-size:26px">🔑</span>
+                        </div>
+                        <div>
+                            <h2 class="card-title">מפתחות משרדים</h2>
+                            <p class="card-desc">מעקב מפתחות</p>
+                        </div>
+                    </div>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- טבלת מפתחות -->
+        <div id="keysSection" class="section">
+            <div class="section-header">
+                <button class="back-btn" onclick="showSection('main')">←</button>
+                <h2 class="section-title">🔑 מעקב מפתחות משרדים</h2>
+            </div>
+            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
+                <div style="max-width: 1200px; margin: 0 auto;">
+                    <table style="width: 100%; border-collapse: collapse; border: 3px solid rgba(255,255,255,0.3);">
+                        <tbody id="keysTableBody">
+                            <!-- 8 rows with 11 columns each, matching the image -->
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%; background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 10%; vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">משרד</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה א' צד דרום</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה א' צד צפון</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה ב' צד דרום</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה ב' צד צפון</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">מעליות</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">דלת</td>
+                            </tr>
+                            <tr style="height: 80px;">
+                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
+                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">חניון</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="saveKeysFromLobby()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 14px 32px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">
+                            💾 שמור טבלה
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -831,14 +964,16 @@ function loadNotifications() {
     onSnapshot(collection(db, 'notifications'), (snap) => {
       const active = snap.docs.map(d => ({id: d.id, ...d.data()}))
         .filter(n => n.active && n.forLobby)
-        .sort((a,b) => (b.createdAt||'') > (a.createdAt||'') ? 1 : -1); // Newest first
+        .sort((a,b) => (b.createdAt||'') > (a.createdAt||'') ? 1 : -1);
       
       const el = document.getElementById('notificationText');
+      const banner = document.getElementById('notificationsBanner');
       
       if (active.length === 0) {
-        el.innerText = "ברוכים הבאים למערכת דה וינצ'י";
+        banner.style.display = 'none';
       } else {
-        // Show all active notifications, separated by lines
+        banner.style.display = 'block';
+        // Show ALL messages without limit, separated by line
         el.innerText = active.map(n => n.message).join('\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n');
       }
     });
@@ -1063,6 +1198,33 @@ async function loadData() {
     employees = eSnap.docs.map(d => ({id: d.id, ...d.data()}));
     renderEmployees();
   } catch(e) { console.error('employees:', e); }
+  
+  // Load keys table
+  try {
+    const kSnap = await getDocs(collection(db, 'keys'));
+    const keysData = {};
+    kSnap.docs.forEach(d => {
+      const data = d.data();
+      keysData[`${data.row}_${data.col}`] = data.value || '';
+    });
+    
+    const tbody = document.getElementById('keysTableBody');
+    let html = '';
+    for (let i = 1; i <= 8; i++) {
+      const rowLabels = ['משרד', 'קומה א\' צד דרום', 'קומה א\' צד צפון', 'קומה ב\' צד דרום', 'קומה ב\' צד צפון', 'מעליות', 'דלת', 'חניון'];
+      html += '<tr style="height: 80px;">';
+      for (let j = 1; j <= 10; j++) {
+        const value = keysData[`${i}_${j}`] || '';
+        const bg = j === 1 ? 'background: rgba(255,255,255,0.05);' : '';
+        html += `<td contenteditable="true" data-row="${i}" data-col="${j}" style="border: 2px solid rgba(255,255,255,0.3); padding: 8px; text-align: center; font-size: 13px; cursor: text; ${bg}">${value}</td>`;
+      }
+      html += `<td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">${rowLabels[i-1]}</td>`;
+      html += '</tr>';
+    }
+    tbody.innerHTML = html;
+  } catch(e) { 
+    console.error('keys:', e);
+  }
 }
 
 function renderGuests() {
@@ -1231,6 +1393,31 @@ window.showSection = (sec) => {
   else if(sec === 'tenants') document.getElementById('tenantsSection').classList.add('active');
   else if(sec === 'offices') document.getElementById('officesSection').classList.add('active');
   else if(sec === 'employees') document.getElementById('employeesSection').classList.add('active');
+  else if(sec === 'keys') document.getElementById('keysSection').classList.add('active');
+};
+
+// Save keys table from lobby
+window.saveKeysFromLobby = async () => {
+  try {
+    const cells = document.querySelectorAll('#keysTableBody [contenteditable="true"]');
+    const batch = [];
+    
+    for (const cell of cells) {
+      const row = cell.getAttribute('data-row');
+      const col = cell.getAttribute('data-col');
+      const value = cell.textContent.trim();
+      
+      const docId = `r${row}_c${col}`;
+      batch.push(
+        setDoc(doc(db, 'keys', docId), { row, col, value })
+      );
+    }
+    
+    await Promise.all(batch);
+    toast('✅ הטבלה נשמרה');
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+  }
 };
 
 // Load notifications on startup
