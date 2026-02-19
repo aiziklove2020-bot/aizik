@@ -24,46 +24,47 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
 }
 
 .frosted-glass {
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 40px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 .frosted-card {
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 24px;
 }
 
 .status-glass {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
     border-radius: 20px; padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     text-align: center;
 }
 
 .tab-btn {
-    padding: 14px 28px; border-radius: 20px;
-    background: rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white; font-weight: 600; cursor: pointer;
-    transition: all 0.3s;
+    padding: 10px 18px; border-radius: 12px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; font-size: 13px; white-space: nowrap;
 }
 
 .tab-btn.active {
-    background: rgba(255,255,255,0.3);
-    border-color: rgba(255,255,255,0.4);
+    background: #f59e0b;
+    color: #111;
+    border-color: #f59e0b;
 }
 
 .inp {
     width: 100%; background: rgba(255,255,255,0.6);
     border: 1px solid rgba(0,0,0,0.1); border-radius: 16px;
     padding: 14px 16px; font-size: 15px;
-    color: rgba(255,255,255,0.7); outline: none;
+    color: #333; outline: none;
 }
 
 .sbtn {
@@ -76,8 +77,8 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
 .toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-    color: rgba(255,255,255,0.7); padding: 16px 32px; border-radius: 24px;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+    color: #333; padding: 16px 32px; border-radius: 24px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     transition: transform 0.3s; z-index: 99999;
 }
@@ -85,7 +86,7 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
 .toast.show { transform: translateX(-50%) translateY(0); }
 
 table { width: 100%; border-collapse: collapse; }
-th { background: rgba(255,255,255,0.6); padding: 12px; text-align: right; font-size: 12px; color: white; }
+th { background: rgba(255,255,255,0.1); padding: 12px; text-align: right; font-size: 12px; color: white; }
 td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: white; }
 
 .modal-overlay {
@@ -96,7 +97,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
 .modal-overlay.show { display: flex; }
 
 .modal-content {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(40px); border-radius: 32px;
     max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
 }
@@ -115,7 +116,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
 }
 
 .btn-icon {
-    background: rgba(255,255,255,0.6); border: none;
+    background: rgba(255,255,255,0.1); border: none;
     padding: 8px; border-radius: 8px; cursor: pointer;
     color: white; font-size: 18px;
 }
@@ -243,10 +244,12 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                 <table>
                     <thead>
                         <tr>
-                            <th>שם</th>
+                            <th>שם אורח</th>
+                            <th>אצל דייר</th>
                             <th>תאריך</th>
                             <th>שעה</th>
                             <th>קטגוריה</th>
+                            <th>נרשם ע"י</th>
                         </tr>
                     </thead>
                     <tbody id="archiveTbody">
@@ -555,6 +558,26 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+// מחיקה אוטומטית - יום עבודה 07:00-00:00
+// כל רישום מאתמול ומוקדם יותר עובר לארכיון בכניסה לאדמין
+async function autoArchiveOldGuests() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const snap = await getDocs(collection(db, 'guests'));
+    const allGuests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const oldGuests = allGuests.filter(g => g.date && g.date < today);
+    if (oldGuests.length === 0) return;
+    for (const g of oldGuests) {
+      const { id, ...data } = g;
+      await addDoc(collection(db, 'archive'), { ...data, archivedAt: new Date().toISOString() });
+      await deleteDoc(doc(db, 'guests', id));
+    }
+    toast('🗄️ ' + oldGuests.length + ' רישומים מאתמול הועברו לארכיון');
+  } catch(e) {
+    console.error('autoArchive error:', e);
+  }
+}
+
 // Load all data
 async function loadAllData() {
   await Promise.all([
@@ -567,6 +590,11 @@ async function loadAllData() {
   ]);
   updateStats();
   loadAnalytics();
+  // מחיקה אוטומטית של רישומים ישנים
+  await autoArchiveOldGuests();
+  // טען מחדש אחרי הארכוב
+  await loadGuests();
+  updateStats();
 }
 
 async function loadGuests() {
@@ -818,14 +846,22 @@ async function loadAnalytics() {
     if (archive.length === 0) {
       archiveTbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
     } else {
-      archiveTbody.innerHTML = archive.slice(-50).reverse().map(a => `
-        <tr>
-          <td>${a.name}</td>
-          <td>${a.date}</td>
-          <td>${a.time}</td>
-          <td>${a.cat || ''}</td>
-        </tr>
-      `).join('');
+      archiveTbody.innerHTML = archive.slice(-100).reverse().map(a => {
+        const name = a.name || a.guestName || a.guest || '—';
+        const date = a.date || a.entryDate || '—';
+        const time = a.time || a.entryTime || '—';
+        const cat  = a.cat  || a.category  || '—';
+        const tname = a.tname || a.tenant || a.tenantName || '—';
+        const by   = a.registeredBy || a.employee || '—';
+        return `<tr>
+          <td style="font-weight:700">${name}</td>
+          <td>${tname}</td>
+          <td>${date}</td>
+          <td>${time}</td>
+          <td>${cat}</td>
+          <td>${by}</td>
+        </tr>`;
+      }).join('');
     }
   } catch(e) {
     document.getElementById('archiveTbody').innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
@@ -958,49 +994,33 @@ window.downloadGuestsExcel = () => {
 window.downloadArchiveExcel = async () => {
   try {
     toast('⏳ מכין גיבוי...');
-
-    // אורחים פעילים
     const gSnap = await getDocs(collection(db, 'guests'));
     const activeGuests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
-
-    // ארכיון
     const aSnap = await getDocs(collection(db, 'archive'));
     const archive = aSnap.docs.map(d => ({id: d.id, ...d.data()}));
-
     const all = [...activeGuests, ...archive].sort((a,b) => (a.date||'') > (b.date||'') ? 1 : -1);
-
     if (all.length === 0) { toast('אין נתונים להורדה'); return; }
 
     const data = all.map(g => ({
-      'שם אורח':       g.name || '',
-      'אצל דייר':      g.tname || '',
-      'קטגוריה':       g.cat || '',
-      'תאריך':         g.date || '',
-      'שעה':           g.time || '',
-      'נרשם ע"י':      g.registeredBy || '',
-      'קומה':          g.floor || '',
-      'דירה':          g.apt || '',
-      'סטטוס':         g.archivedAt ? 'ארכיון' : 'פעיל'
+      'שם אורח':  g.name || g.guestName || g.guest || '',
+      'אצל דייר': g.tname || g.tenant || g.tenantName || '',
+      'קטגוריה':  g.cat || g.category || '',
+      'תאריך':    g.date || g.entryDate || '',
+      'שעה':      g.time || g.entryTime || '',
+      'נרשם ע"י': g.registeredBy || g.employee || '',
+      'קומה':     g.floor || '',
+      'דירה':     g.apt || '',
+      'סטטוס':    g.archivedAt ? 'ארכיון' : 'פעיל'
     }));
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(data);
     ws['!cols'] = [{wch:22},{wch:22},{wch:16},{wch:12},{wch:8},{wch:20},{wch:8},{wch:10},{wch:10}];
-
-    // צבע כותרות
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let C = range.s.c; C <= range.e.c; C++) {
-      const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
-      if (cell) cell.s = {font:{bold:true}, fill:{fgColor:{rgb:'FFF59E0B'}}};
-    }
-
     XLSX.utils.book_append_sheet(wb, ws, 'גיבוי מלא');
-    const filename = 'גיבוי_דה_וינצי_' + new Date().toISOString().split('T')[0] + '.xlsx';
-    XLSX.writeFile(wb, filename);
-    toast('✅ גיבוי הורד! ' + activeGuests.length + ' פעילים + ' + archive.length + ' ארכיון = ' + all.length + ' סה"כ');
+    XLSX.writeFile(wb, 'גיבוי_דה_וינצי_' + new Date().toISOString().split('T')[0] + '.xlsx');
+    toast('✅ גיבוי הורד ' + activeGuests.length + ' פעילים + ' + archive.length + ' ארכיון בהצלחה — ' + data.length + ' רישומים');
   } catch(e) {
     toast('❌ שגיאה: ' + e.message);
-    console.error(e);
   }
 };
 
