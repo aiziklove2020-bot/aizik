@@ -155,6 +155,8 @@ body, html {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 16px rgba(251,146,60,0.2);
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .notification-title {
@@ -165,6 +167,12 @@ body, html {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, rgba(251,146,60,0.3), rgba(251,146,60,0.2));
+    padding: 4px 0;
+    margin: -4px 0 8px 0;
+    z-index: 1;
 }
 
 .notification-text {
@@ -823,9 +831,16 @@ function loadNotifications() {
     onSnapshot(collection(db, 'notifications'), (snap) => {
       const active = snap.docs.map(d => ({id: d.id, ...d.data()}))
         .filter(n => n.active && n.forLobby)
-        .sort((a,b) => (a.createdAt||'') > (b.createdAt||'') ? 1 : -1);
+        .sort((a,b) => (b.createdAt||'') > (a.createdAt||'') ? 1 : -1); // Newest first
+      
       const el = document.getElementById('notificationText');
-      el.innerText = active.length > 0 ? active[active.length-1].message : "ברוכים הבאים למערכת דה וינצ'י";
+      
+      if (active.length === 0) {
+        el.innerText = "ברוכים הבאים למערכת דה וינצ'י";
+      } else {
+        // Show all active notifications, separated by lines
+        el.innerText = active.map(n => n.message).join('\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n');
+      }
     });
   } catch(e) { console.error('notifications:', e); }
 }
