@@ -742,89 +742,55 @@ tr:hover td {
             <button class="modal-close" onclick="closeRegModal()">✕</button>
         </div>
         <form id="gForm" class="modal-body">
+
+            <!-- 1. שם אורח -->
             <div class="form-group">
                 <label class="form-label">שם אורח *</label>
-                <input type="text" id="gN" class="form-input" required>
+                <input type="text" id="gN" class="form-input" placeholder="הכנס שם מלא..." required>
             </div>
-            
-            <!-- סוג יעד -->
+
+            <!-- 2. חיפוש דייר -->
+            <div class="form-group" style="position:relative;">
+                <label class="form-label">חיפוש דייר *</label>
+                <input type="text" id="tenantSearch" class="form-input" placeholder="🔍 הקלד שם, קומה או דירה..." oninput="searchTenant()" autocomplete="off">
+                <div id="tenantResults" style="display:none;position:absolute;background:white;border:1px solid #ddd;border-radius:12px;max-height:220px;overflow-y:auto;width:100%;z-index:99999;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.2);left:0;top:100%;"></div>
+                <input type="hidden" id="gFloor" value="0">
+                <input type="hidden" id="gApt" value="לובי">
+            </div>
+
+            <!-- 3. קטגוריה -->
             <div class="form-group">
-                <label class="form-label">יעד הביקור</label>
-                <div style="display:flex;gap:16px;margin-top:4px;">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
-                        <input type="radio" name="destType" value="tenant" checked onchange="switchDestType(this.value)"> דייר
-                    </label>
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
-                        <input type="radio" name="destType" value="office" onchange="switchDestType(this.value)"> משרד
-                    </label>
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#333;font-weight:600;font-size:15px;">
-                        <input type="radio" name="destType" value="lobby" onchange="switchDestType(this.value)"> לובי
-                    </label>
-                </div>
+                <label class="form-label">קטגוריה *</label>
+                <select id="gCat" class="form-input" required onchange="toggleOtherField()">
+                    <option value="">בחר...</option>
+                    <option>אורח פרטי</option>
+                    <option>ספק/טכנאי</option>
+                    <option>משלוח</option>
+                    <option>אחר</option>
+                </select>
             </div>
 
-            <!-- חיפוש דייר -->
-            <div id="tenantSearchWrap" class="form-group" style="position:relative;">
-                <label class="form-label">חפש דייר</label>
-                <input type="text" id="tenantSearch" class="form-input" placeholder="הקלד שם דייר, קומה או דירה..." oninput="searchTenant()" autocomplete="off">
-                <div id="tenantResults" style="display:none; position:absolute; background:white; border:1px solid #ddd; border-radius:12px; max-height:220px; overflow-y:auto; width:100%; z-index:99999; margin-top:4px; box-shadow:0 8px 24px rgba(0,0,0,0.2); left:0; top:100%;"></div>
-            </div>
-            
-            <!-- חיפוש משרד -->
-            <div id="officeSearchWrap" class="form-group" style="position:relative;display:none;">
-                <label class="form-label">חפש משרד</label>
-                <input type="text" id="officeSearch" class="form-input" placeholder="הקלד שם חברה או קומה..." oninput="searchOffice()" autocomplete="off">
-                <div id="officeResults" style="display:none; position:absolute; background:white; border:1px solid #ddd; border-radius:12px; max-height:220px; overflow-y:auto; width:100%; z-index:99999; margin-top:4px; box-shadow:0 8px 24px rgba(0,0,0,0.2); left:0; top:100%;"></div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">קומה *</label>
-                    <input type="number" id="gFloor" class="form-input" readonly style="background:rgba(255,255,255,0.1);">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">דירה *</label>
-                    <input type="text" id="gApt" class="form-input" readonly style="background:rgba(255,255,255,0.1);">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">קטגוריה *</label>
-                    <select id="gCat" class="form-input" required onchange="toggleOtherField()">
-                        <option value="">בחר...</option>
-                        <option>אורח פרטי</option>
-                        <option>ספק/טכנאי</option>
-                        <option>משלוח</option>
-                        <option>אחר</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">נרשם ע"י *</label>
-                    <select id="gEmployee" class="form-input" required>
-                        <option value="">בחר עובד...</option>
-                    </select>
-                </div>
-            </div>
-            <!-- שדה פירוט - מופיע רק עם "אחר" -->
+            <!-- פירוט אחר -->
             <div id="otherFieldWrap" style="display:none;" class="form-group">
-                <label class="form-label">פירוט — מי הוא ולאן מגיע *</label>
-                <input type="text" id="gOther" class="form-input" placeholder="לדוגמה: בן משפחה של דייר 5B, מגיע לתיקון מזגן...">
+                <label class="form-label">פירוט *</label>
+                <input type="text" id="gOther" class="form-input" placeholder="למשל: בן משפחה של הדייר, טכנאי מזגן...">
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">תאריך *</label>
-                    <input type="date" id="gDt" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">שעה *</label>
-                    <input type="time" id="gTm" class="form-input" required>
-                </div>
+            <!-- 4. נרשם ע"י -->
+            <div class="form-group">
+                <label class="form-label">נרשם ע"י *</label>
+                <select id="gEmployee" class="form-input" required>
+                    <option value="">בחר עובד...</option>
+                </select>
             </div>
+
+            <!-- תאריך ושעה - נסתרים, מתמלאים אוטומטית -->
+            <input type="hidden" id="gDt">
+            <input type="hidden" id="gTm">
+
             <div class="form-actions">
                 <button type="button" class="btn btn-cancel" onclick="closeRegModal()">ביטול</button>
-                <button type="submit" class="btn btn-submit">שמור</button>
+                <button type="submit" class="btn btn-submit">✓ שמור</button>
             </div>
         </form>
     </div>
@@ -965,6 +931,10 @@ window.toggleOtherField = () => {
 window.openRegModal = () => {
   document.getElementById('gDt').value = TODAY;
   document.getElementById('gTm').value = new Date().toTimeString().slice(0,5);
+  document.getElementById('tenantSearch').value = '';
+  document.getElementById('tenantResults').style.display = 'none';
+  document.getElementById('gFloor').value = '0';
+  document.getElementById('gApt').value = 'לובי';
   document.getElementById('regModal').classList.add('show');
 };
 
@@ -1011,15 +981,10 @@ window.closeRegModal = () => {
   document.getElementById('regModal').classList.remove('show');
   document.getElementById('gForm').reset();
   document.getElementById('tenantSearch').value = '';
-  document.getElementById('officeSearch').value = '';
-  document.getElementById('gFloor').value = '';
-  document.getElementById('gApt').value = '';
   document.getElementById('tenantResults').style.display = 'none';
-  document.getElementById('officeResults').style.display = 'none';
-  document.getElementById('tenantSearchWrap').style.display = 'block';
-  document.getElementById('officeSearchWrap').style.display = 'none';
-  // reset radio to tenant
-  document.querySelector('input[name="destType"][value="tenant"]').checked = true;
+  document.getElementById('gFloor').value = '0';
+  document.getElementById('gApt').value = 'לובי';
+  document.getElementById('otherFieldWrap').style.display = 'none';
   document.getElementById('otherFieldWrap').style.display = 'none';
   document.getElementById('gOther').required = false;
 };
