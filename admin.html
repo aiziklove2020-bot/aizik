@@ -520,7 +520,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
         <div class="p-6 border-b border-gray-200">
             <h3 class="text-2xl font-bold text-gray-900">הוסף עדכון למשמרת</h3>
         </div>
-        <form id="notificationForm" class="p-6 space-y-4">
+        <form id="notificationForm" class="p-6 space-y-4" onkeydown="return event.key !== 'Enter' || event.target.tagName === 'TEXTAREA';">
             <textarea id="notificationMessage" placeholder="תוכן ההודעה...
 לחץ Enter למעבר לשורה הבאה
 כתוב כמה שורות שתרצה" class="inp" rows="6" required></textarea>
