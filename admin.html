@@ -200,8 +200,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <button class="tab-btn" onclick="showTab('employees')">👔 עובדים</button>
             <button class="tab-btn" onclick="showTab('keys')">🔑 מפתחות</button>
             <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
-            <button class="tab-btn" onclick="showTab('notifications')">📢 עדכונים ללובי</button>
-            <button class="tab-btn" onclick="showTab('users')">⚙️ ניהול משתמשים</button>
+            <button class="tab-btn" onclick="showTab('users')">👤 ניהול מנהלים</button>
             <button class="tab-btn" onclick="showTab('analytics')">📊 דוחות</button>
         </div>
 
@@ -397,7 +396,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                 <div class="flex gap-4 justify-between items-center">
                     <div>
                         <h2 class="text-2xl font-bold">👤 ניהול מנהלי מערכת</h2>
-                        <p style="color:rgba(255,255,255,0.6);margin-top:8px;">רק מנהלים ברשימה יכולים להיכנס למערכת הניהול</p>
+                        <p style="color: rgba(255,255,255,0.6); margin-top: 8px;">רק מנהלים ברשימה יכולים להיכנס למערכת הניהול</p>
                     </div>
                     <button onclick="openAddUserModal()" class="sbtn">➕ הוסף מנהל</button>
                 </div>
@@ -406,9 +405,9 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                 <table>
                     <thead>
                         <tr>
-                            <th>שם</th>
                             <th>אימייל</th>
-                            <th>תאריך הוספה</th>
+                            <th>שם</th>
+                            <th>נוצר ב</th>
                             <th>פעולות</th>
                         </tr>
                     </thead>
@@ -581,11 +580,32 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
     </div>
 </div>
 
+<!-- Modal הוסף מנהל -->
+<div id="addUserModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">הוסף מנהל חדש</h3>
+        </div>
+        <form id="userForm" class="p-6 space-y-4">
+            <input type="email" id="userEmail" placeholder="כתובת אימייל" class="inp" required>
+            <input type="text" id="userName" placeholder="שם מלא" class="inp" required>
+            <input type="password" id="userPassword" placeholder="סיסמה (לפחות 6 תווים)" class="inp" minlength="6" required>
+            <div style="background: rgba(59,130,246,0.1); padding: 12px; border-radius: 12px; color: rgba(255,255,255,0.8); font-size: 14px;">
+                💡 המנהל החדש יוכל להיכנס למערכת הניהול עם האימייל והסיסמה
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal('addUserModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
+                <button type="submit" class="flex-1 sbtn">שמור</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -626,17 +646,48 @@ document.getElementById('loginBtn').onclick = async () => {
   }
   
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    sessionStorage.setItem('adminPass', pass);
+    
+    // Check if user is authorized admin
+    const adminSnap = await getDocs(collection(db, 'admins'));
+    const isAdmin = adminSnap.docs.some(doc => doc.data().email === email);
+    
+    if (!isAdmin) {
+      await auth.signOut();
+      err.textContent = 'אין לך הרשאות גישה למערכת';
+      return;
+    }
   } catch (e) {
-    err.textContent = 'שגיאה בהתחברות';
+    if (e.code === 'auth/invalid-credential') {
+      err.textContent = 'אימייל או סיסמה שגויים';
+    } else {
+      err.textContent = 'שגיאה בהתחברות';
+    }
   }
 };
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('app').classList.add('show');
-    loadAllData();
+    // Verify user is authorized admin
+    try {
+      const adminSnap = await getDocs(collection(db, 'admins'));
+      const isAdmin = adminSnap.docs.some(doc => doc.data().email === user.email);
+      
+      if (!isAdmin) {
+        await auth.signOut();
+        document.getElementById('login').style.display = 'flex';
+        document.getElementById('app').classList.remove('show');
+        return;
+      }
+      
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      loadAllData();
+    } catch(e) {
+      console.error('Admin check error:', e);
+      await auth.signOut();
+    }
   } else {
     document.getElementById('login').style.display = 'flex';
     document.getElementById('app').classList.remove('show');
@@ -933,6 +984,10 @@ window.showTab = (tab) => {
   if (tab === 'keys') {
     loadKeysTable();
   }
+  // Load users when switching to users tab
+  if (tab === 'users') {
+    loadUsers();
+  }
 };
 
 // Delete functions
@@ -1052,30 +1107,42 @@ window.downloadGuestsExcel = () => {
 window.downloadArchiveExcel = async () => {
   try {
     toast('⏳ מכין גיבוי...');
+
+    // אורחים פעילים
     const gSnap = await getDocs(collection(db, 'guests'));
     const activeGuests = gSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
+    // ארכיון
     const aSnap = await getDocs(collection(db, 'archive'));
     const archive = aSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
     const all = [...activeGuests, ...archive].sort((a,b) => (a.date||'') > (b.date||'') ? 1 : -1);
+
     if (all.length === 0) { toast('אין נתונים להורדה'); return; }
+
     const data = all.map(g => ({
-      'שם אורח':  g.name  || g.guestName || '',
-      'אצל דייר': g.tname || g.tenant    || '',
+      'שם אורח':  g.name  || g.guestName || g.guest || '',
+      'אצל דייר': g.tname || g.tenant    || g.tenantName || '',
       'קטגוריה':  g.cat   || g.category  || '',
-      'תאריך':    g.date  || '',
-      'שעה':      g.time  || '',
-      'נרשם ע"י': g.registeredBy || '',
+      'תאריך':    g.date  || g.entryDate || '',
+      'שעה':      g.time  || g.entryTime || '',
+      'נרשם ע"י': g.registeredBy || g.employee || '',
       'קומה':     g.floor || '',
       'דירה':     g.apt   || '',
       'סטטוס':    g.archivedAt ? 'ארכיון' : 'פעיל'
     }));
+
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(data);
     ws['!cols'] = [{wch:22},{wch:22},{wch:16},{wch:12},{wch:8},{wch:20},{wch:8},{wch:10},{wch:10}];
     XLSX.utils.book_append_sheet(wb, ws, 'גיבוי מלא');
-    XLSX.writeFile(wb, 'גיבוי_דה_וינצי_' + new Date().toISOString().split('T')[0] + '.xlsx');
-    toast('✅ ' + activeGuests.length + ' פעילים + ' + archive.length + ' ארכיון = ' + all.length + ' רישומים');
-  } catch(e) { toast('❌ שגיאה: ' + e.message); console.error(e); }
+    const filename = 'גיבוי_דה_וינצי_' + new Date().toISOString().split('T')[0] + '.xlsx';
+    XLSX.writeFile(wb, filename);
+    toast('✅ ' + activeGuests.length + ' פעילים + ' + archive.length + ' ארכיון = ' + all.length + ' רישומים הורדו');
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+    console.error(e);
+  }
 };
 
 window.downloadTenantsTemplate = () => {
@@ -1494,40 +1561,96 @@ window.loadKeysTable = async () => {
   }
 };
 
-// ===== ניהול מנהלים =====
+// ==================== USER MANAGEMENT ====================
 
+// Open add user modal
 window.openAddUserModal = () => {
-  document.getElementById('addUserModal').style.display = 'flex';
+  document.getElementById('addUserModal').classList.add('show');
 };
 
+// Load admins
 async function loadUsers() {
   try {
     const snap = await getDocs(collection(db, 'admins'));
+    const users = snap.docs.map(d => ({id: d.id, ...d.data()}))
+      .sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+    
     const tbody = document.getElementById('usersTbody');
-    if (!tbody) return;
-    if (snap.empty) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;opacity:0.5">אין מנהלים עדיין</td></tr>';
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין מנהלים</td></tr>';
       return;
     }
-    tbody.innerHTML = snap.docs.map(d => {
-      const u = d.data();
-      const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('he-IL') : '—';
-      return `<tr>
-        <td style="font-weight:700">${u.name || '—'}</td>
-        <td style="direction:ltr;font-size:13px">${u.email || '—'}</td>
-        <td>${date}</td>
-        <td><button onclick="deleteAdmin('${d.id}','${u.email}')" style="background:none;border:none;cursor:pointer;font-size:18px;color:#f87171;">🗑</button></td>
-      </tr>`;
-    }).join('');
+    
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td>${u.email}</td>
+        <td>${u.name}</td>
+        <td>${new Date(u.createdAt).toLocaleDateString('he-IL')}</td>
+        <td>
+          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button>
+        </td>
+      </tr>
+    `).join('');
   } catch(e) {
-    console.error('loadUsers error:', e);
+    console.error('users error:', e);
   }
 }
 
-window.deleteAdmin = async (id, email) => {
-  if (!confirm('למחוק את המנהל ' + email + '?')) return;
+// הוספת מנהל חדש
+document.getElementById('userForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const email    = document.getElementById('userEmail').value.trim();
+  const password = document.getElementById('userPassword').value.trim();
+  const name     = document.getElementById('userName').value.trim();
+
+  if (!email || !password || !name) { toast('❌ מלא את כל השדות'); return; }
+  if (password.length < 6) { toast('❌ סיסמה קצרה מדי'); return; }
+
   try {
-    await deleteDoc(doc(db, 'admins', id));
+    toast('⏳ יוצר מנהל...');
+
+    // שמור את פרטי המנהל הנוכחי
+    const meEmail = auth.currentUser.email;
+    const mePass  = sessionStorage.getItem('adminPass') || '';
+
+    // צור מנהל חדש (זה מחבר אותו אוטומטית)
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid  = cred.user.uid;
+
+    // שמור ב-Firestore
+    await setDoc(doc(db, 'admins', uid), {
+      uid, email, name, role: 'admin',
+      createdAt: new Date().toISOString()
+    });
+
+    toast('✅ ' + name + ' נוסף! מתחבר מחדש...');
+
+    // חזור להתחבר עם המנהל הנוכחי
+    if (mePass) {
+      await signInWithEmailAndPassword(auth, meEmail, mePass);
+      toast('✅ מנהל ' + name + ' נוסף בהצלחה!');
+    } else {
+      toast('✅ נוסף! רענן את הדף כדי להמשיך');
+    }
+
+    closeModal('addUserModal');
+    document.getElementById('userForm').reset();
+    loadUsers();
+  } catch(err) {
+    console.error(err);
+    if (err.code === 'auth/email-already-in-use') toast('❌ האימייל כבר קיים');
+    else if (err.code === 'auth/weak-password')   toast('❌ סיסמה חלשה — לפחות 6 תווים');
+    else if (err.code === 'auth/invalid-email')   toast('❌ אימייל לא תקין');
+    else toast('❌ שגיאה: ' + err.message);
+  }
+};
+
+// Delete admin
+window.deleteUser = async (userId, email) => {
+  if (!confirm(`למחוק את המנהל ${email}?\n\nהוא לא יוכל יותר להיכנס למערכת הניהול.`)) return;
+  
+  try {
+    await deleteDoc(doc(db, 'admins', userId));
     toast('✅ מנהל נמחק');
     loadUsers();
   } catch(e) {
@@ -1535,74 +1658,7 @@ window.deleteAdmin = async (id, email) => {
   }
 };
 
-document.getElementById('userForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const email    = document.getElementById('userEmail').value.trim();
-  const password = document.getElementById('userPassword').value.trim();
-  const name     = document.getElementById('userName').value.trim();
-  if (!email || !password || !name) { toast('❌ מלא את כל השדות'); return; }
-  if (password.length < 6) { toast('❌ סיסמה קצרה — לפחות 6 תווים'); return; }
-  try {
-    toast('⏳ יוצר מנהל...');
-    // שמור פרטי מנהל נוכחי
-    const meEmail = auth.currentUser ? auth.currentUser.email : '';
-    const mePass  = sessionStorage.getItem('adminPass') || '';
-    // צור מנהל חדש
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, 'admins', cred.user.uid), {
-      uid: cred.user.uid, email, name, role: 'admin',
-      createdAt: new Date().toISOString()
-    });
-    // חזור להתחבר כמנהל הנוכחי
-    if (meEmail && mePass) {
-      await signInWithEmailAndPassword(auth, meEmail, mePass);
-    }
-    toast('✅ מנהל ' + name + ' נוסף!');
-    document.getElementById('addUserModal').style.display = 'none';
-    document.getElementById('userForm').reset();
-    loadUsers();
-  } catch(err) {
-    if (err.code === 'auth/email-already-in-use') toast('❌ האימייל כבר קיים');
-    else if (err.code === 'auth/weak-password')   toast('❌ סיסמה חלשה');
-    else if (err.code === 'auth/invalid-email')   toast('❌ אימייל לא תקין');
-    else toast('❌ שגיאה: ' + err.message);
-  }
-};
-
-// טען מנהלים כשעוברים לטאב
-const origShowTab = window.showTab;
-window.showTab = (tab) => {
-  origShowTab && origShowTab(tab);
-  if (tab === 'users') loadUsers();
-};
-
-
 </script>
 
-
-<!-- מודל הוספת מנהל -->
-<div id="addUserModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#1c1c2e;border-radius:20px;padding:32px;width:440px;max-width:95vw;direction:rtl;">
-        <h3 style="font-size:20px;font-weight:800;color:white;margin-bottom:24px;">➕ הוסף מנהל חדש</h3>
-        <form id="userForm">
-            <div style="margin-bottom:16px;">
-                <label style="display:block;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:6px;">שם מלא *</label>
-                <input type="text" id="userName" style="width:100%;background:#2a2a3e;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px;color:white;font-size:15px;" placeholder="שם המנהל" required>
-            </div>
-            <div style="margin-bottom:16px;">
-                <label style="display:block;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:6px;">אימייל *</label>
-                <input type="email" id="userEmail" style="width:100%;background:#2a2a3e;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px;color:white;font-size:15px;direction:ltr;" placeholder="admin@davinci.com" required>
-            </div>
-            <div style="margin-bottom:24px;">
-                <label style="display:block;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:6px;">סיסמה (לפחות 6 תווים) *</label>
-                <input type="password" id="userPassword" style="width:100%;background:#2a2a3e;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px;color:white;font-size:15px;" placeholder="סיסמה" required>
-            </div>
-            <div style="display:flex;gap:12px;">
-                <button type="button" onclick="document.getElementById('addUserModal').style.display='none'" style="flex:1;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">ביטול</button>
-                <button type="submit" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#111;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;">✅ שמור</button>
-            </div>
-        </form>
-    </div>
-</div>
 </body>
 </html>
