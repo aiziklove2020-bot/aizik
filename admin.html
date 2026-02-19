@@ -1611,27 +1611,39 @@ async function loadUsers() {
   }
 }
 
-// Add admin
+// Add admin - משתמש ב-Secondary App כדי לא להתנתק מהמשתמש הנוכחי!
 document.getElementById('userForm').onsubmit = async (e) => {
   e.preventDefault();
   
-  const email = document.getElementById('userEmail').value.trim();
+  const email    = document.getElementById('userEmail').value.trim();
   const password = document.getElementById('userPassword').value;
-  const name = document.getElementById('userName').value.trim();
+  const name     = document.getElementById('userName').value.trim();
   
   try {
-    // Create user in Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Save admin in Firestore 'admins' collection
-    await addDoc(collection(db, 'admins'), {
-      uid: userCredential.user.uid,
-      email: email,
-      name: name,
+    // יצירת אפליקציה זמנית נפרדת - כדי לא להתנתק מהמנהל הנוכחי
+    const { initializeApp, getApps, deleteApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const secondaryApp = initializeApp(firebaseConfig, 'secondary_' + Date.now());
+    const { getAuth: getAuth2, createUserWithEmailAndPassword: createUser2 } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const auth2 = getAuth2(secondaryApp);
+
+    // צור משתמש חדש דרך האפליקציה הזמנית
+    const userCredential = await createUser2(auth2, email, password);
+    const uid = userCredential.user.uid;
+
+    // התנתק מהאפליקציה הזמנית ומחק אותה
+    await userCredential.user.auth.signOut();
+    await deleteApp(secondaryApp);
+
+    // שמור ב-Firestore
+    await setDoc(doc(db, 'admins', uid), {
+      uid:       uid,
+      email:     email,
+      name:      name,
+      role:      'admin',
       createdAt: new Date().toISOString()
     });
     
-    toast('✅ מנהל נוסף בהצלחה');
+    toast('✅ מנהל ' + name + ' נוסף בהצלחה!');
     closeModal('addUserModal');
     document.getElementById('userForm').reset();
     loadUsers();
@@ -1639,7 +1651,9 @@ document.getElementById('userForm').onsubmit = async (e) => {
     if (e.code === 'auth/email-already-in-use') {
       toast('❌ האימייל כבר קיים במערכת');
     } else if (e.code === 'auth/weak-password') {
-      toast('❌ הסיסמה חלשה מדי');
+      toast('❌ הסיסמה חלשה מדי — לפחות 6 תווים');
+    } else if (e.code === 'auth/invalid-email') {
+      toast('❌ אימייל לא תקין');
     } else {
       toast('❌ שגיאה: ' + e.message);
     }
