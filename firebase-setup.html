@@ -3,113 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firebase Setup — דה וינצ'י</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
+<title>יצירת מנהלים — דה וינצ'י</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Heebo',sans-serif;background:#09090b;color:#f0ead8;min-height:100vh;padding:30px 20px;direction:rtl}
-.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-h1{font-size:24px;font-weight:700;color:#c9a84c;text-align:center}
-.sub{text-align:center;color:#a89878;font-size:13px}
-.card{background:#111214;border:1px solid rgba(201,168,76,.28);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
-.card h2{font-size:15px;font-weight:700}
-.fg{display:flex;flex-direction:column;gap:5px}
-label{font-size:11px;font-weight:600;color:#a89878}
-input{background:#1c1e22;border:1px solid #242629;border-radius:8px;padding:10px 12px;color:#f0ead8;font-family:inherit;font-size:13px;direction:ltr;outline:none;width:100%}
-input:focus{border-color:rgba(201,168,76,.5)}
-.btn{background:#c9a84c;color:#09090b;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
-.btn:hover{background:#e2c06a}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.log{background:#0a0a0b;border:1px solid #242629;border-radius:8px;padding:14px;font-size:12px;font-family:monospace;line-height:2;min-height:120px;direction:ltr;text-align:left;overflow-y:auto;max-height:260px}
-.done{background:rgba(76,175,122,.06);border:1px solid rgba(76,175,122,.3);border-radius:10px;padding:18px;text-align:center;display:none}
-.done h3{color:#4caf7a;font-size:16px;margin-bottom:8px}
-.done p{color:#a89878;font-size:12px;line-height:1.8}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:#1c1e22;color:#5c5444;padding:8px 10px;text-align:right;font-size:10px;text-transform:uppercase}
-td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:#a89878}
-td:first-child{color:#f0ead8;font-weight:600}
-.p{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.3)}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #111; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.box { background: #1c1c1c; border-radius: 20px; padding: 40px; width: 100%; max-width: 480px; }
+h1 { color: #f59e0b; font-size: 24px; margin-bottom: 8px; text-align: center; }
+.sub { color: #888; font-size: 13px; text-align: center; margin-bottom: 30px; }
+.group { margin-bottom: 16px; }
+label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 600; }
+input { width: 100%; background: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 12px 14px; color: white; font-size: 15px; outline: none; direction: ltr; }
+input:focus { border-color: #f59e0b; }
+.btn { width: 100%; background: #f59e0b; color: #111; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 20px; }
+.btn:hover { background: #fbbf24; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.divider { border: none; border-top: 1px solid #333; margin: 24px 0; }
+.log { background: #000; border-radius: 10px; padding: 14px; min-height: 120px; max-height: 220px; overflow-y: auto; font-size: 13px; font-family: monospace; line-height: 2; margin-top: 20px; }
+.ok  { color: #22c55e; }
+.err { color: #ef4444; }
+.info { color: #888; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+th { background: #2a2a2a; padding: 8px 12px; text-align: right; color: #888; }
+td { padding: 10px 12px; border-bottom: 1px solid #2a2a2a; }
+.badge { background: rgba(245,158,11,0.2); color: #f59e0b; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🔥 Firebase Setup</h1>
-  <p class="sub">הגדרה חד פעמית — דה וינצ'י</p>
+<div class="box">
+  <h1>🔐 הגדרת מנהלים</h1>
+  <p class="sub">דה וינצ'י — צור משתמש ניהול חדש</p>
 
-  <div class="card">
-    <h2>פרטי Firebase</h2>
-    <div class="fg"><label>API Key</label><input id="apiKey" value="AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo"></div>
-    <div class="fg"><label>Project ID</label><input id="projectId" value="leonrdi-de-vinhi"></div>
+  <div class="group">
+    <label>אימייל המנהל</label>
+    <input type="email" id="email" placeholder="admin@davinci.com" value="admin1@davinci.com">
+  </div>
+  <div class="group">
+    <label>סיסמה (מינימום 6 תווים)</label>
+    <input type="password" id="pass" placeholder="סיסמה" value="admin1234">
+  </div>
+  <div class="group">
+    <label>שם מלא</label>
+    <input type="text" id="uname" placeholder="שם המנהל" value="מנהל ראשי">
   </div>
 
-  <div class="card">
-    <h2>סיסמה למנהלים</h2>
-    <div class="fg"><label>סיסמה (לשני המנהלים)</label><input id="adminPass" value="admin1234"></div>
-    <table style="margin-top:6px">
-      <thead><tr><th>אימייל</th><th>תפקיד</th></tr></thead>
-      <tbody>
-        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debfbab3b7b0ef9ebabfa8b7b0bdb7f0bdb1b3">[email&#160;protected]</a></td><td><span class="p">מנהל 1</span></td></tr>
-        <tr><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58393c3531366a183c392e31363b31763b3735">[email&#160;protected]</a></td><td><span class="p">מנהל 2</span></td></tr>
-      </tbody>
-    </table>
-  </div>
+  <button class="btn" id="createBtn" onclick="createAdmin()">🚀 צור מנהל</button>
 
-  <div class="card">
-    <button class="btn" id="runBtn">🚀 צור משתמשים</button>
-    <div class="log" id="log">ממתין...</div>
-    <div class="done" id="done">
-      <h3>✅ הושלם!</h3>
-      <p>
-        שני המנהלים נוצרו בהצלחה.<br><br>
-        <strong style="color:#f0ead8">כניסה למערכת הניהול:</strong><br>
-        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e0e5ece8efb0c1e5e0f7e8efe2e8afe2eeec">[email&#160;protected]</a> / admin1234<br>
-        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0d6c696064633f4d696c7b64636e64236e6260">[email&#160;protected]</a> / admin1234<br><br>
-        <strong style="color:#f0ead8">דף הלובי:</strong> פתוח לכולם, ללא סיסמה
-      </p>
-    </div>
-  </div>
+  <hr class="divider">
+
+  <p style="color:#888;font-size:13px;margin-bottom:8px;">מנהלים קיימים:</p>
+  <table>
+    <thead><tr><th>אימייל</th><th>שם</th><th>תפקיד</th></tr></thead>
+    <tbody id="adminsList">
+      <tr><td colspan="3" style="color:#555;text-align:center;padding:16px">טוען...</td></tr>
+    </tbody>
+  </table>
+
+  <div class="log" id="log">ממתין לפעולה...</div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+<script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-function log(msg, color) {
+const app = initializeApp({
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+});
+
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+function log(msg, type='info') {
   const el = document.getElementById('log');
-  const c = {g:'#4caf7a',r:'#e05252',y:'#a89878',gold:'#c9a84c'};
-  el.innerHTML += '<span style="color:'+(c[color]||'#f0ead8')+'">'+msg+'</span>\n';
+  el.innerHTML += '<div class="' + type + '">' + msg + '</div>';
   el.scrollTop = el.scrollHeight;
 }
 
-document.getElementById('runBtn').addEventListener('click', async function() {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  const projectId = document.getElementById('projectId').value.trim();
-  const adminPass = document.getElementById('adminPass').value.trim();
+async function loadAdmins() {
+  try {
+    const snap = await getDocs(collection(db, 'admins'));
+    const tbody = document.getElementById('adminsList');
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:#555;text-align:center;padding:16px">אין מנהלים עדיין</td></tr>';
+      return;
+    }
+    tbody.innerHTML = snap.docs.map(d => {
+      const u = d.data();
+      return '<tr>' +
+        '<td style="direction:ltr;font-size:12px">' + (u.email || d.id) + '</td>' +
+        '<td>' + (u.name || '—') + '</td>' +
+        '<td><span class="badge">מנהל</span></td>' +
+        '</tr>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('adminsList').innerHTML =
+      '<tr><td colspan="3" style="color:#555;text-align:center">לא ניתן לטעון — בדוק חיבור</td></tr>';
+  }
+}
 
-  if(!apiKey||!projectId){log('❌ חסרים פרטי Firebase','r');return;}
-  if(adminPass.length<6){log('❌ סיסמה קצרה מדי (מינימום 6 תווים)','r');return;}
+loadAdmins();
 
-  this.disabled=true;
-  document.getElementById('log').innerHTML='';
+window.createAdmin = async () => {
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('pass').value.trim();
+  const name  = document.getElementById('uname').value.trim();
 
-  let auth, db;
-  try{
-    log('🔧 מתחבר...','y');
-    const app = initializeApp({apiKey, authDomain:projectId+'.firebaseapp.com', projectId}, 'setup'+Date.now());
-    auth = getAuth(app);
-    db = getFirestore(app);
-    log('✓ מחובר!','g');
-  }catch(e){log('❌ '+e.message,'r');this.disabled=false;return;}
+  if (!email || !pass || !name) { log('❌ מלא את כל השדות', 'err'); return; }
+  if (pass.length < 6) { log('❌ סיסמה חייבת להיות לפחות 6 תווים', 'err'); return; }
 
-  const users = [
-    {email:'admin1@davinci.com', name:'מנהל 1', role:'admin'},
-    {email:'admin2@davinci.com', name:'מנהל 2', role:'admin'},
-  ];
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
 
-  let ok=0, fail=0;
-  for(const u of users){
-    log('⏳ '+u.email+'...','y');
-    try{
-      const cred = await createUserWithEmailAndPassword(auth, u.email, adminPass);
-      await setDoc(doc(db,'users',cred.
+  log('⏳ יוצר משתמש ב-Firebase...', 'info');
+
+  try {
+    // צור ב-Auth
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    log('✅ משתמש נוצר ב-Firebase Auth', 'ok');
+
+    // שמור ב-Firestore collection admins
+    await setDoc(doc(db, 'admins', cred.user.uid), {
+      email:     email,
+      name:      name,
+      role:      'admin',
+      createdAt: new Date().toISOString()
+    });
+    log('✅ נשמר ב-Firestore collection admins', 'ok');
+    log('━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+    log('🎉 מנהל נוצר בהצלחה!', 'ok');
+    log('📧 אימייל: ' + email, 'ok');
+    log('🔑 סיסמה: ' + pass, 'ok');
+    log('━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+    log('עכשיו כנס ל-admin.html עם פרטים אלה', 'info');
+
+    await loadAdmins();
+  } catch(e) {
+    if (e.code === 'auth/email-already-in-use') {
+      log('⚠️ אימייל זה כבר קיים במערכת', 'info');
+      log('נסה להיכנס ל-admin.html עם הסיסמה הקיימת', 'info');
+      log('אם שכחת סיסמה — שנה אימייל וצור מנהל חדש', 'info');
+    } else if (e.code === 'auth/invalid-email') {
+      log('❌ אימייל לא תקין', 'err');
+    } else if (e.code === 'auth/weak-password') {
+      log('❌ סיסמה חלשה — הוסף תווים', 'err');
+    } else {
+      log('❌ שגיאה: ' + e.message, 'err');
+    }
+  }
+
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
