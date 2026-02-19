@@ -28,37 +28,37 @@ body, html {
 .overlay {
     position: fixed;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.65) 100%);
     z-index: -1;
 }
 
 /* זכוכית חלבית */
 .frosted-glass {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.75);
     border-radius: 40px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .frosted-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.75);
     border-radius: 24px;
     transition: all 0.3s;
 }
 
 .frosted-card:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.75);
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(212,175,55,0.2);
 }
 
 .status-glass {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 50%;
@@ -68,7 +68,7 @@ body, html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(0, 0, 0, 0.75);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -278,10 +278,10 @@ body, html {
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.75);
     border-radius: 32px;
     max-width: 600px;
     width: 100%;
@@ -523,8 +523,8 @@ tr:hover td {
         </div>
         <div class="frosted-glass logo-box">
             <h1 class="logo-title">DA VINCI</h1>
-            <p class="logo-subtitle" style="color:#1a1a2e;font-size:14px;font-weight:900;letter-spacing:3px;">
-                <span class="pulse-dot" style="background:#1a1a2e;"></span>
+            <p class="logo-subtitle">
+                <span class="pulse-dot"></span>
                 לובי • <span id="clk" style="font-size: 16px; font-weight: 900; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></span>
             </p>
         </div>
