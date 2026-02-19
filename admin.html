@@ -19,7 +19,7 @@ body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Assistant',
 
 .overlay {
     position: fixed; inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.85) 100%);
     z-index: -1;
 }
 
@@ -230,31 +230,16 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
 
         <!-- טאב ארכיון -->
         <div id="tabArchive" class="section">
-            <div class="frosted-card p-6 mb-4">
-                <div class="flex gap-4 justify-between items-center flex-wrap">
-                    <div>
-                        <h2 class="text-2xl font-bold mb-1">ארכיון כניסות</h2>
-                        <p class="opacity-70 text-sm">כניסות ישנות שנמחקו אוטומטית</p>
-                    </div>
-                    <button onclick="downloadArchiveExcel()" class="sbtn">📥 הורד גיבוי Excel</button>
+            <div class="frosted-card p-8">
+                <div class="text-center" style="max-width: 500px; margin: 0 auto;">
+                    <div style="font-size: 80px; opacity: 0.6; margin-bottom: 20px;">📁</div>
+                    <h2 class="text-3xl font-bold mb-4">ארכיון כניסות</h2>
+                    <p class="opacity-70 text-lg mb-8">כל הכניסות שנמחקו אוטומטית נשמרות כאן</p>
+                    <button onclick="downloadArchiveExcel()" class="sbtn" style="font-size: 18px; padding: 20px 40px;">
+                        📥 הורד קובץ Excel עם כל הארכיון
+                    </button>
+                    <p class="opacity-50 text-sm mt-6">הקובץ יכלול את כל הכניסות שהועברו לארכיון</p>
                 </div>
-            </div>
-            <div class="frosted-card p-6 overflow-x-auto">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>שם אורח</th>
-                            <th>אצל דייר</th>
-                            <th>תאריך</th>
-                            <th>שעה</th>
-                            <th>קטגוריה</th>
-                            <th>נרשם ע"י</th>
-                        </tr>
-                    </thead>
-                    <tbody id="archiveTbody">
-                        <tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
@@ -385,6 +370,52 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
         <div id="tabAnalytics" class="section">
             <div class="frosted-card p-6 mb-4">
                 <h2 class="text-2xl font-bold mb-4">דוחות ואנליטיקה</h2>
+            </div>
+
+            <!-- לוח שנה - הורדת דוחות -->
+            <div class="frosted-card p-6 mb-4">
+                <h3 class="text-xl font-bold mb-4">📅 הורדת דוחות לפי תאריך</h3>
+                
+                <!-- Quick shortcuts -->
+                <div class="flex gap-2 mb-4 flex-wrap">
+                    <button onclick="setDateRange('today')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-semibold transition">
+                        📅 היום
+                    </button>
+                    <button onclick="setDateRange('yesterday')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-semibold transition">
+                        📅 אתמול
+                    </button>
+                    <button onclick="setDateRange('week')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-semibold transition">
+                        📅 השבוע
+                    </button>
+                    <button onclick="setDateRange('month')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-semibold transition">
+                        📅 החודש
+                    </button>
+                    <button onclick="setDateRange('clear')" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-semibold transition">
+                        🔄 נקה
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-white">תאריך התחלה</label>
+                        <input type="date" id="startDate" class="inp" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-white">תאריך סיום</label>
+                        <input type="date" id="endDate" class="inp" />
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="downloadByDateRange('guests')" class="sbtn flex-1">
+                        📥 הורד אורחים מתאריך זה
+                    </button>
+                    <button onclick="downloadByDateRange('archive')" class="sbtn flex-1" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+                        📥 הורד מהארכיון
+                    </button>
+                </div>
+                <p class="text-xs text-white opacity-70 mt-3">
+                    💡 השאר ריק כדי להוריד הכל, או בחר טווח תאריכים מדויק
+                </p>
             </div>
             
             <!-- כניסות אחרונות -->
@@ -832,34 +863,7 @@ async function loadAnalytics() {
     `).join('');
   }
 
-  // Load archive
-  try {
-    const archiveSnap = await getDocs(collection(db, 'archive'));
-    const archive = archiveSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const archiveTbody = document.getElementById('archiveTbody');
-    if (archive.length === 0) {
-      archiveTbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
-    } else {
-      archiveTbody.innerHTML = archive.slice(-100).reverse().map(a => {
-        const name  = a.name  || a.guestName || a.guest || '—';
-        const tname = a.tname || a.tenant || a.tenantName || '—';
-        const date  = a.date  || a.entryDate || '—';
-        const time  = a.time  || a.entryTime || '—';
-        const cat   = a.cat   || a.category  || '—';
-        const by    = a.registeredBy || a.employee || '—';
-        return `<tr>
-          <td style="font-weight:700">${name}</td>
-          <td>${tname}</td>
-          <td>${date}</td>
-          <td>${time}</td>
-          <td>${cat}</td>
-          <td>${by}</td>
-        </tr>`;
-      }).join('');
-    }
-  } catch(e) {
-    document.getElementById('archiveTbody').innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין ארכיון</td></tr>';
-  }
+  // Archive is now download-only, no table to load
 }
 
 // Tab switching
@@ -1039,6 +1043,111 @@ window.downloadTenantsTemplate = () => {
   XLSX.writeFile(wb, 'תבנית_דיירים_דה_וינצ\'י.xlsx');
   toast('📥 תבנית הורדה — מלא ותעלה');
 };
+
+// הורד דוחות לפי טווח תאריכים
+window.downloadByDateRange = async (source) => {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  
+  try {
+    let data = source === 'archive' ? archive : guests;
+    
+    // Filter by date range if provided
+    if (startDate || endDate) {
+      data = data.filter(item => {
+        const itemDate = item.date;
+        if (!itemDate) return false;
+        
+        if (startDate && endDate) {
+          return itemDate >= startDate && itemDate <= endDate;
+        } else if (startDate) {
+          return itemDate >= startDate;
+        } else if (endDate) {
+          return itemDate <= endDate;
+        }
+        return true;
+      });
+    }
+    
+    if (data.length === 0) {
+      toast('⚠️ לא נמצאו רישומים בטווח תאריכים זה');
+      return;
+    }
+    
+    // Prepare data for export
+    const exportData = data.map(item => ({
+      'שם אורח': item.name || '',
+      'שם דייר': item.tname || '',
+      'קומה': item.floor || '',
+      'דירה': item.apt || '',
+      'תאריך': item.date || '',
+      'שעה': item.time || '',
+      'קטגוריה': item.cat || '',
+      'הערות': item.notes || '',
+      'נוצר על ידי': item.createdBy || ''
+    }));
+    
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    ws['!cols'] = [{wch:22},{wch:22},{wch:8},{wch:12},{wch:12},{wch:10},{wch:16},{wch:30},{wch:16}];
+    
+    const sheetName = source === 'archive' ? 'ארכיון' : 'אורחים';
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    
+    const dateRange = startDate && endDate ? `${startDate}_עד_${endDate}` : 
+                      startDate ? `מ_${startDate}` :
+                      endDate ? `עד_${endDate}` : 'הכל';
+    
+    const filename = `דוח_${sheetName}_${dateRange}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    
+    toast(`✅ הורדו ${data.length} רישומים`);
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+    console.error(e);
+  }
+};
+
+// Set date range shortcuts
+window.setDateRange = (range) => {
+  const today = new Date();
+  const startInput = document.getElementById('startDate');
+  const endInput = document.getElementById('endDate');
+  
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+  
+  switch(range) {
+    case 'today':
+      startInput.value = formatDate(today);
+      endInput.value = formatDate(today);
+      break;
+    case 'yesterday':
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      startInput.value = formatDate(yesterday);
+      endInput.value = formatDate(yesterday);
+      break;
+    case 'week':
+      const weekStart = new Date(today);
+      weekStart.setDate(weekStart.getDate() - 7);
+      startInput.value = formatDate(weekStart);
+      endInput.value = formatDate(today);
+      break;
+    case 'month':
+      const monthStart = new Date(today);
+      monthStart.setDate(1);
+      startInput.value = formatDate(monthStart);
+      endInput.value = formatDate(today);
+      break;
+    case 'clear':
+      startInput.value = '';
+      endInput.value = '';
+      break;
+  }
+};
+
 
 // מחק את כל הדיירים
 window.clearAllTenants = async () => {
