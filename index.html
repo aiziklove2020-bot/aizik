@@ -533,12 +533,9 @@ tr:hover td {
     <div class="main-content">
         
         <!-- בלון עדכונים מהמנהלים -->
-        <div id="notificationsBanner" class="notifications-banner">
-            <div class="notification-title">
-                <span>📢</span>
-                <span>עדכון למשמרת</span>
-            </div>
-            <div class="notification-text" id="notificationText" style="white-space:pre-line;" style="white-space:pre-line;">ברוכים הבאים למערכת דה וינצ'י</div>
+        <!-- עדכונים למשמרת - בלונים דינמיים -->
+        <div id="notificationsBanners">
+            <!-- כל הודעה תהיה בלון נפרד -->
         </div>
 
         <!-- תפריט ראשי -->
@@ -646,128 +643,36 @@ tr:hover td {
             </div>
         </div>
 
-        <!-- טבלת מפתחות -->
+        <!-- טבלת מסירת מפתחות -->
         <div id="keysSection" class="section">
             <div class="section-header">
                 <button class="back-btn" onclick="showSection('main')">←</button>
-                <h2 class="section-title">🔑 מעקב מפתחות משרדים</h2>
+                <h2 class="section-title">🔑 רישום מסירת מפתחות</h2>
             </div>
-            <div class="frosted-card" style="padding: 24px; overflow-x: auto;">
-                <div style="max-width: 1200px; margin: 0 auto;">
-                    <table style="width: 100%; border-collapse: collapse; border: 3px solid rgba(255,255,255,0.3);">
-                        <tbody id="keysTableBody">
-                            <!-- 8 rows with 11 columns each, matching the image -->
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%; background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 9%;"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); width: 10%; vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">משרד</td>
+            <div class="frosted-card" style="padding: 24px;">
+                <div style="overflow-x: auto;">
+                    <table id="keysLogTable" style="width: 100%; border-collapse: collapse; border: 2px solid rgba(255,255,255,0.3);">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.1);">
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 100px;">תאריך</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 80px;">קומה</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 80px;">יחידה</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 150px;">שם מלא</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 120px;">מספר טלפון</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 100px;">שעת קבלה</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 100px;">שעת החזרה</th>
+                                <th style="border: 2px solid rgba(255,255,255,0.3); padding: 12px; font-weight: 600; min-width: 200px;">הערות</th>
                             </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה א' צד דרום</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה א' צד צפון</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה ב' צד דרום</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 13px; background: rgba(255,255,255,0.05);">קומה ב' צד צפון</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">מעליות</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">דלת</td>
-                            </tr>
-                            <tr style="height: 80px;">
-                                <td style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.02);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3);"></td>
-                                <td style="border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.05);">חניון</td>
-                            </tr>
+                        </thead>
+                        <tbody id="keysLogBody">
+                            <tr><td colspan="8" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">טוען...</td></tr>
                         </tbody>
                     </table>
-                    <div style="margin-top: 20px; text-align: center;">
-                        <button onclick="saveKeysFromLobby()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 14px 32px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">
-                            💾 שמור טבלה
-                        </button>
-                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button onclick="openAddKeyLogModal()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 14px 32px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3); width: 100%;">
+                        ➕ רישום מסירת מפתח חדש
+                    </button>
                 </div>
             </div>
         </div>
@@ -937,6 +842,71 @@ tr:hover td {
     </div>
 </div>
 
+<!-- Modal רישום מסירת מפתח -->
+<div id="keyLogModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">רישום מסירת מפתח</h3>
+            <button class="modal-close" onclick="closeKeyLogModal()">✕</button>
+        </div>
+        <form id="keyLogForm" class="modal-body">
+            
+            <!-- תאריך -->
+            <div class="form-group">
+                <label class="form-label">תאריך *</label>
+                <input type="date" id="keyDate" class="form-input" required>
+            </div>
+
+            <!-- קומה -->
+            <div class="form-group">
+                <label class="form-label">קומה *</label>
+                <input type="number" id="keyFloor" class="form-input" placeholder="מספר קומה..." required>
+            </div>
+
+            <!-- יחידה -->
+            <div class="form-group">
+                <label class="form-label">יחידה *</label>
+                <input type="text" id="keyUnit" class="form-input" placeholder="מספר דירה/יחידה..." required>
+            </div>
+
+            <!-- שם מלא -->
+            <div class="form-group">
+                <label class="form-label">שם מלא *</label>
+                <input type="text" id="keyFullName" class="form-input" placeholder="שם מלא של מקבל המפתח..." required>
+            </div>
+
+            <!-- מספר טלפון -->
+            <div class="form-group">
+                <label class="form-label">מספר טלפון *</label>
+                <input type="tel" id="keyPhone" class="form-input" placeholder="050-1234567" required>
+            </div>
+
+            <!-- שעת קבלה -->
+            <div class="form-group">
+                <label class="form-label">שעת קבלת מפתח *</label>
+                <input type="time" id="keyReceived" class="form-input" required>
+            </div>
+
+            <!-- שעת החזרה -->
+            <div class="form-group">
+                <label class="form-label">שעת החזרת מפתח</label>
+                <input type="time" id="keyReturned" class="form-input" placeholder="להשאיר ריק אם עדיין לא הוחזר">
+            </div>
+
+            <!-- הערות -->
+            <div class="form-group">
+                <label class="form-label">הערות</label>
+                <textarea id="keyNotes" class="form-input" rows="3" placeholder="הערות נוספות (אופציונלי)..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeKeyLogModal()">ביטול</button>
+                <button type="submit" class="btn btn-submit">✓ שמור</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="toast" id="toastEl"></div>
 
 <script type="module">
@@ -958,7 +928,7 @@ const TODAY = new Date().toISOString().split('T')[0];
 
 let guests = [], tenants = [], offices = [], employees = [];
 
-// הודעות real-time
+// הודעות real-time - כל הודעה בבלון נפרד
 function loadNotifications() {
   try {
     onSnapshot(collection(db, 'notifications'), (snap) => {
@@ -966,15 +936,21 @@ function loadNotifications() {
         .filter(n => n.active && n.forLobby)
         .sort((a,b) => (b.createdAt||'') > (a.createdAt||'') ? 1 : -1);
       
-      const el = document.getElementById('notificationText');
-      const banner = document.getElementById('notificationsBanner');
+      const container = document.getElementById('notificationsBanners');
       
       if (active.length === 0) {
-        banner.style.display = 'none';
+        container.innerHTML = '';
       } else {
-        banner.style.display = 'block';
-        // Show ALL messages without limit, separated by line
-        el.innerText = active.map(n => n.message).join('\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n');
+        // Create separate banner for each notification
+        container.innerHTML = active.map(notification => `
+          <div class="notifications-banner" style="margin-bottom: 16px;">
+            <div class="notification-title">
+              <span>📢</span>
+              <span>עדכון למשמרת</span>
+            </div>
+            <div class="notification-text" style="white-space:pre-line;">${notification.message}</div>
+          </div>
+        `).join('');
       }
     });
   } catch(e) { console.error('notifications:', e); }
@@ -1420,8 +1396,81 @@ window.saveKeysFromLobby = async () => {
   }
 };
 
+// ==================== KEY LOG FUNCTIONS ====================
+
+// Open key log modal
+window.openAddKeyLogModal = () => {
+  document.getElementById('keyLogModal').classList.add('show');
+  document.getElementById('keyDate').valueAsDate = new Date();
+  const now = new Date();
+  document.getElementById('keyReceived').value = now.toTimeString().slice(0,5);
+};
+
+// Close key log modal
+window.closeKeyLogModal = () => {
+  document.getElementById('keyLogModal').classList.remove('show');
+  document.getElementById('keyLogForm').reset();
+};
+
+// Save key log entry
+document.getElementById('keyLogForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const data = {
+    date: document.getElementById('keyDate').value,
+    floor: document.getElementById('keyFloor').value,
+    unit: document.getElementById('keyUnit').value,
+    fullName: document.getElementById('keyFullName').value,
+    phone: document.getElementById('keyPhone').value,
+    timeReceived: document.getElementById('keyReceived').value,
+    timeReturned: document.getElementById('keyReturned').value || '',
+    notes: document.getElementById('keyNotes').value || '',
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    await addDoc(collection(db, 'keyLogs'), data);
+    toast('✅ רישום נשמר');
+    closeKeyLogModal();
+    loadKeyLogs();
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+  }
+};
+
+// Load key logs
+async function loadKeyLogs() {
+  try {
+    const snap = await getDocs(collection(db, 'keyLogs'));
+    const logs = snap.docs.map(d => ({id: d.id, ...d.data()}))
+      .sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+    
+    const tbody = document.getElementById('keysLogBody');
+    if (logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">אין רישומים</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = logs.map(log => `
+      <tr>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.date}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.floor}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.unit}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.fullName}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.phone}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.timeReceived}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.timeReturned || '—'}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.notes || '—'}</td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    console.error('key logs error:', e);
+  }
+}
+
 // Load notifications on startup
 loadNotifications();
+loadKeyLogs();
 
 </script>
 </body>

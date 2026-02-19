@@ -341,14 +341,26 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
         <!-- טאב מפתחות -->
         <div id="tabKeys" class="section">
             <div class="frosted-card p-6 mb-4">
-                <h2 class="text-2xl font-bold">🔑 צפייה בטבלת מפתחות</h2>
-                <p style="color: rgba(255,255,255,0.6); margin-top: 8px;">הטבלה ניתנת לעריכה מהלובי בלבד</p>
+                <h2 class="text-2xl font-bold">🔑 רישומי מסירת מפתחות</h2>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 8px;">צפייה ברישומים מהלובי</p>
             </div>
             
             <div class="frosted-card p-6 overflow-x-auto">
-                <table id="keysAdminTable" style="width: 100%; border-collapse: collapse; border: 3px solid rgba(255,255,255,0.3);">
+                <table id="keysAdminTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.05);">
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">תאריך</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">קומה</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">יחידה</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">שם מלא</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">טלפון</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">שעת קבלה</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">שעת החזרה</th>
+                            <th style="border: 2px solid rgba(255,255,255,0.2); padding: 12px;">הערות</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td colspan="11" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">טוען...</td></tr>
+                        <tr><td colspan="8" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">טוען...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1449,31 +1461,32 @@ window.saveKeysTable = async () => {
 
 // ==================== KEYS MANAGEMENT ====================
 
-// Load keys table in admin (readonly view)
+// Load key logs in admin (readonly view)
 window.loadKeysTable = async () => {
   try {
-    const snap = await getDocs(collection(db, 'keys'));
-    const keysData = {};
-    snap.docs.forEach(d => {
-      const data = d.data();
-      keysData[`${data.row}_${data.col}`] = data.value || '';
-    });
+    const snap = await getDocs(collection(db, 'keyLogs'));
+    const logs = snap.docs.map(d => ({id: d.id, ...d.data()}))
+      .sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
     
     const tbody = document.querySelector('#keysAdminTable tbody');
-    const rowLabels = ['משרד', 'קומה א\' צד דרום', 'קומה א\' צד צפון', 'קומה ב\' צד דרום', 'קומה ב\' צד צפון', 'מעליות', 'דלת', 'חניון'];
-    let html = '';
     
-    for (let i = 1; i <= 8; i++) {
-      html += '<tr style="height: 70px;">';
-      for (let j = 1; j <= 10; j++) {
-        const value = keysData[`${i}_${j}`] || '';
-        const bg = j === 1 ? 'background: rgba(255,255,255,0.05);' : '';
-        html += `<td style="border: 2px solid rgba(255,255,255,0.3); width: 9%; padding: 8px; text-align: center; ${bg}">${value}</td>`;
-      }
-      html += `<td style="border: 2px solid rgba(255,255,255,0.3); width: 10%; vertical-align: middle; padding: 8px; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.1);">${rowLabels[i-1]}</td>`;
-      html += '</tr>';
+    if (logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">אין רישומים</td></tr>';
+      return;
     }
-    tbody.innerHTML = html;
+    
+    tbody.innerHTML = logs.map(log => `
+      <tr>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.date}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.floor}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.unit}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.fullName}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.phone}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.timeReceived}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.timeReturned || '—'}</td>
+        <td style="border: 2px solid rgba(255,255,255,0.2); padding: 10px;">${log.notes || '—'}</td>
+      </tr>
+    `).join('');
   } catch(e) {
     console.error('keys load error:', e);
   }
