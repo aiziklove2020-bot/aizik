@@ -1089,8 +1089,11 @@ window.searchTenant = () => {
   filtered.slice(0, 15).forEach(t => {
     const div = document.createElement('div');
     div.style.cssText = 'padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;';
-    const tw = t.tower === 'צפוני' ? '<span style="background:#dbeafe;color:#1d4ed8;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:5px;">🔵 צפוני</span>'
-               : t.tower === 'דרומי' ? '<span style="background:#ffedd5;color:#c2410c;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:5px;">🟠 דרומי</span>' : '';
+    const tw = t.tower === 'צפוני'
+      ? '<span style="background:#dbeafe;color:#1d4ed8;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:5px;">🔵 צפוני</span>'
+      : t.tower === 'דרומי'
+      ? '<span style="background:#ffedd5;color:#c2410c;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:5px;">🟠 דרומי</span>'
+      : '';
     div.innerHTML = '<strong>' + t.name + '</strong> ' + tw + '<br><small style="color:#666;">קומה ' + t.floor + ' | דירה ' + t.apt + '</small>';
     div.addEventListener('mouseenter', () => div.style.background = '#f0f7ff');
     div.addEventListener('mouseleave', () => div.style.background = 'white');
