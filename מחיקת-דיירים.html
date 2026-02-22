@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>מחיקת כל הדיירים</title>
+<style>
+body { font-family: Arial; background: #111; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+.box { background: #1c1c1c; border-radius: 16px; padding: 40px; width: 500px; text-align: center; }
+h1 { color: #ef4444; margin-bottom: 12px; }
+p { color: #888; margin-bottom: 30px; font-size: 14px; line-height: 1.8; }
+.btn { background: #ef4444; color: white; border: none; padding: 16px 40px; border-radius: 12px; font-size: 17px; font-weight: 800; cursor: pointer; width: 100%; }
+.btn:hover { background: #dc2626; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.log { background: #000; border-radius: 8px; padding: 12px; height: 180px; overflow-y: auto; font-size: 12px; font-family: monospace; line-height: 1.9; margin-top: 20px; text-align: right; }
+.ok { color: #22c55e; } .err { color: #ef4444; } .info { color: #888; }
+.done { background: rgba(34,197,94,0.1); border: 1px solid #22c55e; border-radius: 12px; padding: 16px; margin-top: 16px; display: none; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🗑️ מחיקת כל הדיירים</h1>
+  <p>
+    פעולה זו תמחק את <strong>כל הדיירים</strong> מהמערכת.<br>
+    אחרי המחיקה — העלה מחדש דרומי וצפוני עם הקבצים המתאימים.
+  </p>
+  <button class="btn" id="deleteBtn" onclick="deleteAll()">🗑️ מחק את כל הדיירים</button>
+  <div class="log" id="log">לחץ על הכפתור להתחיל...</div>
+  <div class="done" id="done">
+    ✅ <strong>כל הדיירים נמחקו!</strong><br><br>
+    עכשיו פתח:<br>
+    1. <code>העלאת-דיירים.html</code> — מגדל דרומי<br>
+    2. <code>העלאת-דיירים-צפוני.html</code> — מגדל צפוני
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const db = getFirestore(initializeApp({
+  apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
+  authDomain: "leonrdi-de-vinhi.firebaseapp.com",
+  projectId: "leonrdi-de-vinhi",
+  storageBucket: "leonrdi-de-vinhi.firebasestorage.app",
+  messagingSenderId: "287853664744",
+  appId: "1:287853664744:web:3812f47e80da3ef5e12c5d"
+}));
+
+const log = (m, c='info') => {
+  const el = document.getElementById('log');
+  el.innerHTML += '<div class="'+c+'">'+m+'</div>';
+  el.scrollTop = el.scrollHeight;
+};
+
+window.deleteAll = async () => {
+  if (!confirm('בטוח? זה ימחק את כל הדיירים!')) return;
+  
+  const btn = document.getElementById('deleteBtn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+  
+  log('טוען דיירים מ-Firebase...', 'info');
+  try {
+    const snap = await getDocs(collection(db, 'tenants'));
+    log('נמצאו ' + snap.docs.length + ' דיירים — מוחק...', 'info');
+    
+    let deleted = 0;
+    for (const d of snap.docs) {
+      await deleteDoc(doc(db, 'tenants', d.id));
+      deleted++;
+      log('✓ נמחק ' + deleted + '/' + snap.docs.length, 'ok');
+    }
+    
+    log('━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+    log('✅ נמחקו ' + deleted + ' דיירים בהצלחה!', 'ok');
+    document.getElementById('done').style.display = 'block';
+  } catch(e) {
+    log('❌ שגיאה: ' + e.message, 'err');
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>

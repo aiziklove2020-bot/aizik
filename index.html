@@ -1089,7 +1089,9 @@ window.searchTenant = () => {
   filtered.slice(0, 15).forEach(t => {
     const div = document.createElement('div');
     div.style.cssText = 'padding:12px;cursor:pointer;border-bottom:1px solid #eee;color:#333;';
-    div.innerHTML = '<strong>' + t.name + '</strong><br><small style="color:#666;">קומה ' + t.floor + ', דירה ' + t.apt + '</small>';
+    const tower = t.tower === 'צפוני' ? '🔵 צפוני' : t.tower === 'דרומי' ? '🟠 דרומי' : '';
+    const towerBadge = tower ? '<span style="background:' + (t.tower==='צפוני'?'#dbeafe':'#ffedd5') + ';color:' + (t.tower==='צפוני'?'#1d4ed8':'#c2410c') + ';border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;margin-right:6px;">' + tower + '</span>' : '';
+    div.innerHTML = '<strong>' + t.name + '</strong> ' + towerBadge + '<br><small style="color:#666;">קומה ' + t.floor + ' | דירה ' + t.apt + '</small>';
     div.addEventListener('mouseenter', () => div.style.background = '#f0f7ff');
     div.addEventListener('mouseleave', () => div.style.background = 'white');
     div.addEventListener('click', () => {

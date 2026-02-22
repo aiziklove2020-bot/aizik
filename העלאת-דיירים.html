@@ -56,7 +56,7 @@ const log = (m, c='info') => {
     let ok = 0;
     for (let i = 0; i < TENANTS.length; i++) {
       try {
-        await addDoc(collection(db, 'tenants'), TENANTS[i]);
+        await addDoc(collection(db, 'tenants'), {...TENANTS[i], tower: 'דרומי'});
         ok++;
         document.getElementById('num').textContent = ok;
         document.getElementById('bar').style.width = Math.round(ok/TENANTS.length*100)+'%';
