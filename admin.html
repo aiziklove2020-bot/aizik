@@ -274,7 +274,6 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                     <thead>
                         <tr>
                             <th>שם</th>
-                            <th>מגדל</th>
                             <th>קומה</th>
                             <th>דירה</th>
                             <th>טלפון</th>
@@ -516,6 +515,11 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                 <input type="text" id="tenantApt" placeholder="דירה" class="inp" required>
             </div>
             <input type="tel" id="tenantPhone" placeholder="טלפון" class="inp">
+            <select id="tenantTower" class="inp" required>
+                <option value="">בחר מגדל *</option>
+                <option value="דרומי">🟠 מגדל דרומי</option>
+                <option value="צפוני">🔵 מגדל צפוני</option>
+            </select>
             <div class="flex gap-3">
                 <button type="button" onclick="closeModal('addTenantModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
                 <button type="submit" class="flex-1 sbtn">שמור</button>
@@ -859,24 +863,20 @@ function renderGuests() {
 function renderTenants() {
   const tbody = document.getElementById('tenantsTbody');
   if (!tenants.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
     return;
   }
-  tbody.innerHTML = tenants.map(t => {
-    const tw = t.tower === 'צפוני' 
-      ? '<span style="background:#dbeafe;color:#1d4ed8;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">🔵 צפוני</span>'
-      : t.tower === 'דרומי'
-      ? '<span style="background:#ffedd5;color:#c2410c;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">🟠 דרומי</span>'
-      : '—';
-    return `<tr>
+  tbody.innerHTML = tenants.map(t => `
+    <tr>
       <td>${t.name}</td>
-      <td>${tw}</td>
       <td>${t.floor}</td>
-      <td>${t.apt || '—'}</td>
+      <td>${t.apt}</td>
       <td>${t.phone || '—'}</td>
-      <td><button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button></td>
-    </tr>`;
-  }).join('');
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
+      </td>
+    </tr>
+  `).join('');
 }
 
 function renderOffices() {
@@ -1406,7 +1406,8 @@ document.getElementById('tenantForm').onsubmit = async (e) => {
     name: document.getElementById('tenantName').value.trim(),
     floor: parseInt(document.getElementById('tenantFloor').value),
     apt: document.getElementById('tenantApt').value.trim(),
-    phone: document.getElementById('tenantPhone').value.trim()
+    phone: document.getElementById('tenantPhone').value.trim(),
+    tower: document.getElementById('tenantTower').value
   };
   
   try {
