@@ -718,21 +718,30 @@ function toast(msg) {
 }
 
 // ==================== LOGIN ====================
-document.getElementById('loginBtn').onclick = async () => {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  const err   = document.getElementById('loginErr');
-  err.textContent = '';
-  if (!email || !pass) { err.textContent = 'נא למלא אימייל וסיסמה'; return; }
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') err.textContent = 'אימייל או סיסמה שגויים';
-    else if (e.code === 'auth/user-not-found') err.textContent = 'משתמש לא קיים';
-    else if (e.code === 'auth/too-many-requests') err.textContent = 'יותר מדי ניסיונות — המתן קצת';
-    else err.textContent = e.message;
-  }
-};
+// מחכה שה-DOM יהיה מוכן לפני שמחבר את הכפתור
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('loginBtn');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const err   = document.getElementById('loginErr');
+    err.textContent = '';
+    if (!email || !pass) { err.textContent = 'נא למלא אימייל וסיסמה'; return; }
+    btn.disabled = true;
+    btn.textContent = '...מתחבר';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) {
+      if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') err.textContent = 'אימייל או סיסמה שגויים';
+      else if (e.code === 'auth/user-not-found') err.textContent = 'משתמש לא קיים';
+      else if (e.code === 'auth/too-many-requests') err.textContent = 'יותר מדי ניסיונות — המתן קצת';
+      else err.textContent = e.message;
+      btn.disabled = false;
+      btn.textContent = 'כניסה';
+    }
+  });
+});
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -1771,30 +1780,31 @@ window.updatePermissionsUI = function() {
 };
 
 function hideTabsByRole(role, perms) {
-  if (role === 'admin') return;
-  const allTabBtns = document.querySelectorAll('.tab-btn');
+  if (role === 'admin') return; // מנהל ראשי — רואה הכל
 
-  if (role === 'manager') {
-    // מנהל דיירים — דיירים + עדכונים בלבד
-    allTabBtns.forEach(btn => {
-      const txt = btn.textContent;
-      if (!txt.includes('דיירים') && !txt.includes('עדכונים')) btn.style.display = 'none';
-    });
-    showTab('tenants');
-    // הסתר עריכה אם אין הרשאה
-    if (!perms.editGuests)  setTimeout(() => document.querySelectorAll('[onclick*="deleteGuest"]').forEach(b => b.style.display='none'), 1500);
-    if (!perms.editTenants) setTimeout(() => document.querySelectorAll('[onclick*="deleteTenant"]').forEach(b => b.style.display='none'), 1500);
+  // הגדר אילו טאבים מותרים לכל תפקיד
+  const allowed = {
+    manager:         ['tenants', 'notifications'],
+    offices_manager: ['offices', 'keys', 'notifications']
+  };
+  const allowedTabs = allowed[role] || [];
 
-  } else if (role === 'offices_manager') {
-    // מנהל משרדים — משרדים + מפתחות + עדכונים
-    allTabBtns.forEach(btn => {
-      const txt = btn.textContent;
-      if (!txt.includes('משרדים') && !txt.includes('מפתחות') && !txt.includes('עדכונים')) btn.style.display = 'none';
-    });
-    showTab('offices');
-    // הסתר עריכה אם אין הרשאה
-    if (!perms.editOffices) setTimeout(() => document.querySelectorAll('[onclick*="deleteOffice"]').forEach(b => b.style.display='none'), 1500);
-  }
+  // הסתר טאבים שלא בתפקיד
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const tab = btn.getAttribute('onclick')?.match(/showTab\('(\w+)'\)/)?.[1];
+    if (tab && !allowedTabs.includes(tab)) btn.style.display = 'none';
+  });
+
+  // עבור לטאב הראשון המותר
+  if (role === 'manager') showTab('tenants');
+  if (role === 'offices_manager') showTab('offices');
+
+  // הסתר כפתורי עריכה/מחיקה לפי הרשאות ספציפיות
+  setTimeout(() => {
+    if (!perms.editTenants) document.querySelectorAll('[onclick*="deleteTenant"], [onclick*="openEditTenant"]').forEach(b => b.style.display='none');
+    if (!perms.editOffices) document.querySelectorAll('[onclick*="deleteOffice"], [onclick*="openEditOffice"]').forEach(b => b.style.display='none');
+    if (!perms.editGuests)  document.querySelectorAll('[onclick*="deleteGuest"]').forEach(b => b.style.display='none');
+  }, 1000);
 }
 
 window.openEditUser = function(id, role, perms) {
