@@ -596,6 +596,32 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <input type="email" id="userEmail" placeholder="כתובת אימייל" class="inp" required>
             <input type="text" id="userName" placeholder="שם מלא" class="inp" required>
             <input type="password" id="userPassword" placeholder="סיסמה (לפחות 6 תווים)" class="inp" minlength="6" required>
+            <select id="userRole" class="inp" required onchange="updatePermissionsUI()">
+                <option value="">בחר תפקיד *</option>
+                <option value="admin">👑 מנהל ראשי — גישה מלאה</option>
+                <option value="manager">🏠 מנהל דיירים — דיירים + עדכונים</option>
+                <option value="offices_manager">🏢 מנהל משרדים — משרדים + מפתחות + עדכונים</option>
+            </select>
+
+            <!-- הרשאות עריכה למנהל דיירים -->
+            <div id="permManagerBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
+                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;margin-bottom:8px;">
+                    <input type="checkbox" id="permGuests" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת אורחים
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                    <input type="checkbox" id="permTenants" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת דיירים
+                </label>
+            </div>
+
+            <!-- הרשאות עריכה למנהל משרדים -->
+            <div id="permOfficesBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
+                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                    <input type="checkbox" id="permOffices" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת משרדים
+                </label>
+            </div>
+
             <div style="background: rgba(59,130,246,0.1); padding: 12px; border-radius: 12px; color: rgba(255,255,255,0.8); font-size: 14px;">
                 💡 המנהל החדש יוכל להיכנס למערכת הניהול עם האימייל והסיסמה
             </div>
@@ -687,8 +713,14 @@ onAuthStateChanged(auth, async (user) => {
         return;
       }
       
+      const adminDoc = adminSnap.docs.find(doc => doc.data().email === user.email);
+      const currentRole = adminDoc ? (adminDoc.data().role || 'admin') : 'admin';
+      const currentPerms = adminDoc ? (adminDoc.data().permissions || {}) : {};
+      window.currentUserRole = currentRole;
+      window.currentUserPerms = currentPerms;
       document.getElementById('login').style.display = 'none';
       document.getElementById('app').classList.add('show');
+      setTimeout(() => hideTabsByRole(currentRole, currentPerms), 100);
       loadAllData();
     } catch(e) {
       console.error('Admin check error:', e);
@@ -867,18 +899,18 @@ function renderTenants() {
     tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
     return;
   }
-  tbody.innerHTML = tenants.map(t => `
-    <tr>
+  tbody.innerHTML = tenants.map(t => {
+    const tw = t.tower==='צפוני' ? '<span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;">🔵 צפוני</span>'
+             : t.tower==='דרומי' ? '<span style="background:#ffedd5;color:#c2410c;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;">🟠 דרומי</span>' : '—';
+    return `<tr>
       <td>${t.name}</td>
-      <td>${t.tower || '—'}</td>
+      <td>${tw}</td>
       <td>${t.floor}</td>
       <td>${t.apt}</td>
       <td>${t.phone || '—'}</td>
-      <td>
-        <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
-      </td>
-    </tr>
-  `).join('');
+      <td><button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
 }
 
 function renderOffices() {
@@ -1589,16 +1621,25 @@ async function loadUsers() {
       return;
     }
     
-    tbody.innerHTML = users.map(u => `
-      <tr>
-        <td>${u.email}</td>
+    tbody.innerHTML = users.map(u => {
+      const roleLabel = u.role === 'admin' ? '👑 מנהל ראשי'
+                      : u.role === 'manager' ? '🏠 מנהל דיירים'
+                      : u.role === 'offices_manager' ? '🏢 מנהל משרדים'
+                      : '👑 מנהל ראשי';
+      const p = u.permissions || {};
+      const perms = [
+        p.editGuests  ? '✏️ אורחים' : '',
+        p.editTenants ? '✏️ דיירים' : '',
+        p.editOffices ? '✏️ משרדים' : '',
+      ].filter(Boolean).join(' ');
+      return `<tr>
+        <td style="direction:ltr;font-size:12px">${u.email}</td>
         <td>${u.name}</td>
-        <td>${new Date(u.createdAt).toLocaleDateString('he-IL')}</td>
-        <td>
-          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button>
-        </td>
-      </tr>
-    `).join('');
+        <td><span style="background:rgba(245,158,11,0.2);color:#f59e0b;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
+        <td style="font-size:12px;color:rgba(255,255,255,0.6)">${perms || '—'}</td>
+        <td><button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button></td>
+      </tr>`;
+    }).join('');
   } catch(e) {
     console.error('users error:', e);
   }
@@ -1626,8 +1667,14 @@ document.getElementById('userForm').onsubmit = async (e) => {
     const uid  = cred.user.uid;
 
     // שמור ב-Firestore
+    const selectedRole = document.getElementById('userRole').value;
+    const permissions = {
+      editGuests:  selectedRole === 'manager'         && document.getElementById('permGuests')  && document.getElementById('permGuests').checked,
+      editTenants: selectedRole === 'manager'         && document.getElementById('permTenants') && document.getElementById('permTenants').checked,
+      editOffices: selectedRole === 'offices_manager' && document.getElementById('permOffices') && document.getElementById('permOffices').checked,
+    };
     await setDoc(doc(db, 'admins', uid), {
-      uid, email, name, role: 'admin',
+      uid, email, name, role: selectedRole, permissions,
       createdAt: new Date().toISOString()
     });
 
@@ -1666,6 +1713,39 @@ window.deleteUser = async (userId, email) => {
   }
 };
 
+
+window.updatePermissionsUI = function() {
+  const role = document.getElementById('userRole').value;
+  document.getElementById('permManagerBox').style.display  = (role === 'manager')         ? 'block' : 'none';
+  document.getElementById('permOfficesBox').style.display  = (role === 'offices_manager') ? 'block' : 'none';
+};
+
+function hideTabsByRole(role, perms) {
+  if (role === 'admin') return;
+  const allTabBtns = document.querySelectorAll('.tab-btn');
+
+  if (role === 'manager') {
+    // מנהל דיירים — דיירים + עדכונים בלבד
+    allTabBtns.forEach(btn => {
+      const txt = btn.textContent;
+      if (!txt.includes('דיירים') && !txt.includes('עדכונים')) btn.style.display = 'none';
+    });
+    showTab('tenants');
+    // הסתר עריכה אם אין הרשאה
+    if (!perms.editGuests)  setTimeout(() => document.querySelectorAll('[onclick*="deleteGuest"]').forEach(b => b.style.display='none'), 1500);
+    if (!perms.editTenants) setTimeout(() => document.querySelectorAll('[onclick*="deleteTenant"]').forEach(b => b.style.display='none'), 1500);
+
+  } else if (role === 'offices_manager') {
+    // מנהל משרדים — משרדים + מפתחות + עדכונים
+    allTabBtns.forEach(btn => {
+      const txt = btn.textContent;
+      if (!txt.includes('משרדים') && !txt.includes('מפתחות') && !txt.includes('עדכונים')) btn.style.display = 'none';
+    });
+    showTab('offices');
+    // הסתר עריכה אם אין הרשאה
+    if (!perms.editOffices) setTimeout(() => document.querySelectorAll('[onclick*="deleteOffice"]').forEach(b => b.style.display='none'), 1500);
+  }
+}
 </script>
 
 </body>
