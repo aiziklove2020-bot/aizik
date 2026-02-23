@@ -718,80 +718,42 @@ function toast(msg) {
 }
 
 // ==================== LOGIN ====================
-const loginBtn = document.getElementById('loginBtn');
-const loginErr = document.getElementById('loginErr');
-
-loginBtn.onclick = async () => {
+document.getElementById('loginBtn').onclick = async () => {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPass').value;
-  loginErr.textContent = '';
-
-  if (!email || !pass) { loginErr.textContent = 'נא למלא אימייל וסיסמה'; return; }
-
-  loginBtn.disabled = true;
-  loginBtn.textContent = '...מתחבר';
-
+  const err   = document.getElementById('loginErr');
+  err.textContent = '';
+  if (!email || !pass) { err.textContent = 'נא למלא אימייל וסיסמה'; return; }
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged ימשיך משם
   } catch (e) {
-    console.error('login error:', e.code, e.message);
-    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
-      loginErr.textContent = 'אימייל או סיסמה שגויים';
-    } else if (e.code === 'auth/invalid-email') {
-      loginErr.textContent = 'אימייל לא תקין';
-    } else if (e.code === 'auth/too-many-requests') {
-      loginErr.textContent = 'יותר מדי ניסיונות — המתן כמה דקות';
-    } else {
-      loginErr.textContent = 'שגיאה: ' + e.message;
-    }
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'כניסה';
+    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') err.textContent = 'אימייל או סיסמה שגויים';
+    else if (e.code === 'auth/user-not-found') err.textContent = 'משתמש לא קיים';
+    else if (e.code === 'auth/too-many-requests') err.textContent = 'יותר מדי ניסיונות — המתן קצת';
+    else err.textContent = e.message;
   }
 };
 
 onAuthStateChanged(auth, async (user) => {
-  loginBtn.disabled = false;
-  loginBtn.textContent = 'כניסה';
-
   if (!user) {
     document.getElementById('login').style.display = 'flex';
     document.getElementById('app').classList.remove('show');
     return;
   }
-
-  // המשתמש מחובר — בדוק אם הוא ב-admins לפי UID (document ID) או לפי email
   try {
-    // נסה לפי UID (הדרך הנכונה)
-    let adminData = null;
-    let adminId = null;
+    // חפש את המשתמש ב-admins — קודם לפי UID, אחר כך לפי email
+    const adminSnap = await getDocs(collection(db, 'admins'));
+    let adminDoc = adminSnap.docs.find(d => d.id === user.uid);
+    if (!adminDoc) adminDoc = adminSnap.docs.find(d => d.data().email === user.email);
 
-    const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const byUid = await getDoc(doc(db, 'admins', user.uid));
-
-    if (byUid.exists()) {
-      adminData = byUid.data();
-      adminId = byUid.id;
-    } else {
-      // fallback — חפש לפי email
-      const adminSnap = await getDocs(collection(db, 'admins'));
-      const found = adminSnap.docs.find(d => d.data().email === user.email);
-      if (found) {
-        adminData = found.data();
-        adminId = found.id;
-      }
-    }
-
-    if (!adminData) {
-      // לא נמצא כלל — נתק
-      console.warn('User not in admins collection:', user.email);
-      loginErr.textContent = 'אין לך הרשאות גישה למערכת';
+    if (!adminDoc) {
+      document.getElementById('loginErr').textContent = 'אין לך הרשאות גישה';
       await auth.signOut();
       return;
     }
 
-    // נמצא — כנס
-    const currentRole  = adminData.role || 'admin';
+    const adminData   = adminDoc.data();
+    const currentRole = adminData.role || 'admin';
     const currentPerms = adminData.permissions || {};
     window.currentUserRole  = currentRole;
     window.currentUserPerms = currentPerms;
@@ -799,18 +761,15 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').classList.add('show');
 
-    // הצג שם ותפקיד ב-header
     const roleLabels = { admin: '👑 מנהל ראשי', manager: '🏠 מנהל דיירים', offices_manager: '🏢 מנהל משרדים' };
     document.getElementById('currentUserName').textContent = adminData.name || user.email;
     document.getElementById('currentUserRole').textContent = roleLabels[currentRole] || '👑 מנהל ראשי';
     document.getElementById('currentUserBadge').style.display = 'block';
 
     hideTabsByRole(currentRole, currentPerms);
-    await loadAllData();
-
+    loadAllData();
   } catch(e) {
-    console.error('Auth check error:', e);
-    loginErr.textContent = 'שגיאת מערכת: ' + e.message;
+    document.getElementById('loginErr').textContent = 'שגיאה: ' + e.message;
     await auth.signOut();
   }
 });
