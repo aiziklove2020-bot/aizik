@@ -507,6 +507,14 @@ tr:hover td {
 <div class="main-bg"></div>
 <div class="overlay"></div>
 
+<!-- מסך לובי סגור -->
+<div id="lobbyClosedScreen" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.92); backdrop-filter:blur(20px); flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+  <div style="font-size:80px; margin-bottom:24px;">🔒</div>
+  <h1 style="font-family:'Assistant',sans-serif; font-size:48px; font-weight:900; color:white; margin-bottom:12px;">הלובי סגור</h1>
+  <p style="font-family:'Assistant',sans-serif; font-size:22px; color:rgba(255,255,255,0.6); margin-bottom:8px;">אין רישומים כרגע</p>
+  <p style="font-family:'Assistant',sans-serif; font-size:16px; color:rgba(255,255,255,0.35);">המערכת תיפתח אוטומטית כשהלובי יפתח</p>
+</div>
+
 <div style="position: relative; z-index: 10; min-height: 100vh; padding: 24px;">
     
     <!-- Header -->
@@ -912,7 +920,7 @@ tr:hover td {
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -972,6 +980,17 @@ setInterval(updateClock, 1000);
 
 // Auto load data
 loadData();
+
+// ====== מאזין לסטטוס הלובי בזמן אמת ======
+onSnapshot(doc(db, 'settings', 'lobby'), (snap) => {
+  const isOpen = snap.exists() ? snap.data().open !== false : true;
+  const screen = document.getElementById('lobbyClosedScreen');
+  if (isOpen) {
+    screen.style.display = 'none';
+  } else {
+    screen.style.display = 'flex';
+  }
+});
 
 window.switchDestType = (type) => {
   const tenantWrap = document.getElementById('tenantSearchWrap');
