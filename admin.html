@@ -161,7 +161,11 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                 ניהול מערכת
             </p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-4 items-center">
+            <div id="currentUserBadge" class="frosted-card px-5 py-3 text-sm" style="display:none">
+                <div id="currentUserName" style="font-weight:700;font-size:13px"></div>
+                <div id="currentUserRole" style="font-size:11px;opacity:0.7;margin-top:2px"></div>
+            </div>
             <button id="lobbyStatusBtn" onclick="toggleLobbyStatus()" class="frosted-card px-6 py-3 text-sm font-bold"></button>
             <button onclick="auth.signOut()" class="frosted-card px-6 py-3 text-sm font-bold hover:bg-white/30">יציאה</button>
         </div>
@@ -257,7 +261,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <div class="frosted-card p-6 mb-4">
                 <div class="flex gap-4 justify-between items-center flex-wrap">
                     <h2 class="text-2xl font-bold">ניהול דיירים</h2>
-                    <div class="flex gap-3 flex-wrap">
+                    <div class="flex gap-3 flex-wrap" id="tenantsEditBtns">
                         <button onclick="downloadTenantsTemplate()" class="sbtn" style="background:linear-gradient(135deg,#10b981,#059669)">📋 הורד תבנית</button>
                         <label class="sbtn cursor-pointer">
                             📤 העלה Excel
@@ -293,7 +297,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             <div class="frosted-card p-6 mb-4">
                 <div class="flex gap-4 justify-between items-center">
                     <h2 class="text-2xl font-bold">ניהול משרדים</h2>
-                    <button onclick="openAddOffice()" class="sbtn">➕ הוסף משרד</button>
+                    <button id="addOfficeBtn" onclick="openAddOffice()" class="sbtn">➕ הוסף משרד</button>
                 </div>
             </div>
             <div class="frosted-card p-6 overflow-x-auto">
@@ -408,12 +412,13 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
                         <tr>
                             <th>אימייל</th>
                             <th>שם</th>
-                            <th>נוצר ב</th>
+                            <th>תפקיד</th>
+                            <th>הרשאות</th>
                             <th>פעולות</th>
                         </tr>
                     </thead>
                     <tbody id="usersTbody">
-                        <tr><td colspan="4" class="text-center opacity-60 py-8">טוען...</td></tr>
+                        <tr><td colspan="5" class="text-center opacity-60 py-8">טוען...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -766,6 +771,44 @@ onAuthStateChanged(auth, async (user) => {
       window.currentUserPerms = currentPerms;
       document.getElementById('login').style.display = 'none';
       document.getElementById('app').classList.add('show');
+      // הצג שם ותפקיד ב-header
+      const adminName = adminDoc ? (adminDoc.data().name || user.email) : user.email;
+      const roleLabels = { admin: '👑 מנהל ראשי', manager: '🏠 מנהל דיירים', offices_manager: '🏢 מנהל משרדים' };
+      document.getElementById('currentUserName').textContent = adminName;
+      document.getElementById('currentUserRole').textContent = roleLabels[currentRole] || '👑 מנהל ראשי';
+      document.getElementById('currentUserBadge').style.display = 'block';
+// ==================== הרשאות לפי תפקיד ====================
+function hideTabsByRole(role, perms) {
+  const tabVisibility = {
+    admin:           ['guests','archive','tenants','offices','employees','keys','notifications','users','analytics'],
+    manager:         ['tenants','notifications'],
+    offices_manager: ['offices','keys','notifications'],
+  };
+  const allowed = tabVisibility[role] || tabVisibility['admin'];
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    const match = onclick.match(/showTab\('(\w+)'\)/);
+    if (match && !allowed.includes(match[1])) btn.style.display = 'none';
+  });
+
+  showTab(allowed[0]);
+
+  window.currentUserRole = role;
+  window.currentUserPerms = perms;
+
+  if (role !== 'admin') {
+    if (!(perms && perms.editTenants)) {
+      const el = document.getElementById('tenantsEditBtns');
+      if (el) el.style.display = 'none';
+    }
+    if (!(perms && perms.editOffices)) {
+      const el = document.getElementById('addOfficeBtn');
+      if (el) el.style.display = 'none';
+    }
+  }
+}
+
       hideTabsByRole(currentRole, currentPerms);
       loadAllData();
     } catch(e) {
@@ -922,6 +965,7 @@ function renderGuests() {
     tbody.innerHTML = '<tr><td colspan="9" class="text-center opacity-60 py-8">אין רישומים</td></tr>';
     return;
   }
+  const canEditGuests = (window.currentUserRole === 'admin') || (window.currentUserPerms && window.currentUserPerms.editGuests);
   tbody.innerHTML = guests.map(g => `
     <tr>
       <td>${g.name}</td>
@@ -933,7 +977,7 @@ function renderGuests() {
       <td>${g.time}</td>
       <td>${g.registeredBy || '—'}</td>
       <td>
-        <button class="btn-icon text-red-400" onclick="deleteGuest('${g.id}')">🗑</button>
+        ${canEditGuests ? `<button class="btn-icon text-red-400" onclick="deleteGuest('${g.id}')">🗑</button>` : ''}
       </td>
     </tr>
   `).join('');
@@ -945,6 +989,7 @@ function renderTenants() {
     tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
     return;
   }
+  const canEditTenants = (window.currentUserRole === 'admin') || (window.currentUserPerms && window.currentUserPerms.editTenants);
   tbody.innerHTML = tenants.map(t => `
     <tr>
       <td>${t.name}</td>
@@ -953,7 +998,7 @@ function renderTenants() {
       <td>${t.apt}</td>
       <td>${t.phone || '—'}</td>
       <td>
-        <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
+        ${canEditTenants ? `<button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>` : ''}
       </td>
     </tr>
   `).join('');
@@ -965,12 +1010,13 @@ function renderOffices() {
     tbody.innerHTML = '<tr><td colspan="3" class="text-center opacity-60 py-8">אין משרדים</td></tr>';
     return;
   }
+  const canEditOffices = (window.currentUserRole === 'admin') || (window.currentUserPerms && window.currentUserPerms.editOffices);
   tbody.innerHTML = offices.map(o => `
     <tr>
       <td>קומה ${o.floor}</td>
       <td>${o.name}</td>
       <td>
-        <button class="btn-icon text-red-400" onclick="deleteOffice('${o.id}')">🗑</button>
+        ${canEditOffices ? `<button class="btn-icon text-red-400" onclick="deleteOffice('${o.id}')">🗑</button>` : ''}
       </td>
     </tr>
   `).join('');
@@ -1663,28 +1709,37 @@ async function loadUsers() {
     
     const tbody = document.getElementById('usersTbody');
     if (users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="text-center opacity-60 py-8">אין מנהלים</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center opacity-60 py-8">אין מנהלים</td></tr>';
       return;
     }
     
     tbody.innerHTML = users.map(u => {
-      const roleLabel = u.role === 'admin' ? '👑 מנהל ראשי'
-                      : u.role === 'manager' ? '🏠 מנהל דיירים'
-                      : u.role === 'offices_manager' ? '🏢 מנהל משרדים'
+      const role = u.role || 'admin';
+      const roleLabel = role === 'admin' ? '👑 מנהל ראשי'
+                      : role === 'manager' ? '🏠 מנהל דיירים'
+                      : role === 'offices_manager' ? '🏢 מנהל משרדים'
                       : '👑 מנהל ראשי';
+      const roleColor = role === 'admin' ? '#f59e0b' : role === 'manager' ? '#22c55e' : '#60a5fa';
       const p = u.permissions || {};
-      const perms = [
-        p.editGuests  ? '✏️ אורחים' : '',
-        p.editTenants ? '✏️ דיירים' : '',
-        p.editOffices ? '✏️ משרדים' : '',
-      ].filter(Boolean).join(' ');
+      const permsList = [
+        p.editGuests  ? '✏️ עריכת אורחים' : '',
+        p.editTenants ? '✏️ עריכת דיירים' : '',
+        p.editOffices ? '✏️ עריכת משרדים' : '',
+      ].filter(Boolean);
+      const permsHtml = role === 'admin'
+        ? '<span style="color:rgba(255,255,255,0.4);font-size:12px">גישה מלאה</span>'
+        : permsList.length
+          ? permsList.map(p => `<span style="background:rgba(255,255,255,0.1);border-radius:6px;padding:2px 8px;font-size:11px;margin:2px;display:inline-block">${p}</span>`).join('')
+          : '<span style="color:rgba(255,255,255,0.3);font-size:12px">צפייה בלבד</span>';
       return `<tr>
         <td style="direction:ltr;font-size:12px">${u.email}</td>
         <td>${u.name}</td>
-        <td><span style="background:rgba(245,158,11,0.2);color:#f59e0b;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
-        <td style="font-size:12px;color:rgba(255,255,255,0.6)">${perms || '—'}</td>
-        <td><button class="btn-icon" style="color:#60a5fa" onclick='openEditUser("${u.id}","${u.role||"admin"}",${JSON.stringify(u.permissions||{})})'>✏️</button>
-          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button></td>
+        <td><span style="background:${roleColor}22;color:${roleColor};border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;">${roleLabel}</span></td>
+        <td>${permsHtml}</td>
+        <td>
+          <button class="btn-icon" style="color:#60a5fa" onclick='openEditUser("${u.id}","${role}",${JSON.stringify(u.permissions||{})})'>✏️</button>
+          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button>
+        </td>
       </tr>`;
     }).join('');
   } catch(e) {
@@ -1764,33 +1819,6 @@ window.updatePermissionsUI = function() {
   document.getElementById('permManagerBox').style.display  = (role === 'manager')         ? 'block' : 'none';
   document.getElementById('permOfficesBox').style.display  = (role === 'offices_manager') ? 'block' : 'none';
 };
-
-function hideTabsByRole(role, perms) {
-  if (role === 'admin') return;
-  const allTabBtns = document.querySelectorAll('.tab-btn');
-
-  if (role === 'manager') {
-    // מנהל דיירים — דיירים + עדכונים בלבד
-    allTabBtns.forEach(btn => {
-      const txt = btn.textContent;
-      if (!txt.includes('דיירים') && !txt.includes('עדכונים')) btn.style.display = 'none';
-    });
-    showTab('tenants');
-    // הסתר עריכה אם אין הרשאה
-    if (!perms.editGuests)  setTimeout(() => document.querySelectorAll('[onclick*="deleteGuest"]').forEach(b => b.style.display='none'), 1500);
-    if (!perms.editTenants) setTimeout(() => document.querySelectorAll('[onclick*="deleteTenant"]').forEach(b => b.style.display='none'), 1500);
-
-  } else if (role === 'offices_manager') {
-    // מנהל משרדים — משרדים + מפתחות + עדכונים
-    allTabBtns.forEach(btn => {
-      const txt = btn.textContent;
-      if (!txt.includes('משרדים') && !txt.includes('מפתחות') && !txt.includes('עדכונים')) btn.style.display = 'none';
-    });
-    showTab('offices');
-    // הסתר עריכה אם אין הרשאה
-    if (!perms.editOffices) setTimeout(() => document.querySelectorAll('[onclick*="deleteOffice"]').forEach(b => b.style.display='none'), 1500);
-  }
-}
 
 window.openEditUser = function(id, role, perms) {
   document.getElementById('editUserId').value = id;
