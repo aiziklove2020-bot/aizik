@@ -604,20 +604,20 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             </select>
 
             <!-- הרשאות עריכה למנהל דיירים -->
-            <div id="permManagerBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
-                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;margin-bottom:8px;">
+            <div id="permManagerBox" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+                <div style="color:#b45309;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;margin-bottom:8px;">
                     <input type="checkbox" id="permGuests" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת אורחים
                 </label>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;">
                     <input type="checkbox" id="permTenants" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת דיירים
                 </label>
             </div>
 
             <!-- הרשאות עריכה למנהל משרדים -->
-            <div id="permOfficesBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
-                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+            <div id="permOfficesBox" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+                <div style="color:#b45309;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;">
                     <input type="checkbox" id="permOffices" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת משרדים
                 </label>
             </div>
@@ -653,20 +653,20 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
             </div>
 
             <!-- הרשאות למנהל דיירים -->
-            <div id="editPermManagerBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
-                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;margin-bottom:8px;">
+            <div id="editPermManagerBox" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+                <div style="color:#b45309;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;margin-bottom:8px;">
                     <input type="checkbox" id="editPermGuests" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת אורחים
                 </label>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;">
                     <input type="checkbox" id="editPermTenants" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת דיירים
                 </label>
             </div>
 
             <!-- הרשאות למנהל משרדים -->
-            <div id="editPermOfficesBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
-                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
-                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+            <div id="editPermOfficesBox" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+                <div style="color:#b45309;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:#1e293b;font-size:14px;cursor:pointer;">
                     <input type="checkbox" id="editPermOffices" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת משרדים
                 </label>
             </div>
@@ -682,7 +682,7 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp, getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -1705,35 +1705,33 @@ document.getElementById('userForm').onsubmit = async (e) => {
   try {
     toast('⏳ יוצר מנהל...');
 
-    // שמור את פרטי המנהל הנוכחי
-    const meEmail = auth.currentUser.email;
+    // שמור את פרטי המנהל הנוכחי לפני יצירת המנהל החדש
+    const meEmail = auth.currentUser ? auth.currentUser.email : null;
     const mePass  = sessionStorage.getItem('adminPass') || '';
 
-    // צור מנהל חדש (זה מחבר אותו אוטומטית)
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    const uid  = cred.user.uid;
-
-    // שמור ב-Firestore
     const selectedRole = document.getElementById('userRole').value;
+    if (!selectedRole) { toast('❌ בחר תפקיד'); return; }
+
     const permissions = {
       editGuests:  selectedRole === 'manager'         && document.getElementById('permGuests')  && document.getElementById('permGuests').checked,
       editTenants: selectedRole === 'manager'         && document.getElementById('permTenants') && document.getElementById('permTenants').checked,
       editOffices: selectedRole === 'offices_manager' && document.getElementById('permOffices') && document.getElementById('permOffices').checked,
     };
+
+    // צור מנהל חדש ב-Firebase Auth עם אפליקציה שניה - כדי לא לנתק את המנהל הנוכחי
+    const secondApp = initializeApp(app.options, 'secondApp-' + Date.now());
+    const secondAuth = getAuth(secondApp);
+    const cred = await createUserWithEmailAndPassword(secondAuth, email, password);
+    const uid  = cred.user.uid;
+    await secondAuth.signOut();
+
+    // שמור ב-Firestore
     await setDoc(doc(db, 'admins', uid), {
       uid, email, name, role: selectedRole, permissions,
       createdAt: new Date().toISOString()
     });
 
-    toast('✅ ' + name + ' נוסף! מתחבר מחדש...');
-
-    // חזור להתחבר עם המנהל הנוכחי
-    if (mePass) {
-      await signInWithEmailAndPassword(auth, meEmail, mePass);
-      toast('✅ מנהל ' + name + ' נוסף בהצלחה!');
-    } else {
-      toast('✅ נוסף! רענן את הדף כדי להמשיך');
-    }
+    toast('✅ מנהל ' + name + ' נוסף בהצלחה!');
 
     closeModal('addUserModal');
     document.getElementById('userForm').reset();
