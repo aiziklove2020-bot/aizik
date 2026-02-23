@@ -633,12 +633,58 @@ td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: 
     </div>
 </div>
 
+
+<!-- Modal עריכת הרשאות מנהל -->
+<div id="editUserModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900">✏️ עריכת הרשאות מנהל</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <input type="hidden" id="editUserId">
+            
+            <div>
+                <label style="display:block;font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;">תפקיד</label>
+                <select id="editUserRole" class="inp" onchange="updateEditPermissionsUI()">
+                    <option value="admin">👑 מנהל ראשי — גישה מלאה</option>
+                    <option value="manager">🏠 מנהל דיירים — דיירים + עדכונים</option>
+                    <option value="offices_manager">🏢 מנהל משרדים — משרדים + מפתחות + עדכונים</option>
+                </select>
+            </div>
+
+            <!-- הרשאות למנהל דיירים -->
+            <div id="editPermManagerBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
+                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — דיירים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;margin-bottom:8px;">
+                    <input type="checkbox" id="editPermGuests" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת אורחים
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                    <input type="checkbox" id="editPermTenants" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת דיירים
+                </label>
+            </div>
+
+            <!-- הרשאות למנהל משרדים -->
+            <div id="editPermOfficesBox" style="display:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px;">
+                <div style="color:#f59e0b;font-weight:700;font-size:13px;margin-bottom:10px;">✏️ הרשאות עריכה — משרדים</div>
+                <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;">
+                    <input type="checkbox" id="editPermOffices" style="width:16px;height:16px;accent-color:#f59e0b;"> עריכת משרדים
+                </label>
+            </div>
+
+            <div class="flex gap-3" style="margin-top:16px;">
+                <button type="button" onclick="closeModal('editUserModal')" class="flex-1 px-6 py-3 bg-gray-200 text-gray-900 rounded-2xl font-bold">ביטול</button>
+                <button type="button" onclick="saveEditUser()" class="flex-1 sbtn">💾 שמור שינויים</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfnYW-d4UFVvuqdxCLk_autpWmOLL2zFo",
@@ -720,7 +766,7 @@ onAuthStateChanged(auth, async (user) => {
       window.currentUserPerms = currentPerms;
       document.getElementById('login').style.display = 'none';
       document.getElementById('app').classList.add('show');
-      setTimeout(() => hideTabsByRole(currentRole, currentPerms), 100);
+      hideTabsByRole(currentRole, currentPerms);
       loadAllData();
     } catch(e) {
       console.error('Admin check error:', e);
@@ -899,18 +945,18 @@ function renderTenants() {
     tbody.innerHTML = '<tr><td colspan="6" class="text-center opacity-60 py-8">אין דיירים</td></tr>';
     return;
   }
-  tbody.innerHTML = tenants.map(t => {
-    const tw = t.tower==='צפוני' ? '<span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;">🔵 צפוני</span>'
-             : t.tower==='דרומי' ? '<span style="background:#ffedd5;color:#c2410c;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;">🟠 דרומי</span>' : '—';
-    return `<tr>
+  tbody.innerHTML = tenants.map(t => `
+    <tr>
       <td>${t.name}</td>
-      <td>${tw}</td>
+      <td>${t.tower || '—'}</td>
       <td>${t.floor}</td>
       <td>${t.apt}</td>
       <td>${t.phone || '—'}</td>
-      <td><button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button></td>
-    </tr>`;
-  }).join('');
+      <td>
+        <button class="btn-icon text-red-400" onclick="deleteTenant('${t.id}')">🗑</button>
+      </td>
+    </tr>
+  `).join('');
 }
 
 function renderOffices() {
@@ -1637,7 +1683,8 @@ async function loadUsers() {
         <td>${u.name}</td>
         <td><span style="background:rgba(245,158,11,0.2);color:#f59e0b;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;">${roleLabel}</span></td>
         <td style="font-size:12px;color:rgba(255,255,255,0.6)">${perms || '—'}</td>
-        <td><button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button></td>
+        <td><button class="btn-icon" style="color:#60a5fa" onclick='openEditUser("${u.id}","${u.role||"admin"}",${JSON.stringify(u.permissions||{})})'>✏️</button>
+          <button class="btn-icon text-red-400" onclick="deleteUser('${u.id}', '${u.email}')">🗑</button></td>
       </tr>`;
     }).join('');
   } catch(e) {
@@ -1746,6 +1793,43 @@ function hideTabsByRole(role, perms) {
     if (!perms.editOffices) setTimeout(() => document.querySelectorAll('[onclick*="deleteOffice"]').forEach(b => b.style.display='none'), 1500);
   }
 }
+
+window.openEditUser = function(id, role, perms) {
+  document.getElementById('editUserId').value = id;
+  document.getElementById('editUserRole').value = role;
+  
+  // הגדר checkboxes
+  if (document.getElementById('editPermGuests'))  document.getElementById('editPermGuests').checked  = perms.editGuests  || false;
+  if (document.getElementById('editPermTenants')) document.getElementById('editPermTenants').checked = perms.editTenants || false;
+  if (document.getElementById('editPermOffices')) document.getElementById('editPermOffices').checked = perms.editOffices || false;
+  
+  updateEditPermissionsUI();
+  document.getElementById('editUserModal').classList.add('show');
+};
+
+window.updateEditPermissionsUI = function() {
+  const role = document.getElementById('editUserRole').value;
+  document.getElementById('editPermManagerBox').style.display  = (role === 'manager')         ? 'block' : 'none';
+  document.getElementById('editPermOfficesBox').style.display  = (role === 'offices_manager') ? 'block' : 'none';
+};
+
+window.saveEditUser = async function() {
+  const id   = document.getElementById('editUserId').value;
+  const role = document.getElementById('editUserRole').value;
+  const permissions = {
+    editGuests:  role === 'manager'         && document.getElementById('editPermGuests')  && document.getElementById('editPermGuests').checked,
+    editTenants: role === 'manager'         && document.getElementById('editPermTenants') && document.getElementById('editPermTenants').checked,
+    editOffices: role === 'offices_manager' && document.getElementById('editPermOffices') && document.getElementById('editPermOffices').checked,
+  };
+  try {
+    await updateDoc(doc(db, 'admins', id), { role, permissions });
+    toast('✅ הרשאות עודכנו!');
+    closeModal('editUserModal');
+    loadUsers();
+  } catch(e) {
+    toast('❌ שגיאה: ' + e.message);
+  }
+};
 </script>
 
 </body>
